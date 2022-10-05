@@ -2,7 +2,7 @@ package com.midorimart.managementsystem.model.product.dto;
 
 import java.util.Date;
 
-import com.midorimart.managementsystem.entity.Category;
+import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class ProductDTOResponse {
     private int id;
-    private Category category;
+    private CategoryDTOResponse category;
     private String title;
     private double price;
     private int discount;

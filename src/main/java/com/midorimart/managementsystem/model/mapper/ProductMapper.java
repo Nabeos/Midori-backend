@@ -1,7 +1,10 @@
 package com.midorimart.managementsystem.model.mapper;
 
+import java.util.Date;
+
 import com.midorimart.managementsystem.entity.Category;
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 
@@ -16,26 +19,31 @@ public class ProductMapper {
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
-                .category(getCategoryDetail(product.getCategory()))
+                .category(toCategoryDTOResponse(product.getCategory()))
                 .created_at(product.getCreated_at())
                 .updated_at(product.getUpdated_at())
                 .build();
     }
 
-    private static Category getCategoryDetail(Category cate) {
-        return Category.builder()
-                .id(cate.getId())
-                .name(cate.getName())
-                .build();
-    }
-
     public static Product toProduct(ProductDTOCreate productDTOCreate) {
+        Date now = new Date();
         return Product.builder()
-                .category(getCategoryDetail(productDTOCreate.getCategory()))
                 .title(productDTOCreate.getTitle())
                 .thumbnails(productDTOCreate.getThumbnails())
                 .description(productDTOCreate.getDescription())
                 .price(productDTOCreate.getPrice())
+                .created_at(now)
+                .updated_at(now)
+                .discount(0)
+                .deleted(0)
+                .status("in_stock")
+                .build();
+    }
+
+    private static CategoryDTOResponse toCategoryDTOResponse(Category cate) {
+        return CategoryDTOResponse.builder()
+                .id(cate.getId())
+                .name(cate.getName())
                 .build();
     }
 }

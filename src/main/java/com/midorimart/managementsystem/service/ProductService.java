@@ -8,10 +8,10 @@ import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 
 public interface ProductService {
 
-    void updateDeletedById(int id);
+    public void updateDeletedById(int id);
 
-    Map<String, List<ProductDTOResponse>> findAllProduct();
+    public Map<String, List<ProductDTOResponse>> findAllProduct();
 
-    Map<String, ProductDTOResponse> addNewProduct(Map<String, ProductDTOCreate> productDTOMap);
+    public Map<String, ProductDTOResponse> addNewProduct(Map<String, ProductDTOCreate> productDTOMap);
 
 }
