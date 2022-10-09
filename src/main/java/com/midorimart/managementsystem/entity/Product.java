@@ -35,6 +35,7 @@ public class Product {
     private String title;
     private double price;
     private int discount;
+    @Column(name = "thumbnail")
     private String thumbnails;
     private String description;
     private String status;

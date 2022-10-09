@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.midorimart.managementsystem.entity.Category;
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
@@ -40,10 +41,13 @@ public class ProductMapper {
                 .build();
     }
 
-    private static CategoryDTOResponse toCategoryDTOResponse(Category cate) {
+    public static CategoryDTOResponse toCategoryDTOResponse(Category cate) {
         return CategoryDTOResponse.builder()
                 .id(cate.getId())
                 .name(cate.getName())
                 .build();
+    }
+    public static Category toCategory(CategoryDTOCreate categoryDTOCreate){
+        return Category.builder().name(categoryDTOCreate.getName()).build();
     }
 }
