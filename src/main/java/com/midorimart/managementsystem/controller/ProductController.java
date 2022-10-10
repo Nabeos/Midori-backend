@@ -3,6 +3,7 @@ package com.midorimart.managementsystem.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/productManagement")
+
 @RequiredArgsConstructor
 @Tag(name = "Product")
 public class ProductController {
@@ -43,10 +46,12 @@ public class ProductController {
                 .build();
         return service.getProductByCategoryId(filter);
     }
+
     @GetMapping("/getAllCategories")
-    public Map<String, List<CategoryDTOResponse>> getAllCategories(){
+    public Map<String, List<CategoryDTOResponse>> getAllCategories() {
         return service.getAllCategories();
     }
+
     @PostMapping("/addNewProduct")
     public Map<String, ProductDTOResponse> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) {
         return service.addNewProduct(productDTOMap);
