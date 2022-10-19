@@ -2,7 +2,6 @@ package com.midorimart.managementsystem.model.merchant.dto;
 
 import java.util.Date;
 
-import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.model.country.dto.CountryDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
 

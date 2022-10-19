@@ -19,7 +19,6 @@ import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.mapper.ProductMapper;
-import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
