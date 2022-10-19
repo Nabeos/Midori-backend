@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
+import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
@@ -55,6 +58,10 @@ public class ProductController {
     @PostMapping("/addNewProduct")
     public Map<String, ProductDTOResponse> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) {
         return service.addNewProduct(productDTOMap);
+    }
+    @PostMapping("/uploadImages")
+    public Map<String, ImageDTOResponse> uploadImage(@RequestParam("files") MultipartFile[] files) throws IllegalStateException, IOException{
+        return service.uploadImage(files);
     }
 
     @PostMapping("/addNewCategory")

@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +10,24 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.entity.Category;
+import com.midorimart.managementsystem.entity.Gallery;
+import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.mapper.ProductMapper;
+import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
+import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.repository.CategoryRepository;
+import com.midorimart.managementsystem.repository.CountryRepository;
+import com.midorimart.managementsystem.repository.GalleryRepository;
+import com.midorimart.managementsystem.repository.MerchantRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.custom.ProductCriteria;
 import com.midorimart.managementsystem.service.ProductService;
@@ -30,6 +40,10 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductCriteria productCriteria;
     private final CategoryRepository categoryRepository;
+    private final GalleryRepository galleryRepository;
+    private final MerchantRepository merchantRepository;
+    private final CountryRepository countryRepository;
+    private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public void updateDeletedById(int id) {
@@ -89,6 +103,19 @@ public class ProductServiceImpl implements ProductService {
         List<Product> productList = (List<Product>) results.get("listProducts");
         Long totalProducts = (Long) results.get("totalProducts");
 
+        for (Product product : productList) {
+            Optional<Merchant> merchantOptional = merchantRepository.findById(product.getMerchant().getId());
+            if(merchantOptional.isPresent()){
+                Merchant merchant = merchantOptional.get();
+                product.setMerchant(merchant);
+            }else{
+                System.out.println("not FOUND merchant");
+            }
+            // set images for each product
+            List<Gallery> galleryResults = galleryRepository.findByProductId(product.getId());
+            product.setGalleries(galleryResults);
+        }
+        // convert to ProductDTOResponse
         List<ProductDTOResponse> listProductDTOResponses = productList.stream().map(ProductMapper::toProductDTOResponse)
                 .collect(Collectors.toList());
         Map<String, Object> wrapper = new HashMap<>();
@@ -107,5 +134,21 @@ public class ProductServiceImpl implements ProductService {
         Map<String, List<CategoryDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("categories", listCategoryDTOResponses);
         return wrapper;
+    }
+
+    @Override
+    public Map<String, ImageDTOResponse> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException {
+        for (MultipartFile file : files) {
+            System.out.println(file.getOriginalFilename());
+            saveFile(file);
+        }
+        return null;
+    }
+
+    private String saveFile(MultipartFile file) throws IllegalStateException, IOException {
+        String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
+        Gallery gallery = galleryRepository.save(Gallery.builder().thumbnail(filePath).build());
+        file.transferTo(new File(filePath));
+        return gallery.getThumbnail();
     }
 }

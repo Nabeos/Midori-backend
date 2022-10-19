@@ -27,6 +27,7 @@ public class ProductCriteria {
             query.append(" and pc.id = :category");
             params.put("category", filter.getCategoryId());
         }
+
         TypedQuery<Product> tQuery = em.createQuery(query.toString(), Product.class);
         Query countQuery = em.createQuery(query.toString().replace("select p", "select count(p.id)"));
         params.forEach((k, v) -> {

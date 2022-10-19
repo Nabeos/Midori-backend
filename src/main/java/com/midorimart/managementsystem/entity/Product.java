@@ -1,7 +1,7 @@
 package com.midorimart.managementsystem.entity;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -40,18 +41,20 @@ public class Product {
     @Column(unique = true)
     private String title;
     private double price;
+    private double amount;
     private int discount;
-
-    @Column(name = "thumbnail")
-    private String thumbnails;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToStringExclude
-    private Set<Gallery> galleries;
+    private List<Gallery> galleries;
     private String description;
     private String status;
     private Date created_at;
     private Date updated_at;
     private int deleted;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id")
+    private Merchant merchant;
 }
