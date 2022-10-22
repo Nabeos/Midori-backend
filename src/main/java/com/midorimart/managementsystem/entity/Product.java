@@ -56,4 +56,15 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
+    @Column(name = "slug", unique = true)
+    private String slug;
+    @Column(name = "sku",unique = true)
+    private String sku;
+
+    @ManyToOne
+    @JoinColumn(name = "product_unit_id")
+    private ProductUnit unit;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }

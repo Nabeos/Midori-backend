@@ -4,16 +4,16 @@ import java.util.Date;
 import java.util.List;
 
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
+import com.midorimart.managementsystem.model.comment.dto.CommentDTOResponse;
 import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
 import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
 
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
-public class ProductDTOResponse {
-    private int id;
+@Builder
+public class ProductDetailDTOResponse{
     private String slug;
     private String sku;
     private CategoryDTOResponse category;
@@ -27,6 +27,7 @@ public class ProductDTOResponse {
     private Date updated_at;
     private int deleted;
     private double amount;
-    private ProductUnitDTOResponse unit;
     private MerchantDTOResponse merchant;
+    private ProductUnitDTOResponse unit;
+    private List<CommentDTOResponse> comments;
 }

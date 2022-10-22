@@ -6,9 +6,11 @@ import lombok.Data;
 @Builder
 @Data
 public class ProductDTOCreate {
+    private String slug;
+    private String sku;
     private int category;
     private String title;
     private double price;
-    private String thumbnails;
+    private double amount;
     private String description;
 }

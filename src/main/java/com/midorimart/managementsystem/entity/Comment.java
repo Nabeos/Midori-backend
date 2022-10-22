@@ -1,40 +1,41 @@
 package com.midorimart.managementsystem.entity;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Table(name = "Order_Detail")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class OrderDetail {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "content")
+    private String content;
+    @Column(name = "created_at")
+    private Date createdAt;
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Order order;
-    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-    private int quantity;
-    private float price;
-    private float totalMoney;
 }

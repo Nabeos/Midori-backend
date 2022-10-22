@@ -7,6 +7,7 @@ import com.midorimart.managementsystem.model.users.UserDTOResponse;
 public class UserMapper {
     public static UserDTOResponse toUserDTOResponse(User user){
         return UserDTOResponse.builder()
+        .id(user.getId())
         .email(user.getEmail())
         .fullname(user.getFullname())
         .address(user.getAddress())

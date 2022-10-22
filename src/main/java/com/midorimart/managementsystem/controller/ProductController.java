@@ -21,6 +21,7 @@ import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
+import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
 import com.midorimart.managementsystem.service.ProductService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,7 +41,18 @@ public class ProductController {
         return service.findAllProduct();
     }
 
-    @GetMapping("/getProductsById")
+    @GetMapping("/searchProduct")
+    public Map<String, List<ProductDTOResponse>> searchProduct(
+            @RequestParam(name = "title", required = false) String productName) {
+        return service.searchProduct(productName);
+    }
+
+    @GetMapping("/{slug}")
+    public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug) {
+        return service.getProductBySlug(slug);
+    }
+
+    @GetMapping("/getProductsByCategoryId")
     public Map<String, Object> getProductByCategoryId(
             @RequestParam(name = "category", defaultValue = "0", required = false) Integer categoryId,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit,
@@ -56,11 +68,13 @@ public class ProductController {
     }
 
     @PostMapping("/addNewProduct")
-    public Map<String, ProductDTOResponse> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) {
+    public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) {
         return service.addNewProduct(productDTOMap);
     }
+
     @PostMapping("/uploadImages")
-    public Map<String, ImageDTOResponse> uploadImage(@RequestParam("files") MultipartFile[] files) throws IllegalStateException, IOException{
+    public Map<String, ImageDTOResponse> uploadImage(@RequestParam("files") MultipartFile[] files)
+            throws IllegalStateException, IOException {
         return service.uploadImage(files);
     }
 
@@ -73,4 +87,5 @@ public class ProductController {
     public void deleteUser(@PathVariable("id") int id) {
         service.updateDeletedById(id);
     }
+
 }

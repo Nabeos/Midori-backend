@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -44,4 +45,6 @@ public class User {
     private String phonenumber;
     private String address;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }

@@ -12,6 +12,7 @@ import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
+import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
 
 public interface ProductService {
 
@@ -19,7 +20,7 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> findAllProduct();
 
-    public Map<String, ProductDTOResponse> addNewProduct(Map<String, ProductDTOCreate> productDTOMap);
+    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap);
 
     public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap);
 
@@ -28,5 +29,9 @@ public interface ProductService {
     public Map<String, List<CategoryDTOResponse>> getAllCategories();
 
     public Map<String, ImageDTOResponse> uploadImage(MultipartFile[] multipartFiles) throws IllegalStateException, IOException;
+
+    public Map<String, List<ProductDTOResponse>> searchProduct(String productName);
+
+    public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug);
 
 }
