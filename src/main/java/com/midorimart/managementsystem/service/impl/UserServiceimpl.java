@@ -19,7 +19,7 @@ import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.service.UserService;
-import com.midorimart.managementsystem.util.JwtTokenUtil;
+import com.midorimart.managementsystem.utils.JwtTokenUtil;
 
 import lombok.RequiredArgsConstructor;
 

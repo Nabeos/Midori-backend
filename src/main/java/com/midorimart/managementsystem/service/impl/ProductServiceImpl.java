@@ -28,8 +28,8 @@ import com.midorimart.managementsystem.repository.GalleryRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.custom.ProductCriteria;
 import com.midorimart.managementsystem.service.ProductService;
-import com.midorimart.managementsystem.util.SkuUtil;
-import com.midorimart.managementsystem.util.SlugUtil;
+import com.midorimart.managementsystem.utils.SkuUtil;
+import com.midorimart.managementsystem.utils.SlugUtil;
 
 import lombok.RequiredArgsConstructor;
 

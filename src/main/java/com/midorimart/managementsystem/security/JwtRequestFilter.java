@@ -31,7 +31,7 @@ import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.TokenPayload;
 import com.midorimart.managementsystem.repository.PermissionRepository;
 import com.midorimart.managementsystem.repository.UserRepository;
-import com.midorimart.managementsystem.util.JwtTokenUtil;
+import com.midorimart.managementsystem.utils.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

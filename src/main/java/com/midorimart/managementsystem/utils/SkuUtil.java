@@ -1,4 +1,4 @@
-package com.midorimart.managementsystem.util;
+package com.midorimart.managementsystem.utils;
 
 public class SkuUtil {
     public static String getSku(int categoryId, int productId) {

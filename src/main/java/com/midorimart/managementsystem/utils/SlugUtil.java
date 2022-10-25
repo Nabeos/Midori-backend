@@ -1,4 +1,4 @@
-package com.midorimart.managementsystem.util;
+package com.midorimart.managementsystem.utils;
 
 import java.text.Normalizer;
 import java.util.regex.Pattern;
