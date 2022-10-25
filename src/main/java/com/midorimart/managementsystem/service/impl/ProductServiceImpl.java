@@ -14,7 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.entity.Category;
 import com.midorimart.managementsystem.entity.Gallery;
+import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.entity.ProductUnit;
+import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
+import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
+import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.mapper.ProductMapper;
@@ -25,7 +30,9 @@ import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
 import com.midorimart.managementsystem.repository.CategoryRepository;
 import com.midorimart.managementsystem.repository.GalleryRepository;
+import com.midorimart.managementsystem.repository.MerchantRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
+import com.midorimart.managementsystem.repository.ProductUnitRepository;
 import com.midorimart.managementsystem.repository.custom.ProductCriteria;
 import com.midorimart.managementsystem.service.ProductService;
 import com.midorimart.managementsystem.utils.SkuUtil;
@@ -40,6 +47,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductCriteria productCriteria;
     private final CategoryRepository categoryRepository;
     private final GalleryRepository galleryRepository;
+    private final MerchantRepository merchantRepository;
+    private final ProductUnitRepository productUnitRepository;
     private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
@@ -67,35 +76,53 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap) {
+    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
+            throws CustomNotFoundException, CustomBadRequestException {
         ProductDTOCreate productDTOCreate = productDTOMap.get("product");
         Product product = ProductMapper.toProduct(productDTOCreate);
-        Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
-        if (categoryOptional.isPresent()) {
-            Category category = categoryOptional.get();
-            product.setCategory(category);
-        }
-        product = productRepository.save(product);
-        if (Integer.valueOf(product.getId()) != null) {
-            product.setSku(SkuUtil.getSku(product.getCategory().getId(), product.getId()));
-            product.setSlug(SlugUtil.getSlug(product.getTitle(), product.getSku()));
+        Optional<Product> productOptional = productRepository.findByTitle(product.getTitle());
+        if (productOptional.isEmpty()) {
+            Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
+            Optional<ProductUnit> productUnitOptional = productUnitRepository.findById(productDTOCreate.getProductUnit());
+            Optional<Merchant> merchantOptional = merchantRepository.findById(productDTOCreate.getMerchantId());
+            if (categoryOptional.isPresent() && productUnitOptional.isPresent() && merchantOptional.isPresent()) {
+                product.setCategory(categoryOptional.get());
+                product.setMerchant(merchantOptional.get());
+                product.setUnit(productUnitOptional.get());
+                product.setAmount(productDTOCreate.getAmount());
+            }else{
+                throw new CustomNotFoundException(CustomError.builder().code("404").message("Category, merchant or unit are not existed").build());
+            }
             product = productRepository.save(product);
+            if (Integer.valueOf(product.getId()) != null) {
+                product.setSku(SkuUtil.getSku(product.getCategory().getId(), product.getId()));
+                product.setSlug(SlugUtil.getSlug(product.getTitle(), product.getSku()));
+                product = productRepository.save(product);
+            }
+            Map<String, String> wrapper = new HashMap<>();
+            wrapper.put("product", "ok");
+            return wrapper;
         }
-        Map<String, String> wrapper = new HashMap<>();
-        wrapper.put("product", "ok");
-        return wrapper;
+        throw new CustomBadRequestException(
+                CustomError.builder().code("400").message("Already had the same Product name").build());
     }
 
     @Override
-    public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap) {
+    public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap)
+            throws CustomBadRequestException {
         CategoryDTOCreate categoryDTOCreate = categoryMap.get("category");
         Category category = ProductMapper.toCategory(categoryDTOCreate);
-        category = categoryRepository.save(category);
+        Optional<Category> categoryOptional = categoryRepository.findByName(category.getName());
+        if (categoryOptional.isEmpty()) {
+            category = categoryRepository.save(category);
 
-        CategoryDTOResponse categoryDTOResponse = ProductMapper.toCategoryDTOResponse(category);
-        Map<String, CategoryDTOResponse> wrapper = new HashMap<>();
-        wrapper.put("category", categoryDTOResponse);
-        return wrapper;
+            CategoryDTOResponse categoryDTOResponse = ProductMapper.toCategoryDTOResponse(category);
+            Map<String, CategoryDTOResponse> wrapper = new HashMap<>();
+            wrapper.put("category", categoryDTOResponse);
+            return wrapper;
+        }
+        throw new CustomBadRequestException(
+                CustomError.builder().code("400").message("Already had this category").build());
     }
 
     @Override
@@ -152,11 +179,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) {
-        Product product = productRepository.findBySlug(slug);
-        ProductDetailDTOResponse productDetailDTOResponse = ProductMapper.toProductDetail(product);
-        Map<String, ProductDetailDTOResponse> wrapper = new HashMap<>();
-        wrapper.put("product", productDetailDTOResponse);
-        return wrapper;
+    public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) throws CustomNotFoundException {
+        Optional<Product> productOptional = productRepository.findBySlug(slug);
+        if (productOptional.isPresent()) {
+            ProductDetailDTOResponse productDetailDTOResponse = ProductMapper.toProductDetail(productOptional.get());
+            Map<String, ProductDetailDTOResponse> wrapper = new HashMap<>();
+            wrapper.put("product", productDetailDTOResponse);
+            return wrapper;
+        }
+        throw new CustomNotFoundException(CustomError.builder().code("404").message("Product is not existed").build());
     }
 }

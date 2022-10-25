@@ -13,4 +13,6 @@ public class ProductDTOCreate {
     private double price;
     private double amount;
     private String description;
+    private int merchantId;
+    private int productUnit;
 }

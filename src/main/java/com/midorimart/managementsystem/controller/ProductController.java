@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
+import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
@@ -45,7 +47,7 @@ public class ProductController {
 
     @Operation(summary = "Get Product Detail")
     @GetMapping("/{slug}")
-    public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug) {
+    public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug) throws CustomNotFoundException {
         return service.getProductBySlug(slug);
     }
 
@@ -66,7 +68,7 @@ public class ProductController {
     }
 
     @PostMapping("/addNewProduct")
-    public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) {
+    public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) throws CustomBadRequestException, CustomNotFoundException {
         return service.addNewProduct(productDTOMap);
     }
 
@@ -77,7 +79,7 @@ public class ProductController {
     }
 
     @PostMapping("/addNewCategory")
-    public Map<String, CategoryDTOResponse> addNewCategory(@RequestBody Map<String, CategoryDTOCreate> categoryMap) {
+    public Map<String, CategoryDTOResponse> addNewCategory(@RequestBody Map<String, CategoryDTOCreate> categoryMap) throws CustomBadRequestException {
         return service.addNewCategory(categoryMap);
     }
 

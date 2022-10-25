@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
+import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
@@ -20,9 +22,9 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> findAllProduct();
 
-    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap);
+    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap) throws CustomBadRequestException, CustomNotFoundException;
 
-    public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap);
+    public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap) throws CustomBadRequestException;
 
     public Map<String, Object> getProductByCategoryId(ProductDTOFilter filter);
 
@@ -32,6 +34,6 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> searchProduct(String productName);
 
-    public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug);
+    public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) throws CustomNotFoundException;
 
 }
