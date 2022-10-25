@@ -73,12 +73,21 @@ public class UserServiceimpl implements UserService {
 
     @Override
     public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException {
+        User userLogin = getUserLogin();
+        if(userLogin != null){
+            return buildDTOResponse(userLogin);
+        }
+        throw new CustomNotFoundException(CustomError.builder().code("404").message("User not exist").build());
+    }
+
+
+    public User getUserLogin(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails){
             String email = ((UserDetails)principal).getUsername();
             User user = userRepository.findByEmail(email).get();
-            return buildDTOResponse(user);
+            return user;
         }
-        throw new CustomNotFoundException(CustomError.builder().code("404").message("User not exist").build());
+        return null;
     }
 }
