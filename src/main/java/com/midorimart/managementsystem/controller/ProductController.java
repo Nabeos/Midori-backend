@@ -24,34 +24,32 @@ import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
 import com.midorimart.managementsystem.service.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/productManagement")
-
 @RequiredArgsConstructor
 @Tag(name = "Product")
 public class ProductController {
     private final ProductService service;
 
-    @GetMapping("/getAllProducts")
-    public Map<String, List<ProductDTOResponse>> getAllProduct() {
-        return service.findAllProduct();
-    }
-
+    @Operation(summary = "Search all products")
     @GetMapping("/searchProduct")
     public Map<String, List<ProductDTOResponse>> searchProduct(
             @RequestParam(name = "title", required = false) String productName) {
         return service.searchProduct(productName);
     }
 
+    @Operation(summary = "Get Product Detail")
     @GetMapping("/{slug}")
     public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug) {
         return service.getProductBySlug(slug);
     }
 
+    @Operation(summary = "Get Products By Category ID")
     @GetMapping("/getProductsByCategoryId")
     public Map<String, Object> getProductByCategoryId(
             @RequestParam(name = "category", defaultValue = "0", required = false) Integer categoryId,

@@ -8,5 +8,4 @@ import lombok.Data;
 public class UserDTOLoginRequest {
     private String email;
     private String password;
-    
 }

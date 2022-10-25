@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.model.mapper;
 
+import java.util.Date;
+
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
@@ -16,11 +18,15 @@ public class UserMapper {
     }
 
     public static User toUser(UserDTOCreate userDTOCreate) {
+        Date now = new Date();
         return User.builder()
         .email(userDTOCreate.getEmail())
         .password(userDTOCreate.getPassword())
         .phonenumber(userDTOCreate.getPhonenumber())
         .fullname(userDTOCreate.getFullname())
+        .createdAt(now)
+        .updatedAt(now)
+        .deleted(0)
         .build();
     }
 }

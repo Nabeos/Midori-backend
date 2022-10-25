@@ -12,6 +12,4 @@ public class UserDTOResponse {
     private String phonenumber;
     private String address;
     private String token;
-
-    
 }

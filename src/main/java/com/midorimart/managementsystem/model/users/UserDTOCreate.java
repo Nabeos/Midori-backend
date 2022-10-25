@@ -10,5 +10,4 @@ public class UserDTOCreate {
     private String email;
     private String phonenumber;
     private String password;
-    
 }

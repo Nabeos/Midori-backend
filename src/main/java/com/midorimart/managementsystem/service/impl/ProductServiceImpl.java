@@ -81,8 +81,6 @@ public class ProductServiceImpl implements ProductService {
             product.setSlug(SlugUtil.getSlug(product.getTitle(), product.getSku()));
             product = productRepository.save(product);
         }
-        // ProductDTOResponse productDTOResponse =
-        // ProductMapper.toProductDTOResponse(product);
         Map<String, String> wrapper = new HashMap<>();
         wrapper.put("product", "ok");
         return wrapper;

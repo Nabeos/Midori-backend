@@ -8,5 +8,4 @@ import lombok.Data;
 public class TokenPayload {
     private int userId;
     private String email;
-    
 }
