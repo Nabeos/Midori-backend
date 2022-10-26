@@ -38,4 +38,7 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Column(name = "star_rate")
+    private double starRate;
 }
