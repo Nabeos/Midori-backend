@@ -17,7 +17,7 @@ public class CommentMapper {
 
     public static CommentDTOResponse toCommentDTOResponse(Comment comment) {
         return CommentDTOResponse.builder().id(comment.getId()).content(comment.getContent())
-                .createdAt(comment.getCreatedAt()).updatedAt(comment.getUpdatedAt())
+                .createdAt(comment.getCreatedAt()).updatedAt(comment.getUpdatedAt()).starRate(comment.getStarRate())
                 .user(CommentUserDTOResponse.builder().fullname(comment.getUser().getFullname()).build()).build();
     }
 }

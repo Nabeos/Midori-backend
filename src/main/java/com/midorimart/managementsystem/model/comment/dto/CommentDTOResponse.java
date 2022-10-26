@@ -11,6 +11,7 @@ import lombok.Data;
 public class CommentDTOResponse {
     private int id;
     private String content;
+    private double starRate;
     private Date createdAt;
     private Date updatedAt;
     private CommentUserDTOResponse user;
