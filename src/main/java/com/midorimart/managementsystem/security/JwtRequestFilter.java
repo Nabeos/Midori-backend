@@ -87,9 +87,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 Role userRole = user.getRole();
                 if (needCheckPermission(userRole, url, method)) {
                     String path = request.getRequestURI().toLowerCase();
-                    if (path.matches("/api/.+")) {
+                    if (path.matches("/api/v1/.+")) {
                         String route = path.split("[/]")[3];
-                        path = "/api/productManagement/" + route;
+                        path = "/api/v1/" + route;
                     }
                     Optional<Permission> permissionOptional = permissionRepository.findByPathAndMethod(path, method);
                     if (permissionOptional.isEmpty()) {

@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,8 @@ public class User {
     @ToString.Exclude
     private Set<Order> orders;
 
+    @Column(name = "thumbnail")
+    private String thumbnail;
     @Column(unique = true)
     private String email;
     @Column(name = "full_name")
@@ -59,4 +62,17 @@ public class User {
     private Date updatedAt;
     @Column(name = "deleted")
     private int deleted;
+
+    public List<String> getAddress() {
+        return Arrays.asList(this.address.split(";"));
+    }
+
+    public void setAddress(List<String> addresses) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String address : addresses) {
+            stringBuilder.append(address).append(";");
+        }
+        this.address = stringBuilder.substring(0, stringBuilder.length()-1).toString();
+    }
+
 }

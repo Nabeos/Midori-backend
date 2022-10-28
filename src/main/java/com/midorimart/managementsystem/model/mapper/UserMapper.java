@@ -12,7 +12,7 @@ public class UserMapper {
         .id(user.getId())
         .email(user.getEmail())
         .fullname(user.getFullname())
-        .address(user.getAddress())
+        .address(user.getAddress()!=null?user.getAddress():null)
         .phonenumber(user.getPhonenumber())
         .build();
     }

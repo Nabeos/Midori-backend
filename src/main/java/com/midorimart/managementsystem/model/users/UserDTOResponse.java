@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.model.users;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +12,6 @@ public class UserDTOResponse {
     private String email;
     private String fullname;
     private String phonenumber;
-    private String address;
+    private List<String> address;
     private String token;
 }

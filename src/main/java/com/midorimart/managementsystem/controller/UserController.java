@@ -17,28 +17,35 @@ import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/usermanagement")
+@RequestMapping("/api/user-management")
 @CrossOrigin
 @RequiredArgsConstructor
-
+@Tag(name = "User API")
 public class UserController {
 
     private final UserService userService;
 
     @Operation(summary = "Get Current User")
     @GetMapping("/user")
-    public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException{
+    public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException {
         return userService.getCurrentUser();
     }
+
+    @Operation(summary = "login")
     @PostMapping("/login")
-    public Map<String, UserDTOResponse> login(@RequestBody Map<String, UserDTOLoginRequest> userLoginRequestMap) throws CustomBadRequestException{
+    public Map<String, UserDTOResponse> login(@RequestBody Map<String, UserDTOLoginRequest> userLoginRequestMap)
+            throws CustomBadRequestException {
         return userService.authenticate(userLoginRequestMap);
     }
-    @PostMapping("/addNewUser")
-    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap){
+
+    @Operation(summary = "Add new user")
+    @PostMapping("/users")
+    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) {
         return userService.addNewUser(userDTOCreateMap);
     }
+
 }
