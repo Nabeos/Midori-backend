@@ -64,7 +64,7 @@ public class User {
     private int deleted;
 
     public List<String> getAddress() {
-        return Arrays.asList(this.address.split(";"));
+        return this.address!= null?Arrays.asList(this.address.split(";")):null;
     }
 
     public void setAddress(List<String> addresses) {

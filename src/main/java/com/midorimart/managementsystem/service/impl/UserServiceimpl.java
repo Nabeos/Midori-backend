@@ -1,6 +1,8 @@
 package com.midorimart.managementsystem.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,6 +19,7 @@ import com.midorimart.managementsystem.model.mapper.UserMapper;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
+import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.service.UserService;
 import com.midorimart.managementsystem.utils.JwtTokenUtil;
@@ -74,20 +77,49 @@ public class UserServiceimpl implements UserService {
     @Override
     public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException {
         User userLogin = getUserLogin();
-        if(userLogin != null){
+        if (userLogin != null) {
             return buildDTOResponse(userLogin);
         }
         throw new CustomNotFoundException(CustomError.builder().code("404").message("User not exist").build());
     }
 
-
-    public User getUserLogin(){
+    public User getUserLogin() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(principal instanceof UserDetails){
-            String email = ((UserDetails)principal).getUsername();
+        if (principal instanceof UserDetails) {
+            String email = ((UserDetails) principal).getUsername();
             User user = userRepository.findByEmail(email).get();
             return user;
         }
         return null;
     }
+
+    @Override
+    public Map<String, UserDTOResponse> updateUser(int id, Map<String, UserDTOUpdate> userUpdateMap) {
+        Date date = new Date();
+        User user = userRepository.findById(id).get();
+        UserDTOUpdate userUpdateDTO = userUpdateMap.get("user");
+        user.setUpdatedAt(date);
+        if (userUpdateDTO.getAddress() != null) {
+            List<String> addresses = userUpdateDTO.getAddress();
+            user.setAddress(addresses);
+        }
+        if (userUpdateDTO.getFullname() != null) {
+            user.setFullname(userUpdateDTO.getFullname());
+        }
+
+        if (userUpdateDTO.getThumbnail() != null) {
+            user.setThumbnail(userUpdateDTO.getThumbnail());
+        }
+
+        if (userUpdateDTO.getPhoneNumber() != null) {
+            user.setPhonenumber(userUpdateDTO.getPhoneNumber());
+        }
+
+        user = userRepository.save(user);
+        UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
+        HashMap<String, UserDTOResponse> wrapper = new HashMap<>();
+        wrapper.put("user", userDTOResponse);
+        return wrapper;
+    }
+
 }
