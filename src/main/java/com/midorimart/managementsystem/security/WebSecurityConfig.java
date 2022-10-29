@@ -25,8 +25,9 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        String[] listPermitAll = new String[] {"/api/user-management/login","/api/user-management/register"};
-        httpSecurity.csrf().disable().authorizeRequests()
+        String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register" };
+        httpSecurity.csrf().disable().csrf().and()
+                .authorizeRequests()
                 .antMatchers(listPermitAll).permitAll()
                 .antMatchers("/api/v1/**").authenticated()
                 .anyRequest().permitAll().and()
