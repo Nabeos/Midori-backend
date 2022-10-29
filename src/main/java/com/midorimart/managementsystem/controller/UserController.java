@@ -51,6 +51,7 @@ public class UserController {
         return userService.addNewUser(userDTOCreateMap);
     }
 
+    @Operation(summary = "Update user profile")
     @PutMapping("/v1/user-management/users/{id}")
     public Map<String, UserDTOResponse> updateUser(@PathVariable int id,
             @RequestBody Map<String, UserDTOUpdate> userUpdateMap) {

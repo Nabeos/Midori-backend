@@ -2,6 +2,7 @@ package com.midorimart.managementsystem.model.mapper;
 
 import java.util.Date;
 
+import com.midorimart.managementsystem.entity.Role;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
@@ -28,6 +29,7 @@ public class UserMapper {
                 .fullname(userDTOCreate.getFullname())
                 .createdAt(now)
                 .updatedAt(now)
+                .role(Role.builder().id(2).build())
                 .deleted(0)
                 .build();
     }
