@@ -13,6 +13,7 @@ public class UserMapper {
                 .id(user.getId())
                 .email(user.getEmail())
                 .fullname(user.getFullname())
+                .thumbnail(user.getThumbnail()!=null?user.getThumbnail():null)
                 .address(user.getAddress() != null ? user.getAddress() : null)
                 .phonenumber(user.getPhonenumber())
                 .build();
@@ -32,7 +33,8 @@ public class UserMapper {
     }
 
     public static User toUserDTO(UserDTOUpdate userUpdateDTO) {
+        Date now = new Date();
         return User.builder().fullname(userUpdateDTO.getFullname()).phonenumber(userUpdateDTO.getPhoneNumber())
-                .thumbnail(userUpdateDTO.getThumbnail()).build();
+                .thumbnail(userUpdateDTO.getThumbnail()).updatedAt(now).build();
     }
 }

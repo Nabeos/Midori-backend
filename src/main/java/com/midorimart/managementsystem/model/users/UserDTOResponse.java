@@ -11,6 +11,7 @@ public class UserDTOResponse {
     private int id;
     private String email;
     private String fullname;
+    private String thumbnail;
     private String phonenumber;
     private List<String> address;
     private String token;
