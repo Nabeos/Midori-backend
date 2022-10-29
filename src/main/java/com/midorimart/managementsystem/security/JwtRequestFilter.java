@@ -63,7 +63,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         TokenPayload tokenPayload = null;
         if (requestToken != null && requestToken.startsWith("Token ")) {
             token = requestToken.substring(6).trim();
-            System.out.println(token);
             try {
                 tokenPayload = jwtTokenUtil.getPayLoadFromToken(token);
             } catch (SignatureException e) {
@@ -80,6 +79,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logger.warn("JWT does not start with Token");
             System.out.println("JWT does not start with Token");
         }
+
         if (tokenPayload != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Optional<User> userOptional = userRepository.findByEmail(tokenPayload.getEmail());
             if (userOptional.isPresent()) {
@@ -91,6 +91,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         String route = path.split("[/]")[3];
                         path = "/api/v1/" + route;
                     }
+                    System.out.println(path);
                     Optional<Permission> permissionOptional = permissionRepository.findByPathAndMethod(path, method);
                     if (permissionOptional.isEmpty()) {
                         CustomError customError = CustomError.builder().code("access denied")
@@ -128,11 +129,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean needCheckPermission(Role userRole, String url, String method) {
-        if (url.startsWith("/api/productManagement") && method.equalsIgnoreCase("POST")
-                && userRole.getId() == Role.CUSTOMER)
-            return true;
-        if (url.startsWith("/api/productManagement") && method.equalsIgnoreCase("PUT")
-                && userRole.getId() == Role.CUSTOMER)
+        if (url.startsWith("/api/v1/user-management/users/") && method.equalsIgnoreCase("PUT"))
             return true;
         return userRole.getId() != Role.ADMIN;
     }

@@ -83,6 +83,7 @@ public class UserServiceimpl implements UserService {
         throw new CustomNotFoundException(CustomError.builder().code("404").message("User not exist").build());
     }
 
+    @Override
     public User getUserLogin() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
@@ -95,10 +96,8 @@ public class UserServiceimpl implements UserService {
 
     @Override
     public Map<String, UserDTOResponse> updateUser(int id, Map<String, UserDTOUpdate> userUpdateMap) {
-        Date date = new Date();
         User user = userRepository.findById(id).get();
         UserDTOUpdate userUpdateDTO = userUpdateMap.get("user");
-        user.setUpdatedAt(date);
         if (userUpdateDTO.getAddress() != null) {
             List<String> addresses = userUpdateDTO.getAddress();
             user.setAddress(addresses);

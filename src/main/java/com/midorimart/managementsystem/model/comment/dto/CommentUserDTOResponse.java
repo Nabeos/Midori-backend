@@ -7,4 +7,5 @@ import lombok.Data;
 @Data
 public class CommentUserDTOResponse {
     private String fullname;
+    private String thumbnail;
 }
