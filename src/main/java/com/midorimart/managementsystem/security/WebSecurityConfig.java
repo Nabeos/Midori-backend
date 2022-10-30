@@ -27,7 +27,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register"};
-        httpSecurity.csrf().disable()
+        httpSecurity.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(listPermitAll).permitAll()
                 .antMatchers("/api/v1/**").authenticated()
@@ -40,8 +40,4 @@ public class WebSecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedMethods("*");
-    }
 }
