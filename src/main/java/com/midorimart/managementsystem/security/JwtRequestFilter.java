@@ -54,8 +54,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String url = request.getRequestURI();
         String method = request.getMethod();
         // if (listDontNeedAuthentication.stream().anyMatch(o -> o.equals(url))) {
-        //     filterChain.doFilter(request, response);
-        //     return;
+        // filterChain.doFilter(request, response);
+        // return;
         // }
 
         final String requestToken = request.getHeader("Authorization");
@@ -77,7 +77,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         } else {
             logger.warn("JWT does not start with Token");
-            System.out.println("JWT does not start with Token");
         }
 
         if (tokenPayload != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -114,15 +113,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         return;
                     }
                 }
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(),
-                        user.getPassword(), true, true, true, true, authorities);
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                if (jwtTokenUtil.validateToken(token, tokenPayload)) {
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(),
+                            user.getPassword(), true, true, true, true, authorities);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
             }
         }
         filterChain.doFilter(request, response);

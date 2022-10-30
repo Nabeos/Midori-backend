@@ -1,6 +1,5 @@
 package com.midorimart.managementsystem.service.impl;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class UserServiceimpl implements UserService {
             throw new CustomBadRequestException(
                     CustomError.builder().code("400").message("User name and password incorrect").build());
         }
-        return buildDTOResponse(userOptional.get());
+        return buildDTOResponseForLogin(userOptional.get());
 
     }
 
@@ -63,15 +62,21 @@ public class UserServiceimpl implements UserService {
             User user = UserMapper.toUser(userDTOCreate);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user = userRepository.save(user);
-            return buildDTOResponse(user);
+            return buildDTOResponseForLogin(user);
         }
         throw new CustomBadRequestException(CustomError.builder().code("400").message("Email already existed").build());
     }
 
-    private Map<String, UserDTOResponse> buildDTOResponse(User user) {
+    private Map<String, UserDTOResponse> buildDTOResponseForLogin(User user) {
         Map<String, UserDTOResponse> wrapper = new HashMap<>();
         UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
         userDTOResponse.setToken(jwtTokenUtil.generateToken(user, 24 * 60 * 60));
+        wrapper.put("user", userDTOResponse);
+        return wrapper;
+    }
+    private Map<String, UserDTOResponse> buildDTOResponse(User user) {
+        Map<String, UserDTOResponse> wrapper = new HashMap<>();
+        UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
         wrapper.put("user", userDTOResponse);
         return wrapper;
     }
