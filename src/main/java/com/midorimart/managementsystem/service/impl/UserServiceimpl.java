@@ -58,7 +58,8 @@ public class UserServiceimpl implements UserService {
     @Override
     public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
-        if (userRepository.findByEmail(userDTOCreate.getEmail()) == null) {
+        System.out.println(userDTOCreate.getEmail());
+        if (userRepository.findByEmail(userDTOCreate.getEmail()).isEmpty()) {
             User user = UserMapper.toUser(userDTOCreate);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user = userRepository.save(user);

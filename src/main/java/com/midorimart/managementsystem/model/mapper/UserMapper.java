@@ -9,6 +9,7 @@ import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 
 public class UserMapper {
+    //convert from User to UserDTO
     public static UserDTOResponse toUserDTOResponse(User user) {
         return UserDTOResponse.builder()
                 .id(user.getId())
