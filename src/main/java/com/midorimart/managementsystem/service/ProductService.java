@@ -36,4 +36,6 @@ public interface ProductService {
 
     public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) throws CustomNotFoundException;
 
+    public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(int categoryId);
+
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -83,15 +84,17 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findByTitle(product.getTitle());
         if (productOptional.isEmpty()) {
             Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
-            Optional<ProductUnit> productUnitOptional = productUnitRepository.findById(productDTOCreate.getProductUnit());
+            Optional<ProductUnit> productUnitOptional = productUnitRepository
+                    .findById(productDTOCreate.getProductUnit());
             Optional<Merchant> merchantOptional = merchantRepository.findById(productDTOCreate.getMerchantId());
             if (categoryOptional.isPresent() && productUnitOptional.isPresent() && merchantOptional.isPresent()) {
                 product.setCategory(categoryOptional.get());
                 product.setMerchant(merchantOptional.get());
                 product.setUnit(productUnitOptional.get());
                 product.setAmount(productDTOCreate.getAmount());
-            }else{
-                throw new CustomNotFoundException(CustomError.builder().code("404").message("Category, merchant or unit are not existed").build());
+            } else {
+                throw new CustomNotFoundException(CustomError.builder().code("404")
+                        .message("Category, merchant or unit are not existed").build());
             }
             product = productRepository.save(product);
             if (Integer.valueOf(product.getId()) != null) {
@@ -188,5 +191,16 @@ public class ProductServiceImpl implements ProductService {
             return wrapper;
         }
         throw new CustomNotFoundException(CustomError.builder().code("404").message("Product is not existed").build());
+    }
+
+    @Override
+    public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(int categoryId) {
+        List<Integer> productID = productRepository.findBestSellersInEachCategoryCustom(categoryId);
+        List<Product> products = productID.stream().map((id)->(productRepository.findById(id).get())).collect(Collectors.toList());
+        List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
+                .collect(Collectors.toList());
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("products", productDTOResponses);
+        return wrapper;
     }
 }
