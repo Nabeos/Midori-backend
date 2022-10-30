@@ -9,8 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,8 +25,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register" };
-        httpSecurity.csrf().disable().cors().disable()
+        String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register"};
+        httpSecurity.csrf().disable()
                 .authorizeRequests()
                 .antMatchers(listPermitAll).permitAll()
                 .antMatchers("/api/v1/**").authenticated()
