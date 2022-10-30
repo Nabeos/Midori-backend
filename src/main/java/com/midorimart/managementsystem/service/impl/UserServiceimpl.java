@@ -57,13 +57,15 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) {
+    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
-        User user = UserMapper.toUser(userDTOCreate);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user = userRepository.save(user);
-        return buildDTOResponse(user);
-
+        if (userRepository.findByEmail(userDTOCreate.getEmail()) == null) {
+            User user = UserMapper.toUser(userDTOCreate);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user = userRepository.save(user);
+            return buildDTOResponse(user);
+        }
+        throw new CustomBadRequestException(CustomError.builder().code("400").message("Email already existed").build());
     }
 
     private Map<String, UserDTOResponse> buildDTOResponse(User user) {

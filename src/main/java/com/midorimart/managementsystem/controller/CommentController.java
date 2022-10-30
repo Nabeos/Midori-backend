@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
 @RequiredArgsConstructor
 @Tag(name = "Comment API")
 public class CommentController {

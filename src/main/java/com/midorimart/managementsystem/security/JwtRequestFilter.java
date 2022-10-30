@@ -129,7 +129,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean needCheckPermission(Role userRole, String url, String method) {
-        if (url.startsWith("/api/v1/user-management/users/") && method.equalsIgnoreCase("PUT"))
+        if (url.startsWith("/api/v1/user-management") && method.equalsIgnoreCase("PUT"))
             return true;
         return userRole.getId() != Role.ADMIN;
     }

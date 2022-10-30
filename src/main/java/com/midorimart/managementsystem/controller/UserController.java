@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
 @RequiredArgsConstructor
 @Tag(name = "User API")
 public class UserController {
@@ -47,7 +46,7 @@ public class UserController {
 
     @Operation(summary = "Add new user")
     @PostMapping("/user-management/register")
-    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) {
+    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
         return userService.addNewUser(userDTOCreateMap);
     }
 
