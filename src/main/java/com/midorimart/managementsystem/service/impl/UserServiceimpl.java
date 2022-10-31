@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +32,9 @@ public class UserServiceimpl implements UserService {
     private final UserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
+    private static final String REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d @$!%*?&]{6,32}$";
+    private static final String REGEX_ALL_LETTER = "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ ]+$";
+    private static final String REGEX_PHONE_NUMBER = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
 
     @Override
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
@@ -41,6 +45,7 @@ public class UserServiceimpl implements UserService {
 
         boolean isAuthen = false;
 
+        // Check if user exists
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(userDTOLoginRequest.getPassword(), user.getPassword())) {
@@ -56,9 +61,24 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
+    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap)
+            throws CustomBadRequestException {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
-        System.out.println(userDTOCreate.getEmail());
+        Pattern pattern = Pattern.compile(REGEX_PASSWORD);
+        Pattern patternPhoneNumber = Pattern.compile(REGEX_PHONE_NUMBER);
+        //check password
+        if (!pattern.matcher(userDTOCreate.getPassword()).matches()) {
+            throw new CustomBadRequestException(CustomError.builder().code("400")
+                    .message(
+                            "Password must be at least 6 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character")
+                    .build());
+        }
+        //check phone number
+        if (!patternPhoneNumber.matcher(userDTOCreate.getPhonenumber()).matches()) {
+            throw new CustomBadRequestException(
+                    CustomError.builder().code("400").message("Invalid Phone Number").build());
+        }
+        //check email
         if (userRepository.findByEmail(userDTOCreate.getEmail()).isEmpty()) {
             User user = UserMapper.toUser(userDTOCreate);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -68,6 +88,7 @@ public class UserServiceimpl implements UserService {
         throw new CustomBadRequestException(CustomError.builder().code("400").message("Email already existed").build());
     }
 
+    //return DTO response for login with Token
     private Map<String, UserDTOResponse> buildDTOResponseForLogin(User user) {
         Map<String, UserDTOResponse> wrapper = new HashMap<>();
         UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
@@ -75,6 +96,8 @@ public class UserServiceimpl implements UserService {
         wrapper.put("user", userDTOResponse);
         return wrapper;
     }
+
+    // return DTO response without Token
     private Map<String, UserDTOResponse> buildDTOResponse(User user) {
         Map<String, UserDTOResponse> wrapper = new HashMap<>();
         UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
@@ -82,6 +105,7 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
+    // Get user profile
     @Override
     public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException {
         User userLogin = getUserLogin();
@@ -91,8 +115,10 @@ public class UserServiceimpl implements UserService {
         throw new CustomNotFoundException(CustomError.builder().code("404").message("User not exist").build());
     }
 
+    //Get user information after logging in
     @Override
     public User getUserLogin() {
+        // User information is saved in SecurityHolder
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             String email = ((UserDetails) principal).getUsername();
@@ -102,6 +128,7 @@ public class UserServiceimpl implements UserService {
         return null;
     }
 
+    // Update user profile
     @Override
     public Map<String, UserDTOResponse> updateUser(int id, Map<String, UserDTOUpdate> userUpdateMap) {
         User user = userRepository.findById(id).get();
