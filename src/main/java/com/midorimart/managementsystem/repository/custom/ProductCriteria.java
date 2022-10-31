@@ -27,9 +27,22 @@ public class ProductCriteria {
             query.append(" and pc.id = :category");
             params.put("category", filter.getCategoryId());
         }
+        String query1 = null;
+        if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
+            query1 = filter.getPriceAsc()!=null?"order by p.price asc":"order by p.price desc";
+            System.out.println(query1);
+            query.append(filter.getPriceAsc()!=null?" order by p.price asc":" order by p.price desc");
 
+        }
+        System.out.println(query);
+        String queryForCount = query.toString();
+        if(filter.getPriceAsc() != null || filter.getPriceDesc() != null){
+            queryForCount = queryForCount.substring(0, queryForCount.length()-1-query1.length());
+        }
+        System.out.println(queryForCount);
         TypedQuery<Product> tQuery = em.createQuery(query.toString(), Product.class);
-        Query countQuery = em.createQuery(query.toString().replace("select p", "select count(p.id)"));
+
+        Query countQuery = em.createQuery(queryForCount.replace("select p", "select count(p.id)").trim());
         params.forEach((k, v) -> {
             tQuery.setParameter(k, v);
             countQuery.setParameter(k, v);
@@ -46,4 +59,5 @@ public class ProductCriteria {
         results.put("totalProducts", totalProducts);
         return results;
     }
+
 }
