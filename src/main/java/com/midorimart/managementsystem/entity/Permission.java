@@ -34,6 +34,7 @@ public class Permission {
 
     private String path;
     private String method;
+    @Column(name = "check_action")
     private boolean checkAction;
     @ManyToMany(mappedBy = "permissions", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Role> roles;

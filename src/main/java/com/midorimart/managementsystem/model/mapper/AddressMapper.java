@@ -7,9 +7,6 @@ import com.midorimart.managementsystem.model.address.dto.DistrictDTOResponse;
 import com.midorimart.managementsystem.model.address.dto.ProvinceDTOResponse;
 import com.midorimart.managementsystem.model.address.dto.WardDTOResponse;
 
-import lombok.Builder;
-import lombok.Data;
-
 public class AddressMapper {
     public static ProvinceDTOResponse toProvinceDTOResponse(Province province) {
         return ProvinceDTOResponse.builder().id(province.getProvinceId()).name(province.getName()).build();
