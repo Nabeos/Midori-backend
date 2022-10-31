@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Province")
+@Table(name = "Location_Province")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,6 +22,7 @@ import lombok.Setter;
 public class Province {
     @Id
     @GeneratedValue
+    @Column(name = "Id")
     private int id;
     @Column(name = "ProvinceId")
     private String provinceId;
