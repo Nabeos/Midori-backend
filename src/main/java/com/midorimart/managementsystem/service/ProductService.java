@@ -18,7 +18,7 @@ import com.midorimart.managementsystem.model.product.dto.ProductDetailDTORespons
 
 public interface ProductService {
 
-    public void updateDeletedById(int id);
+    public String updateDeletedById(int id);
 
     public Map<String, List<ProductDTOResponse>> findAllProduct();
 

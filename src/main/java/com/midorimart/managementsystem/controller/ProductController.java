@@ -99,8 +99,8 @@ public class ProductController {
 
     @Operation(summary = "Delete product by update deleted id")
     @PutMapping("/api/v1/product-management/products/{id}")
-    public void deleteUser(@PathVariable("id") int id) {
-        service.updateDeletedById(id);
+    public String deleteUser(@PathVariable("id") int id) {
+        return service.updateDeletedById(id);
     }
 
 }

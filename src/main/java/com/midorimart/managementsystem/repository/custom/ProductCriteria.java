@@ -27,6 +27,7 @@ public class ProductCriteria {
             query.append(" and pc.id = :category");
             params.put("category", filter.getCategoryId());
         }
+        System.out.println(query);
         String query1 = null;
         if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
             query1 = filter.getPriceAsc()!=null?"order by p.price asc":"order by p.price desc";

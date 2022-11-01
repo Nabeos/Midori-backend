@@ -67,4 +67,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductQuantity> productQuantities;
 }
