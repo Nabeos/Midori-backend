@@ -40,7 +40,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Map<String, List<DistrictDTOResponse>> getDistricts(String id) {
-        List<District> districts = districtRepository.findAll();
+        List<District> districts = districtRepository.findByProvinceId(id);
         List<DistrictDTOResponse> districtDTOResponses = districts.stream().map(AddressMapper::toDistrictDTOResponse)
                 .collect(Collectors.toList());
         Map<String, List<DistrictDTOResponse>> wrapper = new HashMap<>();
@@ -50,7 +50,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Map<String, List<WardDTOResponse>> getWards(String id) {
-        List<Ward> wards = wardRepository.findAll();
+        List<Ward> wards = wardRepository.findByDistrictId(id);
         List<WardDTOResponse> wardDTOResponses = wards.stream().map(AddressMapper::toWardDTOResponse)
                 .collect(Collectors.toList());
         Map<String, List<WardDTOResponse>> wrapper = new HashMap<>();

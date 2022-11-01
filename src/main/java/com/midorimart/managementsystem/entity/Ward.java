@@ -28,4 +28,6 @@ public class Ward {
     private String wardId;
     @Column(name = "Name")
     private String name;
+    @Column(name = "DistrictId")
+    private String districtId;
 }

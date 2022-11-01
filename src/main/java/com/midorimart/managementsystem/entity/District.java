@@ -28,4 +28,6 @@ public class District {
     private String districtId;
     @Column(name = "Name")
     private String name;
+    @Column(name = "ProvinceId")
+    private String provinceId;
 }
