@@ -28,7 +28,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         String[] listPermitAll = new String[] {"/api/usermanagement/login",
                 "/api/productManagement/getProductsByCategoryId", "/api/usermanagement/addNewUser",
-                "/api/productManagement/getAllCategories" };
+                "/api/productManagement/getAllCategories", "/api/paymentmanagement/finishOrder" };
         httpSecurity.csrf().disable().authorizeRequests()
                 .antMatchers(listPermitAll).permitAll()
                 .antMatchers(HttpMethod.POST, "/api/**").authenticated()
