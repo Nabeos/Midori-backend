@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,60 +31,76 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/api/productManagement")
 @RequiredArgsConstructor
-@Tag(name = "Product")
+@Tag(name = "Product API")
 public class ProductController {
     private final ProductService service;
 
     @Operation(summary = "Search all products")
-    @GetMapping("/searchProduct")
+    @GetMapping("/product-management/search-product")
     public Map<String, List<ProductDTOResponse>> searchProduct(
             @RequestParam(name = "title", required = false) String productName) {
         return service.searchProduct(productName);
     }
 
+    @Operation(summary = "Get best seller in each category by Category ID")
+    @GetMapping("/product-management/products/categories/{categoryId}/best-seller")
+    public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(@PathVariable int categoryId) {
+        return service.getBestSellerInEachCategory(categoryId);
+    }
+
     @Operation(summary = "Get Product Detail")
-    @GetMapping("/{slug}")
-    public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug) throws CustomNotFoundException {
+    @GetMapping("/product-management/products/{slug}")
+    public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug)
+            throws CustomNotFoundException {
         return service.getProductBySlug(slug);
     }
 
-    @Operation(summary = "Get Products By Category ID")
-    @GetMapping("/getProductsByCategoryId")
+    @Operation(summary = "Get Products by category, price asc or desc")
+    @GetMapping("/product-management/products")
     public Map<String, Object> getProductByCategoryId(
             @RequestParam(name = "category", defaultValue = "0", required = false) Integer categoryId,
+            @RequestParam(name = "priceAsc", required = false) String priceAsc,
+            @RequestParam(name = "priceDesc", required = false) String priceDesc,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit,
             @RequestParam(name = "offset", defaultValue = "0") Integer offset) {
-        ProductDTOFilter filter = ProductDTOFilter.builder().categoryId(categoryId).offset(offset).limit(limit)
+        ProductDTOFilter filter = ProductDTOFilter.builder().categoryId(categoryId).priceAsc(priceAsc)
+                .priceDesc(priceDesc).offset(offset).limit(limit)
                 .build();
         return service.getProductByCategoryId(filter);
     }
 
-    @GetMapping("/getAllCategories")
+    @Operation(summary = "Get All Categories")
+    @GetMapping("/category-management/categories")
     public Map<String, List<CategoryDTOResponse>> getAllCategories() {
         return service.getAllCategories();
     }
 
-    @PostMapping("/addNewProduct")
-    public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap) throws CustomBadRequestException, CustomNotFoundException {
+    @Operation(summary = "Add new Product")
+    @PostMapping("/api/v1/product-management/products")
+    public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap)
+            throws CustomBadRequestException, CustomNotFoundException {
         return service.addNewProduct(productDTOMap);
     }
 
-    @PostMapping("/uploadImages")
+    @Operation(summary = "Upload image after add new Product")
+    @PostMapping("/api/v1/product-management/products/{slug}/images")
     public Map<String, ImageDTOResponse> uploadImage(@RequestParam("files") MultipartFile[] files)
             throws IllegalStateException, IOException {
         return service.uploadImage(files);
     }
 
-    @PostMapping("/addNewCategory")
-    public Map<String, CategoryDTOResponse> addNewCategory(@RequestBody Map<String, CategoryDTOCreate> categoryMap) throws CustomBadRequestException {
+    @Operation(summary = "Add new Category")
+    @PostMapping("/api/v1/category-management/categories")
+    public Map<String, CategoryDTOResponse> addNewCategory(@RequestBody Map<String, CategoryDTOCreate> categoryMap)
+            throws CustomBadRequestException {
         return service.addNewCategory(categoryMap);
     }
 
-    @PutMapping("/deleteProduct/{id}")
-    public void deleteUser(@PathVariable("id") int id) {
-        service.updateDeletedById(id);
+    @Operation(summary = "Delete product by update deleted id")
+    @PutMapping("/api/v1/product-management/products/{id}")
+    public String deleteUser(@PathVariable("id") int id) {
+        return service.updateDeletedById(id);
     }
 
 }

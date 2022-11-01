@@ -2,7 +2,6 @@ package com.midorimart.managementsystem.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,13 +26,11 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        String[] listPermitAll = new String[] {"/api/usermanagement/login",
-                "/api/productManagement/getProductsByCategoryId", "/api/usermanagement/addNewUser",
-                "/api/productManagement/getAllCategories", "/api/paymentmanagement/finishOrder" };
-        httpSecurity.csrf().disable().authorizeRequests()
+        String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register","/api/paymentmanagement/finishOrder"};
+        httpSecurity.cors().and().csrf().disable()
+                .authorizeRequests()
                 .antMatchers(listPermitAll).permitAll()
-                .antMatchers(HttpMethod.POST, "/api/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/api/**").authenticated()
+                .antMatchers("/api/v1/**").authenticated()
                 .anyRequest().permitAll().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -41,4 +39,5 @@ public class WebSecurityConfig {
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
+
 }

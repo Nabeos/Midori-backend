@@ -6,11 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.midorimart.managementsystem.service.ProductUnitService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@Tag(name = "Product Unit API")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class ProductUnitController {
     private final ProductUnitService productUnitService;

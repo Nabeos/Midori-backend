@@ -54,4 +54,17 @@ public class JwtTokenUtil {
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
+
+    public boolean validateToken(String token, TokenPayload tokenPayload) {
+        return getPayLoadFromToken(token).equals(tokenPayload) && !isExpiredToken(token);
+    }
+
+    private boolean isExpiredToken(String token) {
+        final Date expiration = getExpirationDate(token);
+        return expiration.before(new Date());
+    }
+
+    private Date getExpirationDate(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
 }

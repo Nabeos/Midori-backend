@@ -34,6 +34,7 @@ import com.midorimart.managementsystem.repository.MerchantRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.ProductUnitRepository;
 import com.midorimart.managementsystem.repository.custom.ProductCriteria;
+import com.midorimart.managementsystem.service.CommentService;
 import com.midorimart.managementsystem.service.ProductService;
 import com.midorimart.managementsystem.utils.SkuUtil;
 import com.midorimart.managementsystem.utils.SlugUtil;
@@ -49,16 +50,19 @@ public class ProductServiceImpl implements ProductService {
     private final GalleryRepository galleryRepository;
     private final MerchantRepository merchantRepository;
     private final ProductUnitRepository productUnitRepository;
+    private final CommentService commentService;
     private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
-    public void updateDeletedById(int id) {
+    public String updateDeletedById(int id) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             product.setDeleted(1);
             product = productRepository.save(product);
+            return "Delete successfully";
         }
+        return "Delete failed";
     }
 
     @Override
@@ -83,15 +87,17 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findByTitle(product.getTitle());
         if (productOptional.isEmpty()) {
             Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
-            Optional<ProductUnit> productUnitOptional = productUnitRepository.findById(productDTOCreate.getProductUnit());
+            Optional<ProductUnit> productUnitOptional = productUnitRepository
+                    .findById(productDTOCreate.getProductUnit());
             Optional<Merchant> merchantOptional = merchantRepository.findById(productDTOCreate.getMerchantId());
             if (categoryOptional.isPresent() && productUnitOptional.isPresent() && merchantOptional.isPresent()) {
                 product.setCategory(categoryOptional.get());
                 product.setMerchant(merchantOptional.get());
                 product.setUnit(productUnitOptional.get());
                 product.setAmount(productDTOCreate.getAmount());
-            }else{
-                throw new CustomNotFoundException(CustomError.builder().code("404").message("Category, merchant or unit are not existed").build());
+            } else {
+                throw new CustomNotFoundException(CustomError.builder().code("404")
+                        .message("Category, merchant or unit are not existed").build());
             }
             product = productRepository.save(product);
             if (Integer.valueOf(product.getId()) != null) {
@@ -134,6 +140,10 @@ public class ProductServiceImpl implements ProductService {
         // convert to ProductDTOResponse
         List<ProductDTOResponse> listProductDTOResponses = productList.stream().map(ProductMapper::toProductDTOResponse)
                 .collect(Collectors.toList());
+        // Set star for each Product
+        for (ProductDTOResponse productDTOResponse : listProductDTOResponses) {
+            setAvgStarForProduct(productDTOResponse);
+        }
         Map<String, Object> wrapper = new HashMap<>();
         wrapper.put("product", listProductDTOResponses);
         wrapper.put("totalProducts", totalProducts);
@@ -183,10 +193,36 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> productOptional = productRepository.findBySlug(slug);
         if (productOptional.isPresent()) {
             ProductDetailDTOResponse productDetailDTOResponse = ProductMapper.toProductDetail(productOptional.get());
+            setAvgStarForProduct(productDetailDTOResponse);
             Map<String, ProductDetailDTOResponse> wrapper = new HashMap<>();
             wrapper.put("product", productDetailDTOResponse);
             return wrapper;
         }
         throw new CustomNotFoundException(CustomError.builder().code("404").message("Product is not existed").build());
+    }
+
+    @Override
+    public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(int categoryId) {
+        List<Integer> productID = productRepository.findBestSellersInEachCategoryCustom(categoryId);
+        List<Product> products = productID.stream().map((id) -> (productRepository.findById(id).get()))
+                .collect(Collectors.toList());
+        List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
+                .collect(Collectors.toList());
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("products", productDTOResponses);
+        return wrapper;
+    }
+
+    private void setAvgStarForProduct(ProductDTOResponse productDTOResponse) {
+        Double avgStar = commentService.getAverageStarForEachProduct(productDTOResponse.getId())
+                .get("avgStar") == null ? 0
+                        : commentService.getAverageStarForEachProduct(productDTOResponse.getId()).get("avgStar");
+        productDTOResponse.setStar(avgStar);
+    }
+    private void setAvgStarForProduct(ProductDetailDTOResponse productDTOResponse) {
+        Double avgStar = commentService.getAverageStarForEachProduct(productDTOResponse.getId())
+                .get("avgStar") == null ? 0
+                        : commentService.getAverageStarForEachProduct(productDTOResponse.getId()).get("avgStar");
+        productDTOResponse.setStar(avgStar);
     }
 }

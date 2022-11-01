@@ -18,7 +18,7 @@ import com.midorimart.managementsystem.model.product.dto.ProductDetailDTORespons
 
 public interface ProductService {
 
-    public void updateDeletedById(int id);
+    public String updateDeletedById(int id);
 
     public Map<String, List<ProductDTOResponse>> findAllProduct();
 
@@ -35,5 +35,8 @@ public interface ProductService {
     public Map<String, List<ProductDTOResponse>> searchProduct(String productName);
 
     public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) throws CustomNotFoundException;
+
+    public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(int categoryId);
+
 
 }

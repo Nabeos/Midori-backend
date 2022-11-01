@@ -3,14 +3,19 @@ package com.midorimart.managementsystem.model.comment.dto;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentDTOResponse {
     private int id;
     private String content;
+    private double starRate;
     private Date createdAt;
     private Date updatedAt;
     private CommentUserDTOResponse user;

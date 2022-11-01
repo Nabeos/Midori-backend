@@ -13,12 +13,14 @@ import com.midorimart.managementsystem.service.MerchantService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Tag(name = "Merchant API")
 public class MerchantController {
     private final MerchantService merchantService;
 

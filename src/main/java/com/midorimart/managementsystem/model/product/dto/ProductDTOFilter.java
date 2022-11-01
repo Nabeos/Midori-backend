@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 public class ProductDTOFilter {
     private int categoryId;
+    private String priceAsc;
+    private String priceDesc;
     private int limit;
     private int offset;
 }

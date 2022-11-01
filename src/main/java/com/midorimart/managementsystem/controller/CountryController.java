@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@Tag(name = "API for Country")
+@Tag(name = "Country API")
 @RequiredArgsConstructor
 @CrossOrigin
 public class CountryController {

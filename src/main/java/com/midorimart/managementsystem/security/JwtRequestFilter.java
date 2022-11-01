@@ -54,8 +54,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String url = request.getRequestURI();
         String method = request.getMethod();
         // if (listDontNeedAuthentication.stream().anyMatch(o -> o.equals(url))) {
-        //     filterChain.doFilter(request, response);
-        //     return;
+        // filterChain.doFilter(request, response);
+        // return;
         // }
 
         final String requestToken = request.getHeader("Authorization");
@@ -63,7 +63,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         TokenPayload tokenPayload = null;
         if (requestToken != null && requestToken.startsWith("Token ")) {
             token = requestToken.substring(6).trim();
-            System.out.println(token);
             try {
                 tokenPayload = jwtTokenUtil.getPayLoadFromToken(token);
             } catch (SignatureException e) {
@@ -78,8 +77,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         } else {
             logger.warn("JWT does not start with Token");
-            System.out.println("JWT does not start with Token");
         }
+
         if (tokenPayload != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Optional<User> userOptional = userRepository.findByEmail(tokenPayload.getEmail());
             if (userOptional.isPresent()) {
@@ -87,10 +86,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 Role userRole = user.getRole();
                 if (needCheckPermission(userRole, url, method)) {
                     String path = request.getRequestURI().toLowerCase();
-                    if (path.matches("/api/.+")) {
+                    if (path.matches("/api/v1/.+")) {
                         String route = path.split("[/]")[3];
-                        path = "/api/productManagement/" + route;
+                        path = "/api/v1/" + route;
                     }
+                    System.out.println(path);
                     Optional<Permission> permissionOptional = permissionRepository.findByPathAndMethod(path, method);
                     if (permissionOptional.isEmpty()) {
                         CustomError customError = CustomError.builder().code("access denied")
@@ -113,26 +113,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         return;
                     }
                 }
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(),
-                        user.getPassword(), true, true, true, true, authorities);
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                if (jwtTokenUtil.validateToken(token, tokenPayload)) {
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(),
+                            user.getPassword(), true, true, true, true, authorities);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
             }
         }
         filterChain.doFilter(request, response);
     }
 
     private boolean needCheckPermission(Role userRole, String url, String method) {
-        if (url.startsWith("/api/productManagement") && method.equalsIgnoreCase("POST")
-                && userRole.getId() == Role.CUSTOMER)
-            return true;
-        if (url.startsWith("/api/productManagement") && method.equalsIgnoreCase("PUT")
-                && userRole.getId() == Role.CUSTOMER)
+        if (url.startsWith("/api/v1/user-management") && method.equalsIgnoreCase("PUT"))
             return true;
         return userRole.getId() != Role.ADMIN;
     }

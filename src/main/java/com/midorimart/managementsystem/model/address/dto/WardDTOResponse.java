@@ -1,4 +1,4 @@
-package com.midorimart.managementsystem.model.users;
+package com.midorimart.managementsystem.model.address.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTOLoginRequest {
-    private String email;
-    private String password;
+public class WardDTOResponse {
+    private String id;
+    private String name;
 }

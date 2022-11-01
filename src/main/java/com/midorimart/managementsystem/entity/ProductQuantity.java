@@ -5,10 +5,10 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,30 +17,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "Product_Quantity")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Comment {
+public class ProductQuantity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
-    @Column(name = "content")
-    private String content;
-    @Column(name = "created_at")
-    private Date createdAt;
-    @Column(name = "updated_at")
-    private Date updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private int quantity;
+    @Column(name = "expiry_date")
+    private int expiryDate;
+    @Column(name = "updated_at")
+    private Date updatedDate;
+    @Column(name = "created_at")
+    private Date createdDate;
+    @Column(name = "manufacturing_date")
+    private Date manufacturingDate;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @Column(name = "star_rate")
-    private double starRate;
 }

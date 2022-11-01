@@ -3,12 +3,14 @@ package com.midorimart.managementsystem.model.mapper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.midorimart.managementsystem.entity.Category;
 import com.midorimart.managementsystem.entity.Country;
 import com.midorimart.managementsystem.entity.Gallery;
 import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.entity.ProductQuantity;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.country.dto.CountryDTOResponse;
@@ -17,6 +19,7 @@ import com.midorimart.managementsystem.model.merchant.dto.MerchantUserDTORespons
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
+import com.midorimart.managementsystem.model.productQuantityInStock.dto.ProductQuantityDTOResponse;
 import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
 
 public class ProductMapper {
@@ -28,7 +31,6 @@ public class ProductMapper {
                 .title(product.getTitle())
                 .thumbnails(toImageDTOResponse(product.getGalleries()))
                 .status(product.getStatus())
-                .description(product.getDescription())
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
@@ -37,7 +39,9 @@ public class ProductMapper {
                 .updated_at(product.getUpdated_at())
                 .merchant(toMerchantDtoResponse(product.getMerchant()))
                 .amount(product.getAmount())
-                .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName()).build())
+                .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
+                        .build())
+                .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
     }
 
@@ -90,6 +94,7 @@ public class ProductMapper {
 
     public static ProductDetailDTOResponse toProductDetail(Product product) {
         return ProductDetailDTOResponse.builder()
+                .id(product.getId())
                 .slug(product.getSlug())
                 .sku(product.getSku())
                 .title(product.getTitle())
@@ -104,8 +109,20 @@ public class ProductMapper {
                 .updated_at(product.getUpdated_at())
                 .merchant(toMerchantDtoResponse(product.getMerchant()))
                 .amount(product.getAmount())
-                .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName()).build())
+                .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
+                        .build())
                 .comments(CommentMapper.toListCommentDTOResponse(product.getComments()))
+                .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
+    }
+
+    public static List<ProductQuantityDTOResponse> toProductQuantityDTOResponseList(List<ProductQuantity> product) {
+        return product.stream().map(ProductMapper::toProductQuantityDTOResponse).collect(Collectors.toList());
+    }
+
+    public static ProductQuantityDTOResponse toProductQuantityDTOResponse(ProductQuantity product) {
+        return ProductQuantityDTOResponse.builder().quantity(product.getQuantity())
+                .manufacturingDate(product.getManufacturingDate()).expiryDate(product.getExpiryDate())
+                .createdDate(product.getCreatedDate()).updatedDate(product.getUpdatedDate()).build();
     }
 }

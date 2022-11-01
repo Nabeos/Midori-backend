@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.model.comment.dto;
 
+import com.midorimart.managementsystem.model.users.UserDTOResponse;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentUserDTOResponse {
-    private String fullname;
-    private String thumbnail;
+public class CommentDTOUpdate {
+    private String content;
+    private double starRate;
 }
