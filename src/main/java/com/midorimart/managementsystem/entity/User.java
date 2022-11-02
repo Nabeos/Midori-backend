@@ -35,7 +35,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
+
 
     @Column(name = "thumbnail")
     private String thumbnail;
@@ -59,6 +59,8 @@ public class User {
     private Date updatedAt;
     @Column(name = "deleted")
     private int deleted;
+
+
 
     public List<String> getAddress() {
         return this.address!= null?Arrays.asList(this.address.split(";")):null;

@@ -38,7 +38,7 @@ public class CommentController {
     @Operation(summary = "Add comment API")
     @PostMapping("/v1/products/{slug}/comments")
     public Map<String, CommentDTOResponse> addComment(@PathVariable String slug,
-            @RequestBody Map<String, CommentDTOCreate> commentDTOMap) {
+            @RequestBody Map<String, CommentDTOCreate> commentDTOMap) throws CustomBadRequestException {
         return commentService.addComment(slug, commentDTOMap);
     }
 

@@ -20,6 +20,7 @@ import com.midorimart.managementsystem.model.mapper.CommentMapper;
 import com.midorimart.managementsystem.repository.CommentRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.service.CommentService;
+import com.midorimart.managementsystem.service.OrderService;
 import com.midorimart.managementsystem.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,21 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
 
     @Override
-    public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) {
+    public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) throws CustomBadRequestException {
         CommentDTOCreate commentDTOCreate = commentDTOMap.get("comment");
-        Comment comment = CommentMapper.toComment(commentDTOCreate);
         User user = userService.getUserLogin();
-        comment.setUser(user);
-        comment.setProduct(productRepository.findBySlug(slug).get());
-        comment = commentRepository.save(comment);
-        return buildCommentDTOResponse(comment);
+        if(checkBoughtProduct(user)){
+            Comment comment = CommentMapper.toComment(commentDTOCreate);
+            comment.setUser(user);
+            comment.setProduct(productRepository.findBySlug(slug).get());
+            comment = commentRepository.save(comment);
+            return buildCommentDTOResponse(comment);
+        }
+        throw new CustomBadRequestException(CustomError.builder().code("400").message("You must buy product first").build());
+    }
+
+    private boolean checkBoughtProduct(User user) {
+        return true;
     }
 
     private Map<String, CommentDTOResponse> buildCommentDTOResponse(Comment comment) {

@@ -4,8 +4,10 @@ import java.io.UnsupportedEncodingException;
 
 import javax.mail.MessagingException;
 
+import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.model.EmailDetails;
 
 public interface EmailService {
     public String sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException;
+    public String sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException;
 }

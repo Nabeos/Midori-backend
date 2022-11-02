@@ -1,9 +1,6 @@
 package com.midorimart.managementsystem.model.order;
 
-import java.util.Date;
 import java.util.List;
-
-import com.midorimart.managementsystem.entity.OrderDetail;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +26,7 @@ public class OrderDTOPlace {
     private float totalBill;
 
 
-    
 
-    
+
+
 }

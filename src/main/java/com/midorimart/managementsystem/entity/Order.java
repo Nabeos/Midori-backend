@@ -10,11 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +29,16 @@ import lombok.Setter;
 @Getter
 @Builder
 public class Order {
+    public static final int STATUS_NEW_ORDER = 0;
+    public static final int STATUS_IN_PROGRESS = 1;
+    public static final int STATUS_SHIPPING = 2;
+    public static final int STATUS_SUCCESS = 3;
+    public static final int STATUS_CANCEL = 4;
+    public static final int STATUS_REFUND = 5;
+    public static final int STATUS_ALL = 7;
+    public static final int STATUS_REJECT = 6;
+    public static final int STATUS_PENDING = 8;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -49,7 +56,7 @@ public class Order {
 
     @Column(name="full_name")
     private String fullName;
-   
+
     private String email;
     @Column(name="phone_number")
     private String phoneNumber;

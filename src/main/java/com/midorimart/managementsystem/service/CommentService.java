@@ -9,7 +9,7 @@ import com.midorimart.managementsystem.model.comment.dto.CommentDTOUpdate;
 
 public interface CommentService {
 
-    Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap);
+    Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) throws CustomBadRequestException;
 
     Map<String, Double> getAverageStarForEachProduct(int id);
 
