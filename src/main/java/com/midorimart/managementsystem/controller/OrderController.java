@@ -33,6 +33,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @Operation(summary = "Get Order Detail API by order number")
     @GetMapping("/v1/order-management/{order-number}")
     public Map<String, CustomerOrderDTOResponse> getOrderDetail(@PathVariable(name = "order-number") String orderNumber){
         return orderService.getOrderDetail(orderNumber);
@@ -52,6 +53,7 @@ public class OrderController {
         return orderService.updateStatus(orderNumber, status);
     }
 
+    @Operation(summary = "Update Status for customer (WIP)")
     @PutMapping("v1/payment-management/user/purchases/{order-number}")
     public Map<String, OrderDTOResponse> updateStatusForCustomer(
             @PathVariable(name = "order-number") String orderNumber,@RequestParam(name = "status", required = false, defaultValue = "8") int status) {

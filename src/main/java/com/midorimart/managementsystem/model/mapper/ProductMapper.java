@@ -75,7 +75,7 @@ public class ProductMapper {
     }
 
     public static CountryDTOResponse toCountryDTOResponse(Country country) {
-        return CountryDTOResponse.builder().code(country.getCode()).name(country.getName()).build();
+        return CountryDTOResponse.builder().code(country.getCode()).name(country.getName()).thumbnail(country.getImage()).build();
     }
 
     public static Category toCategory(CategoryDTOCreate categoryDTOCreate) {

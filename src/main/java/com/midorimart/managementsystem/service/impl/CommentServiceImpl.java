@@ -20,7 +20,6 @@ import com.midorimart.managementsystem.model.mapper.CommentMapper;
 import com.midorimart.managementsystem.repository.CommentRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.service.CommentService;
-import com.midorimart.managementsystem.service.OrderService;
 import com.midorimart.managementsystem.service.UserService;
 
 import lombok.RequiredArgsConstructor;
