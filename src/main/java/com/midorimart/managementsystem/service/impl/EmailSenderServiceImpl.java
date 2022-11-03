@@ -41,7 +41,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + order.getDeliveryDate().substring(0, 11)
                 + ".</p></br>"
                 + "<p>Vui lòng đăng nhập <a href='#' style='color:red'>Midori Mart</a> để có thể xác nhận sản phẩm cũng như tiến hành hoàn trả trong vòng 3 ngày.</br>"
-                + "Nếu sau 3 ngày quý khách không xác nhận thì chính sách hoàn trả sẽ hết hiệu lực.</p>";
+                + " Nếu sau 3 ngày quý khách không xác nhận thì chính sách hoàn trả sẽ hết hiệu lực.</p>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã giao thành công");
         emailDetails.setMsgBody(body);
         emailDetails.setRecipient(order.getEmail());
