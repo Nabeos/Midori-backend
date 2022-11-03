@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
+import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 import com.midorimart.managementsystem.service.OrderService;
@@ -35,8 +37,19 @@ public class OrderController {
 
     @Operation(summary = "Get Order Detail API by order number")
     @GetMapping("/v1/order-management/{order-number}")
-    public Map<String, CustomerOrderDTOResponse> getOrderDetail(@PathVariable(name = "order-number") String orderNumber){
+    public Map<String, CustomerOrderDTOResponse> getOrderDetail(
+            @PathVariable(name = "order-number") String orderNumber) {
         return orderService.getOrderDetail(orderNumber);
+    }
+
+    @Operation(summary = "Get All Orders for Seller")
+    @GetMapping("/seller/order-management/orders")
+    public Map<String, List<OrderDTOResponse>> getOrderListForSeller(
+            @RequestParam(name = "limit", defaultValue = "20", required = false) Integer limit,
+            @RequestParam(name = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(name = "status", defaultValue = "0", required = true) Integer status) {
+        OrderDTOFilter filter = OrderDTOFilter.builder().limit(limit).offset(offset).status(status).build();
+        return orderService.getOrderListForSeller(filter);
     }
 
     @Operation(summary = "Add new order")
@@ -45,7 +58,7 @@ public class OrderController {
         return orderService.addNewOrder(addNewCartMap);
     }
 
-    @Operation(summary = "Update Status For Seller")
+    @Operation(summary = "Update Status For Seller (only need status when reject or accept order. Status = 1 is Accept order, 6 is reject)")
     @PutMapping("/v1/order-management/{order-number}")
     public Map<String, OrderDTOResponse> updateStatus(@PathVariable(name = "order-number") String orderNumber,
             @RequestParam(name = "status", defaultValue = "0", required = false) int status)
@@ -56,7 +69,8 @@ public class OrderController {
     @Operation(summary = "Update Status for customer (WIP)")
     @PutMapping("v1/payment-management/user/purchases/{order-number}")
     public Map<String, OrderDTOResponse> updateStatusForCustomer(
-            @PathVariable(name = "order-number") String orderNumber,@RequestParam(name = "status", required = false, defaultValue = "8") int status) {
+            @PathVariable(name = "order-number") String orderNumber,
+            @RequestParam(name = "status", required = false, defaultValue = "8") int status) {
         return orderService.updateStatusForCustomer(orderNumber);
     }
 }

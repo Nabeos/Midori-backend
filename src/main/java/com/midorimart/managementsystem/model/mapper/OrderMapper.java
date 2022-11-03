@@ -64,8 +64,11 @@ public class OrderMapper {
                 .notes(order.getNote())
                 .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
                 .status(getStatus(order.getStatus()))
+                .orderDetail(toListOrderDetailDTOResponse(order.getCart()))
                 .build();
     }
+
+
 
     public static String getOrderNumber() {
         Date date = Calendar.getInstance().getTime();
@@ -113,7 +116,7 @@ public class OrderMapper {
                 .orderNumber(order.getOrderNumber())
                 .fullName(order.getFullName())
                 .phoneNumber(order.getPhoneNumber())
-                .address(order.getAddress())
+                // .address(order.getAddress())
                 .notes(order.getNote())
                 .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
                 .orderStatus(getStatus(order.getStatus()))
@@ -134,6 +137,10 @@ public class OrderMapper {
 
     public static List<OrderDetailDTOResponse> toListOrderDetailDTOResponse(List<OrderDetail> orderDetails) {
         return orderDetails.stream().map(OrderMapper::toOrderDetailDTOResponse).collect(Collectors.toList());
+    }
+
+    public static List<OrderDTOResponse> toOrderDTOList(List<Order> orders) {
+        return orders.stream().map(OrderMapper::toOrderDTOResponse).collect(Collectors.toList());
     }
 
 }

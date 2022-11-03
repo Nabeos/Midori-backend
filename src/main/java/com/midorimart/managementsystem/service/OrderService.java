@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -8,6 +9,7 @@ import javax.mail.MessagingException;
 import com.midorimart.managementsystem.entity.Invoice;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
+import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 
@@ -22,5 +24,7 @@ public interface OrderService {
     public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber);
 
     public Invoice getInvoiceByUser(int userId);
+
+    public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter);
 
 }

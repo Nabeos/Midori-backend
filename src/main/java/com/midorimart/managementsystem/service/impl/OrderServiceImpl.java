@@ -16,6 +16,7 @@ import com.midorimart.managementsystem.exception.custom.CustomBadRequestExceptio
 import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.mapper.OrderMapper;
 import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
+import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDetailDTOResponse;
@@ -23,6 +24,7 @@ import com.midorimart.managementsystem.repository.InvoiceRepository;
 import com.midorimart.managementsystem.repository.OrderDetailRepository;
 import com.midorimart.managementsystem.repository.OrderRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
+import com.midorimart.managementsystem.repository.custom.OrderCriteria;
 import com.midorimart.managementsystem.service.EmailService;
 import com.midorimart.managementsystem.service.OrderService;
 import com.midorimart.managementsystem.service.ProductService;
@@ -41,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private final EmailService emailService;
     private final InvoiceRepository invoiceRepository;
     private final UserService userService;
+    private final OrderCriteria orderCriteria;
 
     @Override
     public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) {
@@ -107,19 +110,35 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
-        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
-        CustomerOrderDTOResponse customerOrderDTOResponse = OrderMapper.toCustomerOrderDTOResponse(order);
-        Map<String, List<OrderDetailDTOResponse>> cart = new HashMap<>();
-        cart.put("productItem", OrderMapper.toListOrderDetailDTOResponse(orderDetails));
-        customerOrderDTOResponse.setCart(cart);
+        CustomerOrderDTOResponse customerOrderDTOResponse = setOrderDetailForEachProduct(order);
         Map<String, CustomerOrderDTOResponse> wrapper = new HashMap<>();
         wrapper.put("customerOrderDetailInformation", customerOrderDTOResponse);
         return wrapper;
     }
 
+    //Get Order Detail For Each Product
+    private CustomerOrderDTOResponse setOrderDetailForEachProduct(Order order) {
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
+        CustomerOrderDTOResponse customerOrderDTOResponse = OrderMapper.toCustomerOrderDTOResponse(order);
+        Map<String, List<OrderDetailDTOResponse>> cart = new HashMap<>();
+        cart.put("productItem", OrderMapper.toListOrderDetailDTOResponse(orderDetails));
+        customerOrderDTOResponse.setCart(cart);
+        return customerOrderDTOResponse;
+    }
+
     @Override
     public Invoice getInvoiceByUser(int userId) {
         return invoiceRepository.findByUserId(userId) != null ? invoiceRepository.findByUserId(userId) : null;
+    }
+
+    @Override
+    public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter) {
+        Map<String, Object> result = orderCriteria.getOrders(filter);
+        List<Order> orders = (List<Order>) result.get("totalOrders");
+        List<OrderDTOResponse> orderDTOResponses = OrderMapper.toOrderDTOList(orders);
+        Map<String, List<OrderDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("orders", orderDTOResponses);
+        return wrapper;
     }
 
 }
