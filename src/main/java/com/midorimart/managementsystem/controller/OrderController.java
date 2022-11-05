@@ -35,21 +35,31 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @Operation(summary = "Get Order Detail API by order number")
-    @GetMapping("/v1/order-management/{order-number}")
-    public Map<String, CustomerOrderDTOResponse> getOrderDetail(
-            @PathVariable(name = "order-number") String orderNumber) {
-        return orderService.getOrderDetail(orderNumber);
-    }
+    // @Operation(summary = "Get Order Detail API by order number")
+    // @GetMapping("/v1/order-management/{order-number}")
+    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(
+    // @PathVariable(name = "order-number") String orderNumber) {
+    // return orderService.getOrderDetail(orderNumber);
+    // }
 
     @Operation(summary = "Get All Orders for Seller")
-    @GetMapping("/seller/order-management/orders")
+    @GetMapping("/v1/order-management/orders")
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(
             @RequestParam(name = "limit", defaultValue = "20", required = false) Integer limit,
             @RequestParam(name = "offset", defaultValue = "0", required = false) Integer offset,
             @RequestParam(name = "status", defaultValue = "0", required = true) Integer status) {
         OrderDTOFilter filter = OrderDTOFilter.builder().limit(limit).offset(offset).status(status).build();
         return orderService.getOrderListForSeller(filter);
+    }
+
+    @Operation(summary = "Get Customer Purchase List")
+    @GetMapping("/v1/users/purchase")
+    public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(
+            @RequestParam(name = "limit", defaultValue = "20", required = false) Integer limit,
+            @RequestParam(name = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(name = "status", defaultValue = "0", required = true) Integer status) {
+        OrderDTOFilter filter = OrderDTOFilter.builder().limit(limit).offset(offset).status(status).build();
+        return orderService.getOrderListForCustomer(filter);
     }
 
     @Operation(summary = "Add new order")
@@ -61,13 +71,13 @@ public class OrderController {
     @Operation(summary = "Update Status For Seller (only need status when reject or accept order. Status = 1 is Accept order, 6 is reject)")
     @PutMapping("/v1/order-management/{order-number}")
     public Map<String, OrderDTOResponse> updateStatus(@PathVariable(name = "order-number") String orderNumber,
-            @RequestParam(name = "status", defaultValue = "0", required = false) int status)
+            @RequestParam(name = "status", defaultValue = "8", required = false) int status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         return orderService.updateStatus(orderNumber, status);
     }
 
     @Operation(summary = "Update Status for customer (WIP)")
-    @PutMapping("v1/payment-management/user/purchases/{order-number}")
+    @PutMapping("/v1/payment-management/user/purchases/{order-number}")
     public Map<String, OrderDTOResponse> updateStatusForCustomer(
             @PathVariable(name = "order-number") String orderNumber,
             @RequestParam(name = "status", required = false, defaultValue = "8") int status) {

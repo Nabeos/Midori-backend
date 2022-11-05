@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.entity.Role;
 import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
@@ -29,7 +30,7 @@ public class OrderMapper {
                 .fullName(orderDTOPlace.getFullName())
                 .email(orderDTOPlace.getEmail())
                 .phoneNumber(orderDTOPlace.getPhoneNumber())
-                .status(Order.STATUS_PENDING)
+                .status(Order.STATUS_NEW_ORDER_OR_PENDING)
                 .cart(toOrderDetailDTOList(orderDTOPlace.getCart()))
                 .paymentMethod(orderDTOPlace.getPaymentMethod())
                 .deliveryDate(orderDTOPlace.getDeliveryDate())
@@ -52,7 +53,8 @@ public class OrderMapper {
                 .build();
     }
 
-    public static OrderDTOResponse toOrderDTOResponse(Order order) {
+    public static OrderDTOResponse toOrderDTOResponse(Order order, int id) {
+
         return OrderDTOResponse.builder()
                 .id(order.getId())
                 .totalBill(order.getTotalMoney())
@@ -63,12 +65,10 @@ public class OrderMapper {
                 .address(order.getAddress())
                 .notes(order.getNote())
                 .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
-                .status(getStatus(order.getStatus()))
+                .status(getStatus(order.getStatus(), id))
                 .orderDetail(toListOrderDetailDTOResponse(order.getCart()))
                 .build();
     }
-
-
 
     public static String getOrderNumber() {
         Date date = Calendar.getInstance().getTime();
@@ -77,26 +77,29 @@ public class OrderMapper {
         return strDate;
     }
 
-    public static String getStatus(int status) {
+    public static String getStatus(int status, int id) {
+
         switch (status) {
-            case Order.STATUS_NEW_ORDER:
-                return "NEW ORDER";
+            case Order.STATUS_NEW_ORDER_OR_PENDING:
+                if (id == Role.SHOPKEEPER)
+                    return "Đơn Hàng Mới";
+                else
+                    return "Đang Chờ Xác Nhận";
             case 1:
-                return "IN PROGRESS";
+                return "Đang Xử Lý";
             case 2:
-                return "SHIPPING";
+                return "Đang Giao Hàng";
             case 3:
-                return "SUCCESS";
+                return "Thành Công";
             case 4:
-                return "CANCELLED";
+                if (id == Role.SHOPKEEPER)
+                    return "Từ chối";
+                else
+                    return "Hủy Bỏ";
             case 5:
-                return "REFUND";
-            case 6:
-                return "REJECT";
-            case 7:
-                return "ALL";
+                return "Hoàn Tiền";
             default:
-                return "PENDING";
+                return "ERROR";
 
         }
     }
@@ -104,33 +107,39 @@ public class OrderMapper {
     public static String getReceiveMethod(int receive) {
         switch (receive) {
             case 1:
-                return "HOME DELIVERY";
+                return "Giao Tận Nhà";
             default:
-                return "PICK UP AT SHOP";
+                return "Nhận Tại Cửa Hàng";
         }
     }
 
-    public static CustomerOrderDTOResponse toCustomerOrderDTOResponse(Order order) {
-        DateFormat format = new SimpleDateFormat("hh:mm dd-mm-yyyy");
-        return CustomerOrderDTOResponse.builder()
-                .orderNumber(order.getOrderNumber())
-                .fullName(order.getFullName())
-                .phoneNumber(order.getPhoneNumber())
-                // .address(order.getAddress())
-                .notes(order.getNote())
-                .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
-                .orderStatus(getStatus(order.getStatus()))
-                .createdDate(format.format(order.getOrderDate()))
-                .receiveDateTime(order.getDeliveryTimeRange()+" "+order.getDeliveryDate())
-                .build();
-    }
+    // public static CustomerOrderDTOResponse toCustomerOrderDTOResponse(Order
+    // order) {
+    // DateFormat format = new SimpleDateFormat("hh:mm dd-mm-yyyy");
+    // return CustomerOrderDTOResponse.builder()
+    // .orderNumber(order.getOrderNumber())
+    // .fullName(order.getFullName())
+    // .phoneNumber(order.getPhoneNumber())
+    // // .address(order.getAddress())
+    // .notes(order.getNote())
+    // .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
+    // .orderStatus(getStatus(order.getStatus()))
+    // .createdDate(format.format(order.getOrderDate()))
+    // .receiveDateTime(order.getDeliveryTimeRange() + " " +
+    // order.getDeliveryDate())
+    // .build();
+    // }
 
     public static OrderDetailDTOResponse toOrderDetailDTOResponse(OrderDetail orderDetails) {
+        String thumbnails = null;
+        if (orderDetails.getProduct().getGalleries() != null) {
+            thumbnails = orderDetails.getProduct().getGalleries().toString();
+        }
         return OrderDetailDTOResponse.builder().sku(orderDetails.getProduct().getSku())
                 .productName(orderDetails.getProduct().getTitle())
-                .thumbnails(orderDetails.getProduct().getGalleries().isEmpty() ? null
-                        : orderDetails.getProduct().getGalleries().get(0).toString())
-                .total(orderDetails.getTotalMoney())
+                .thumbnails(thumbnails)
+                .price(orderDetails.getPrice())
+                .totalPrice(orderDetails.getTotalMoney())
                 .quantity(orderDetails.getQuantity())
                 .build();
     }
@@ -139,8 +148,8 @@ public class OrderMapper {
         return orderDetails.stream().map(OrderMapper::toOrderDetailDTOResponse).collect(Collectors.toList());
     }
 
-    public static List<OrderDTOResponse> toOrderDTOList(List<Order> orders) {
-        return orders.stream().map(OrderMapper::toOrderDTOResponse).collect(Collectors.toList());
+    public static List<OrderDTOResponse> toOrderDTOList(List<Order> orders, int roleId) {
+        return orders.stream().map(order -> toOrderDTOResponse(order, roleId)).collect(Collectors.toList());
     }
 
 }

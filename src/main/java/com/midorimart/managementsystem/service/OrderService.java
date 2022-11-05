@@ -21,10 +21,12 @@ public interface OrderService {
 
     public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber);
 
-    public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber);
+    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber);
 
-    public Invoice getInvoiceByUser(int userId);
+    public List<Invoice> getInvoiceByUser(int userId);
 
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter);
+
+    public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter);
 
 }

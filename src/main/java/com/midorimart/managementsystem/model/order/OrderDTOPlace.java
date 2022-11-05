@@ -26,7 +26,4 @@ public class OrderDTOPlace {
     private float totalBill;
 
 
-
-
-
 }

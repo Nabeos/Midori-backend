@@ -29,6 +29,7 @@ import lombok.Setter;
 public class Role {
     public static final int ADMIN = 1;
     public static final int CUSTOMER = 2;
+    public static final int SHOPKEEPER = 4;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

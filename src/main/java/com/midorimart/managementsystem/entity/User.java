@@ -3,6 +3,7 @@ package com.midorimart.managementsystem.entity;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -32,7 +35,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
 
     @Column(name = "thumbnail")
     private String thumbnail;
@@ -57,10 +59,15 @@ public class User {
     @Column(name = "deleted")
     private int deleted;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "User_Product", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private Set<Product> products;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Invoice> invoices;
 
     public List<String> getAddress() {
-        return this.address!= null?Arrays.asList(this.address.split(";")):null;
+        return this.address != null ? Arrays.asList(this.address.split(";")) : null;
     }
 
     public void setAddress(List<String> addresses) {
@@ -68,7 +75,7 @@ public class User {
         for (String address : addresses) {
             stringBuilder.append(address).append(";");
         }
-        this.address = stringBuilder.substring(0, stringBuilder.length()-1).toString();
+        this.address = stringBuilder.substring(0, stringBuilder.length() - 1).toString();
     }
 
 }

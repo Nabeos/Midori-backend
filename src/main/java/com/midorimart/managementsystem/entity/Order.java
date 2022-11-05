@@ -29,15 +29,13 @@ import lombok.Setter;
 @Getter
 @Builder
 public class Order {
-    public static final int STATUS_NEW_ORDER = 0;
+    public static final int STATUS_NEW_ORDER_OR_PENDING = 0;
     public static final int STATUS_IN_PROGRESS = 1;
     public static final int STATUS_SHIPPING = 2;
     public static final int STATUS_SUCCESS = 3;
-    public static final int STATUS_CANCEL = 4;
+    public static final int STATUS_CANCEL_OR_REJECT = 4;
     public static final int STATUS_REFUND = 5;
     public static final int STATUS_ALL = 7;
-    public static final int STATUS_REJECT = 6;
-    public static final int STATUS_PENDING = 8;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,5 +81,9 @@ public class Order {
             str.append(field).append(";");
         }
         this.address=str.substring(0,str.length()-1).toString();
+    }
+
+    public int getStatus(int id2) {
+        return 0;
     }
 }

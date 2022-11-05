@@ -1,9 +1,12 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -12,18 +15,19 @@ import org.springframework.stereotype.Service;
 import com.midorimart.managementsystem.entity.Invoice;
 import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
+import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.mapper.OrderMapper;
-import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
-import com.midorimart.managementsystem.model.order.OrderDetailDTOResponse;
 import com.midorimart.managementsystem.repository.InvoiceRepository;
 import com.midorimart.managementsystem.repository.OrderDetailRepository;
 import com.midorimart.managementsystem.repository.OrderRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
+import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.repository.custom.OrderCriteria;
 import com.midorimart.managementsystem.service.EmailService;
 import com.midorimart.managementsystem.service.OrderService;
@@ -43,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final EmailService emailService;
     private final InvoiceRepository invoiceRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final OrderCriteria orderCriteria;
 
     @Override
@@ -52,21 +57,25 @@ public class OrderServiceImpl implements OrderService {
         order.setAddress(orderDTOPlace.getAddress());
         order = orderRepository.save(order);
         saveOrderDetail(order.getCart(), order);
+        if (userService.getUserLogin() != null)
+            saveInvoiceForUser(userService.getUserLogin(), order);
 
         return buildDTOResponse(order);
+    }
+
+    private void saveInvoiceForUser(User userLogin, Order order) {
+        Invoice invoice = new Invoice();
+        invoice.setUser(userLogin);
+        invoice.setOrder(order);
+        invoice = invoiceRepository.save(invoice);
+        saveUserProductStatus(invoice.getOrder().getCart(), userLogin);
     }
 
     public void saveOrderDetail(List<OrderDetail> orderDetailList, Order order) {
         for (OrderDetail od : orderDetailList) {
             od.setOrder(order);
             orderDetailRepository.save(od);
-            if (userService.getUserLogin() != null)
-                saveUserProductStatus(od.getProduct().getId(), userService.getUserLogin().getId());
         }
-    }
-
-    private void saveUserProductStatus(int productId, int userId) {
-
     }
 
     @Override
@@ -74,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         // change status to reject or accept
-        if (status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS && status != 0) {
+        if (status == Order.STATUS_CANCEL_OR_REJECT || status == Order.STATUS_IN_PROGRESS) {
             order.setStatus(status);
             order = orderRepository.save(order);
             return buildDTOResponse(order);
@@ -102,32 +111,41 @@ public class OrderServiceImpl implements OrderService {
 
     private Map<String, OrderDTOResponse> buildDTOResponse(Order order) {
         Map<String, OrderDTOResponse> wrapper = new HashMap<>();
-        OrderDTOResponse orderDTOResponse = OrderMapper.toOrderDTOResponse(order);
+        int roleId = 0;
+        if (userService.getUserLogin() != null) {
+            roleId = userService.getUserLogin().getRole().getId();
+        }
+        OrderDTOResponse orderDTOResponse = OrderMapper.toOrderDTOResponse(order, roleId);
         wrapper.put("order_response", orderDTOResponse);
         return wrapper;
     }
 
-    @Override
-    public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber) {
-        Order order = orderRepository.findByOrderNumber(orderNumber);
-        CustomerOrderDTOResponse customerOrderDTOResponse = setOrderDetailForEachProduct(order);
-        Map<String, CustomerOrderDTOResponse> wrapper = new HashMap<>();
-        wrapper.put("customerOrderDetailInformation", customerOrderDTOResponse);
-        return wrapper;
-    }
+    // @Override
+    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(String
+    // orderNumber) {
+    // Order order = orderRepository.findByOrderNumber(orderNumber);
+    // CustomerOrderDTOResponse customerOrderDTOResponse =
+    // setOrderDetailForEachProduct(order);
+    // Map<String, CustomerOrderDTOResponse> wrapper = new HashMap<>();
+    // wrapper.put("customerOrderDetailInformation", customerOrderDTOResponse);
+    // return wrapper;
+    // }
 
-    //Get Order Detail For Each Product
-    private CustomerOrderDTOResponse setOrderDetailForEachProduct(Order order) {
-        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
-        CustomerOrderDTOResponse customerOrderDTOResponse = OrderMapper.toCustomerOrderDTOResponse(order);
-        Map<String, List<OrderDetailDTOResponse>> cart = new HashMap<>();
-        cart.put("productItem", OrderMapper.toListOrderDetailDTOResponse(orderDetails));
-        customerOrderDTOResponse.setCart(cart);
-        return customerOrderDTOResponse;
-    }
+    // //Get Order Detail For Each Product
+    // private CustomerOrderDTOResponse setOrderDetailForEachProduct(Order order) {
+    // List<OrderDetail> orderDetails =
+    // orderDetailRepository.findByOrderId(order.getId());
+    // CustomerOrderDTOResponse customerOrderDTOResponse =
+    // OrderMapper.toCustomerOrderDTOResponse(order);
+    // Map<String, List<OrderDetailDTOResponse>> cart = new HashMap<>();
+    // cart.put("productItem",
+    // OrderMapper.toListOrderDetailDTOResponse(orderDetails));
+    // customerOrderDTOResponse.setCart(cart);
+    // return customerOrderDTOResponse;
+    // }
 
     @Override
-    public Invoice getInvoiceByUser(int userId) {
+    public List<Invoice> getInvoiceByUser(int userId) {
         return invoiceRepository.findByUserId(userId) != null ? invoiceRepository.findByUserId(userId) : null;
     }
 
@@ -135,10 +153,29 @@ public class OrderServiceImpl implements OrderService {
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter) {
         Map<String, Object> result = orderCriteria.getOrders(filter);
         List<Order> orders = (List<Order>) result.get("totalOrders");
-        List<OrderDTOResponse> orderDTOResponses = OrderMapper.toOrderDTOList(orders);
+        return toOrderDTOList(orders);
+    }
+
+    @Override
+    public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter) {
+        Map<String, Object> result = orderCriteria.getOrdersForCustomer(filter, userService.getUserLogin().getId());
+        List<Order> orders = (List<Order>) result.get("totalOrders");
+        return toOrderDTOList(orders);
+    }
+
+    private void saveUserProductStatus(List<OrderDetail> list, User user) {
+        for (OrderDetail orderDetail : list) {
+            Product product = productRepository.findById(orderDetail.getProduct().getId()).get();
+            user.getProducts().add(product);
+            user = userRepository.save(user);
+        }
+    }
+
+    private Map<String, List<OrderDTOResponse>> toOrderDTOList(List<Order> orders) {
+        User user = userService.getUserLogin();
+        List<OrderDTOResponse> orderDTOResponses = OrderMapper.toOrderDTOList(orders, user.getRole().getId());
         Map<String, List<OrderDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("orders", orderDTOResponses);
         return wrapper;
     }
-
 }

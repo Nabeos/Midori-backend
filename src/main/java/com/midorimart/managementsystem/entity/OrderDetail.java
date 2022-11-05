@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.midorimart.managementsystem.utils.NumberHelperUtil;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -34,6 +36,7 @@ public class OrderDetail {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Order order;
+
     @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -42,4 +45,11 @@ public class OrderDetail {
     private float price;
     @Column(name="total_money")
     private float totalMoney;
+
+    public double getPrice(){
+        return NumberHelperUtil.fixNumberDecimal(this.price);
+    }
+    public double getTotalMoney(){
+        return NumberHelperUtil.fixNumberDecimal(this.totalMoney);
+    }
 }
