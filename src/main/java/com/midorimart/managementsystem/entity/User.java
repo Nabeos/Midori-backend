@@ -69,6 +69,9 @@ public class User {
     private Set<Invoice> invoices;
 
     public AddressDTOResponse getAddress() {
+        if(this.address == null){
+            return null;
+        }
         return AddressDTOResponse.builder()
         .provinceId(this.address.split(";")[0])
         .districtId(this.address.split(";")[1])
