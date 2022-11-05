@@ -1,12 +1,9 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.mail.MessagingException;
 

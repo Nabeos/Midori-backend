@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Repository;
 
 import com.midorimart.managementsystem.entity.Order;

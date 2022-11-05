@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
-import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
