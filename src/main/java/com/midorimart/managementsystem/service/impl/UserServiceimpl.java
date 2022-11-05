@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,19 +67,19 @@ public class UserServiceimpl implements UserService {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
         Pattern pattern = Pattern.compile(REGEX_PASSWORD);
         Pattern patternPhoneNumber = Pattern.compile(REGEX_PHONE_NUMBER);
-        //check password
+        // check password
         if (!pattern.matcher(userDTOCreate.getPassword()).matches()) {
             throw new CustomBadRequestException(CustomError.builder().code("400")
                     .message(
                             "Password must be at least 6 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character")
                     .build());
         }
-        //check phone number
+        // check phone number
         if (!patternPhoneNumber.matcher(userDTOCreate.getPhonenumber()).matches()) {
             throw new CustomBadRequestException(
                     CustomError.builder().code("400").message("Invalid Phone Number").build());
         }
-        //check email
+        // check email
         if (userRepository.findByEmail(userDTOCreate.getEmail()).isEmpty()) {
             User user = UserMapper.toUser(userDTOCreate);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -88,7 +89,7 @@ public class UserServiceimpl implements UserService {
         throw new CustomBadRequestException(CustomError.builder().code("400").message("Email already existed").build());
     }
 
-    //return DTO response for login with Token
+    // return DTO response for login with Token
     private Map<String, UserDTOResponse> buildDTOResponseForLogin(User user) {
         Map<String, UserDTOResponse> wrapper = new HashMap<>();
         UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
@@ -115,7 +116,7 @@ public class UserServiceimpl implements UserService {
         throw new CustomNotFoundException(CustomError.builder().code("404").message("User not exist").build());
     }
 
-    //Get user information after logging in
+    // Get user information after logging in
     @Override
     public User getUserLogin() {
         // User information is saved in SecurityHolder
@@ -134,8 +135,12 @@ public class UserServiceimpl implements UserService {
         User user = userRepository.findById(id).get();
         UserDTOUpdate userUpdateDTO = userUpdateMap.get("user");
         if (userUpdateDTO.getAddress() != null) {
-            List<String> addresses = userUpdateDTO.getAddress();
-            user.setAddress(addresses);
+            List<String> address = new ArrayList<>();
+            address.add(userUpdateDTO.getAddress().getProvinceId());
+            address.add(userUpdateDTO.getAddress().getDistrictId());
+            address.add(userUpdateDTO.getAddress().getWardId());
+            address.add(userUpdateDTO.getAddress().getAddressDetail());
+            user.setAddress(address);
         }
         if (userUpdateDTO.getFullname() != null) {
             user.setFullname(userUpdateDTO.getFullname());

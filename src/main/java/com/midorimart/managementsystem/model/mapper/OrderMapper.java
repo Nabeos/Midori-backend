@@ -11,6 +11,7 @@ import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
 import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.Role;
+import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
 import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
@@ -26,7 +27,6 @@ public class OrderMapper {
                 .orderDate(now)
                 .orderNumber(getOrderNumber())
                 .totalMoney(orderDTOPlace.getTotalBill())
-                .address("dsadddsa")
                 .fullName(orderDTOPlace.getFullName())
                 .email(orderDTOPlace.getEmail())
                 .phoneNumber(orderDTOPlace.getPhoneNumber())
@@ -54,7 +54,6 @@ public class OrderMapper {
     }
 
     public static OrderDTOResponse toOrderDTOResponse(Order order, int id) {
-
         return OrderDTOResponse.builder()
                 .id(order.getId())
                 .totalBill(order.getTotalMoney())
@@ -62,7 +61,7 @@ public class OrderMapper {
                 .fullName(order.getFullName())
                 .email(order.getEmail())
                 .phoneNumber(order.getPhoneNumber())
-                .address(order.getAddress())
+                .address(order.getAddressField())
                 .notes(order.getNote())
                 .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
                 .status(getStatus(order.getStatus(), id))

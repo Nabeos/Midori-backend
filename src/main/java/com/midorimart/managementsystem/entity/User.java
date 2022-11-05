@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -66,8 +68,13 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Invoice> invoices;
 
-    public List<String> getAddress() {
-        return this.address != null ? Arrays.asList(this.address.split(";")) : null;
+    public AddressDTOResponse getAddress() {
+        return AddressDTOResponse.builder()
+        .provinceId(this.address.split(";")[0])
+        .districtId(this.address.split(";")[1])
+        .wardId(this.address.split(";")[2])
+        .addressDetail(this.address.split(";")[3])
+        .build();
     }
 
     public void setAddress(List<String> addresses) {

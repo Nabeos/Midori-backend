@@ -19,4 +19,5 @@ public class AddressMapper {
     public static WardDTOResponse toWardDTOResponse(Ward ward) {
         return WardDTOResponse.builder().id(ward.getWardId()).name(ward.getName()).build();
     }
+
 }

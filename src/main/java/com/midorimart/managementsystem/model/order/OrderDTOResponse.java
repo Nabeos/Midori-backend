@@ -2,6 +2,8 @@ package com.midorimart.managementsystem.model.order;
 
 import java.util.List;
 
+import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +19,7 @@ public class OrderDTOResponse {
     private String email;
     private String phoneNumber;
     private String receiveProductsMethod;
-    private String address;
+    private AddressDTOResponse address;
     private String notes;
     private float totalBill;
     private String orderNumber;

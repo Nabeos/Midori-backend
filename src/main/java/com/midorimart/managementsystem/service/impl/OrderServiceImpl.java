@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.CustomError;
+import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
 import com.midorimart.managementsystem.model.mapper.OrderMapper;
 import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
@@ -50,8 +52,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) {
         OrderDTOPlace orderDTOPlace = OrderDTOPlacemap.get("orderinformation");
+        List<String> address = new ArrayList<>();
+        address.add(orderDTOPlace.getAddress().getProvinceId());
+        address.add(orderDTOPlace.getAddress().getDistrictId());
+        address.add(orderDTOPlace.getAddress().getWardId());
+        address.add(orderDTOPlace.getAddress().getAddressDetail());
         Order order = OrderMapper.toOrder(orderDTOPlace);
-        order.setAddress(orderDTOPlace.getAddress());
+        order.setAddress(address);
         order = orderRepository.save(order);
         saveOrderDetail(order.getCart(), order);
         if (userService.getUserLogin() != null)

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDTOResponse {
-    private ProvinceDTOResponse provinceId;
-    private DistrictDTOResponse districtId;
+    private String provinceId;
+    private String districtId;
+    private String wardId;
+    private String addressDetail;
 }
