@@ -33,8 +33,9 @@ public class Order {
     public static final int STATUS_IN_PROGRESS = 1;
     public static final int STATUS_SHIPPING = 2;
     public static final int STATUS_SUCCESS = 3;
-    public static final int STATUS_CANCEL_OR_REJECT = 4;
+    public static final int STATUS_REJECT = 4;
     public static final int STATUS_REFUND = 5;
+    public static final int STATUS_CANCEL = 6;
     public static final int STATUS_ALL = 7;
 
     @Id

@@ -181,9 +181,10 @@ public class ProductServiceImpl implements ProductService {
     public Map<String, List<ProductDTOResponse>> searchProduct(String title) {
         String query = "%" + title + "%";
         List<Product> products = productRepository.findByTitleOrSlug(query);
-        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
-                .collect(Collectors.toList());
+        .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("products", productDTOResponses);
         return wrapper;
     }
@@ -208,6 +209,7 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
         List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
                 .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
         Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("products", productDTOResponses);
         return wrapper;
@@ -219,6 +221,13 @@ public class ProductServiceImpl implements ProductService {
                         : commentService.getAverageStarForEachProduct(productDTOResponse.getId()).get("avgStar");
         productDTOResponse.setStar(avgStar);
     }
+
+    private void setAvgStarForProductList(List<ProductDTOResponse> productDTOResponses) {
+        for (ProductDTOResponse productDTOResponse : productDTOResponses) {
+            setAvgStarForProduct(productDTOResponse);
+        }
+    }
+
     private void setAvgStarForProduct(ProductDetailDTOResponse productDTOResponse) {
         Double avgStar = commentService.getAverageStarForEachProduct(productDTOResponse.getId())
                 .get("avgStar") == null ? 0

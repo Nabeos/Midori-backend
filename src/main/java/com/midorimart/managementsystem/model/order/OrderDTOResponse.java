@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderDTOResponse {
     private int id;
+    private String orderDate;
     private String fullName;
     private String email;
     private String phoneNumber;

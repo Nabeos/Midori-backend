@@ -24,10 +24,11 @@ public class OrderCriteria {
                 "select o from Order o where 1=1");
         Map<String, Object> param = new HashMap<>();
 
-        if (filter.getStatus() < 6) {
-            queryOrder.append(" and status = :status order by o.orderDate desc");
+        if (filter.getStatus() < 7) {
+            queryOrder.append(" and status = :status ");
             param.put("status", filter.getStatus());
         }
+        queryOrder.append(" order by o.orderDate desc");
 
         TypedQuery<Order> tQuery = em.createQuery(queryOrder.toString(), Order.class);
 
@@ -41,11 +42,13 @@ public class OrderCriteria {
         result.put("totalOrders", orders);
         return result;
     }
-    public Map<String, Object> getOrdersForCustomer(OrderDTOFilter filter, int userId){
-        StringBuilder query = new StringBuilder("select o from Invoice i inner join i.order o where i.user.id = :userId");
+
+    public Map<String, Object> getOrdersForCustomer(OrderDTOFilter filter, int userId) {
+        StringBuilder query = new StringBuilder(
+                "select o from Invoice i inner join i.order o where i.user.id = :userId");
         Map<String, Object> param = new HashMap<>();
         param.put("userId", userId);
-        if (filter.getStatus() < 6) {
+        if (filter.getStatus() < 7) {
             query.append(" and status = :status order by o.orderDate desc");
             param.put("status", filter.getStatus());
         }

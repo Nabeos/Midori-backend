@@ -46,7 +46,7 @@ public class OrderController {
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(
             @RequestParam(name = "limit", defaultValue = "20", required = false) Integer limit,
             @RequestParam(name = "offset", defaultValue = "0", required = false) Integer offset,
-            @RequestParam(name = "status", defaultValue = "0", required = true) Integer status) {
+            @RequestParam(name = "status", defaultValue = "8", required = true) Integer status) {
         OrderDTOFilter filter = OrderDTOFilter.builder().limit(limit).offset(offset).status(status).build();
         return orderService.getOrderListForSeller(filter);
     }
@@ -56,7 +56,7 @@ public class OrderController {
     public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(
             @RequestParam(name = "limit", defaultValue = "20", required = false) Integer limit,
             @RequestParam(name = "offset", defaultValue = "0", required = false) Integer offset,
-            @RequestParam(name = "status", defaultValue = "0", required = true) Integer status) {
+            @RequestParam(name = "status", defaultValue = "8", required = true) Integer status) {
         OrderDTOFilter filter = OrderDTOFilter.builder().limit(limit).offset(offset).status(status).build();
         return orderService.getOrderListForCustomer(filter);
     }
@@ -67,7 +67,7 @@ public class OrderController {
         return orderService.addNewOrder(addNewCartMap);
     }
 
-    @Operation(summary = "Update Status For Seller (only need status when reject or accept order. Status = 1 is Accept order, 6 is reject)")
+    @Operation(summary = "Update Status For Seller")
     @PutMapping("/v1/order-management/{order-number}")
     public Map<String, OrderDTOResponse> updateStatus(@PathVariable(name = "order-number") String orderNumber,
             @RequestParam(name = "status", defaultValue = "8", required = false) int status)
@@ -75,8 +75,8 @@ public class OrderController {
         return orderService.updateStatus(orderNumber, status);
     }
 
-    @Operation(summary = "Update Status for customer (WIP)")
-    @PutMapping("/v1/payment-management/user/purchases/{order-number}")
+    @Operation(summary = "Update Status for Customer")
+    @PutMapping("/user/purchases/{order-number}")
     public Map<String, OrderDTOResponse> updateStatusForCustomer(
             @PathVariable(name = "order-number") String orderNumber,
             @RequestParam(name = "status", required = false, defaultValue = "8") int status) {

@@ -17,7 +17,6 @@ import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.CustomError;
-import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
 import com.midorimart.managementsystem.model.mapper.OrderMapper;
 import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
@@ -87,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         // change status to reject or accept
-        if (status == Order.STATUS_CANCEL_OR_REJECT || status == Order.STATUS_IN_PROGRESS) {
+        if (status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS && order.getStatus() == 0) {
             order.setStatus(status);
             order = orderRepository.save(order);
             return buildDTOResponse(order);
@@ -109,8 +108,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber) {
-        // TODO Auto-generated method stub
-        return null;
+        Order order = orderRepository.findByOrderNumber(orderNumber);
+        if(order.getStatus() == Order.STATUS_NEW_ORDER_OR_PENDING){
+            order.setStatus(Order.STATUS_CANCEL);
+        }else if(order.getStatus() == Order.STATUS_SUCCESS){
+            order.setStatus(Order.STATUS_REFUND);
+        }else if (order.getStatus() == Order.STATUS_CANCEL){
+            order.setStatus(Order.STATUS_NEW_ORDER_OR_PENDING);
+        }
+        order = orderRepository.save(order);
+        return buildDTOResponse(order);
     }
 
     private Map<String, OrderDTOResponse> buildDTOResponse(Order order) {

@@ -11,8 +11,6 @@ import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
 import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.Role;
-import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
-import com.midorimart.managementsystem.model.order.CustomerOrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 import com.midorimart.managementsystem.model.order.OrderDetailDTOPlace;
@@ -54,10 +52,12 @@ public class OrderMapper {
     }
 
     public static OrderDTOResponse toOrderDTOResponse(Order order, int id) {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         return OrderDTOResponse.builder()
                 .id(order.getId())
                 .totalBill(order.getTotalMoney())
                 .orderNumber(order.getOrderNumber())
+                .orderDate(format.format(order.getOrderDate()))
                 .fullName(order.getFullName())
                 .email(order.getEmail())
                 .phoneNumber(order.getPhoneNumber())
@@ -91,12 +91,11 @@ public class OrderMapper {
             case 3:
                 return "Thành Công";
             case 4:
-                if (id == Role.SHOPKEEPER)
-                    return "Từ chối";
-                else
-                    return "Hủy Bỏ";
+                return "Từ Chối";
             case 5:
                 return "Hoàn Tiền";
+            case 6:
+                return "Hủy Bỏ";
             default:
                 return "ERROR";
 

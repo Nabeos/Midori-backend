@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.midorimart.managementsystem.entity.Comment;
+import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.CustomError;
@@ -34,18 +35,26 @@ public class CommentServiceImpl implements CommentService {
     public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) throws CustomBadRequestException {
         CommentDTOCreate commentDTOCreate = commentDTOMap.get("comment");
         User user = userService.getUserLogin();
-        if(checkBoughtProduct(user)){
+        Product product = productRepository.findBySlug(slug).get();
+        if(checkBoughtProduct(product, user)){
             Comment comment = CommentMapper.toComment(commentDTOCreate);
             comment.setUser(user);
-            comment.setProduct(productRepository.findBySlug(slug).get());
+            comment.setProduct(product);
             comment = commentRepository.save(comment);
             return buildCommentDTOResponse(comment);
         }
         throw new CustomBadRequestException(CustomError.builder().code("400").message("You must buy product first").build());
     }
 
-    private boolean checkBoughtProduct(User user) {
-        return true;
+    private boolean checkBoughtProduct(Product product, User user) {
+        boolean isBought = false;
+        for(User u : product.getUsers()){
+            if(u.getId() == user.getId()){
+                isBought = true;
+                return isBought;
+            }
+        }
+        return isBought;
     }
 
     private Map<String, CommentDTOResponse> buildCommentDTOResponse(Comment comment) {
