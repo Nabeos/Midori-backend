@@ -82,7 +82,7 @@ public class ProductMapper {
         return Category.builder().name(categoryDTOCreate.getName()).build();
     }
 
-    private static List<String> toImageDTOResponse(List<Gallery> galleries) {
+    public static List<String> toImageDTOResponse(List<Gallery> galleries) {
         List<String> imageUrl = new ArrayList<>();
 
         for (Gallery gallery : galleries) {

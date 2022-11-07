@@ -132,8 +132,8 @@ public class OrderMapper {
 
     public static OrderDetailDTOResponse toOrderDetailDTOResponse(OrderDetail orderDetails) {
         String thumbnails = null;
-        if (orderDetails.getProduct().getGalleries() != null) {
-            thumbnails = orderDetails.getProduct().getGalleries().toString();
+        if (orderDetails.getProduct().getGalleries() != null && orderDetails.getProduct().getGalleries().isEmpty() == false) {
+            thumbnails = orderDetails.getProduct().getGalleries().get(0).getThumbnail().replace("\\", "/");
         }
         return OrderDetailDTOResponse.builder().sku(orderDetails.getProduct().getSku())
                 .productName(orderDetails.getProduct().getTitle())
