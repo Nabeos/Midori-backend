@@ -30,7 +30,7 @@ public interface ProductService {
 
     public Map<String, List<CategoryDTOResponse>> getAllCategories();
 
-    public Map<String, ImageDTOResponse> uploadImage(MultipartFile[] multipartFiles) throws IllegalStateException, IOException;
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] multipartFiles, String slug) throws IllegalStateException, IOException;
 
     public Map<String, List<ProductDTOResponse>> searchProduct(String productName);
 

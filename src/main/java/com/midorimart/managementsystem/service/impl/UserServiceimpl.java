@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,12 +13,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.mapper.UserMapper;
+import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
@@ -34,8 +38,10 @@ public class UserServiceimpl implements UserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private static final String REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d @$!%*?&]{6,32}$";
-    private static final String REGEX_ALL_LETTER = "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ ]+$";
+    // private static final String REGEX_ALL_LETTER = "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ ]+$";
     private static final String REGEX_PHONE_NUMBER = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
+    private final String FOLDER_PATH = "\\images\\users";
+    // private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
@@ -161,4 +167,26 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
+    @Override
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException {
+        Map<String, List<ImageDTOResponse>> wrapper = new HashMap<>();
+        List<ImageDTOResponse> imageDTOResponses = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            String url = saveFile(file);
+            String stringBuilder = url.replace("\\", "/");
+            imageDTOResponses.add(ImageDTOResponse.builder().url(stringBuilder).build());
+        }
+        wrapper.put("images", imageDTOResponses);
+        return wrapper;
+    }
+
+    private String saveFile(MultipartFile file) throws IllegalStateException, IOException {
+        String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
+        User user = getUserLogin();
+        user.setThumbnail(filePath);
+        user = userRepository.save(user);
+        file.transferTo(new File(filePath));
+        return user.getThumbnail();
+    }
 }

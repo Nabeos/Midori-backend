@@ -58,6 +58,8 @@ public class OrderMapper {
                 .totalBill(order.getTotalMoney())
                 .orderNumber(order.getOrderNumber())
                 .orderDate(format.format(order.getOrderDate()))
+                .deliveryDate(order.getDeliveryDate())
+                .deliveryTimeRange(order.getDeliveryTimeRange())
                 .fullName(order.getFullName())
                 .email(order.getEmail())
                 .phoneNumber(order.getPhoneNumber())

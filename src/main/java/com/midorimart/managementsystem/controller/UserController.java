@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.controller;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,9 +12,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
+import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
@@ -51,10 +55,16 @@ public class UserController {
         return userService.addNewUser(userDTOCreateMap);
     }
 
+    @PostMapping("/v1/user-management/users/image/upload")
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException{
+        return userService.uploadImage(files);
+    }
+
     @Operation(summary = "Update user profile")
     @PutMapping("/v1/user-management/users/{id}")
     public Map<String, UserDTOResponse> updateUser(@PathVariable int id,
             @RequestBody Map<String, UserDTOUpdate> userUpdateMap) {
         return userService.updateUser(id, userUpdateMap);
     }
+
 }

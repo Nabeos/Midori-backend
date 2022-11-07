@@ -15,7 +15,7 @@ public class UserMapper {
                 .id(user.getId())
                 .email(user.getEmail())
                 .fullname(user.getFullname())
-                .thumbnail(user.getThumbnail()!=null?user.getThumbnail():null)
+                .thumbnail(user.getThumbnail()!=null?user.getThumbnail().replace("\\", "/"):null)
                 .address(user.getAddress() != null ? user.getAddress() : null)
                 .phonenumber(user.getPhonenumber())
                 .build();

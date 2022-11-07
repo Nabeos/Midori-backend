@@ -49,10 +49,10 @@ public class OrderCriteria {
         Map<String, Object> param = new HashMap<>();
         param.put("userId", userId);
         if (filter.getStatus() < 7) {
-            query.append(" and status = :status order by o.orderDate desc");
+            query.append(" and status = :status ");
             param.put("status", filter.getStatus());
         }
-
+        query.append(" order by o.orderDate desc");
         TypedQuery<Order> tQuery = em.createQuery(query.toString(), Order.class);
 
         param.forEach((k, v) -> {

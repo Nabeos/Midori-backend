@@ -86,7 +86,7 @@ public class ProductMapper {
         List<String> imageUrl = new ArrayList<>();
 
         for (Gallery gallery : galleries) {
-            imageUrl.add(gallery.getThumbnail());
+            imageUrl.add(gallery.getThumbnail().replace("\\", "/"));
         }
 
         return imageUrl;

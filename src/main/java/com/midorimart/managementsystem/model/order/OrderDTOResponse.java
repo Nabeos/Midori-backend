@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class OrderDTOResponse {
     private int id;
     private String orderDate;
+    private String deliveryDate;
+    private String deliveryTimeRange;
     private String fullName;
     private String email;
     private String phoneNumber;
