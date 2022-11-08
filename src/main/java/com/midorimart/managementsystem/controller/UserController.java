@@ -51,10 +51,17 @@ public class UserController {
 
     @Operation(summary = "Add new user")
     @PostMapping("/user-management/register")
-    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
+    public Map<String, UserDTOResponse> register(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
+        return userService.register(userDTOCreateMap);
+    }
+
+    @Operation(summary = "Add new User for Admin")
+    @PostMapping("/v1/user-management/users")
+    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap){
         return userService.addNewUser(userDTOCreateMap);
     }
 
+    @Operation(summary = "Upload Avatar")
     @PostMapping("/v1/user-management/users/image/upload")
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException{
         return userService.uploadImage(files);

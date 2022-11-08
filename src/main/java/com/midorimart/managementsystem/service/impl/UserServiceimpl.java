@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.midorimart.managementsystem.entity.Role;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
@@ -38,10 +41,14 @@ public class UserServiceimpl implements UserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private static final String REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d @$!%*?&]{6,32}$";
-    // private static final String REGEX_ALL_LETTER = "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ ]+$";
+    // private static final String REGEX_ALL_LETTER =
+    // "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ
+    // ]+$";
     private static final String REGEX_PHONE_NUMBER = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
     private final String FOLDER_PATH = "\\images\\users";
-    // private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
+    // private final String FOLDER_PATH =
+    // "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP
+    // Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
@@ -68,7 +75,7 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap)
+    public Map<String, UserDTOResponse> register(Map<String, UserDTOCreate> userDTOCreateMap)
             throws CustomBadRequestException {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
         Pattern pattern = Pattern.compile(REGEX_PASSWORD);
@@ -168,7 +175,8 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException {
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files)
+            throws IllegalStateException, IOException {
         Map<String, List<ImageDTOResponse>> wrapper = new HashMap<>();
         List<ImageDTOResponse> imageDTOResponses = new ArrayList<>();
 
@@ -188,5 +196,16 @@ public class UserServiceimpl implements UserService {
         user = userRepository.save(user);
         file.transferTo(new File(filePath));
         return user.getThumbnail();
+    }
+
+    @Override
+    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) {
+        UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
+        User user = UserMapper.toUser(userDTOCreate);
+        user.setRole(Role.builder().id(userDTOCreate.getRole()).build());
+        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString().replaceAll("_", "").substring(0, 8)));
+        user = userRepository.save(user);
+
+        return buildDTOResponse(user);
     }
 }

@@ -19,7 +19,7 @@ public interface UserService {
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
             throws CustomBadRequestException;
 
-    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException;
+    public Map<String, UserDTOResponse> register(Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException;
 
     public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException;
 
@@ -28,4 +28,6 @@ public interface UserService {
     public Map<String, UserDTOResponse> updateUser(int id, Map<String, UserDTOUpdate> userUpdateMap);
 
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException;
+
+    public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap);
 }
