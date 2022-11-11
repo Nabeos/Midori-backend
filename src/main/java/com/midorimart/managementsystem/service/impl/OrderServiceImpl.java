@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,10 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.midorimart.managementsystem.entity.Invoice;
 import com.midorimart.managementsystem.entity.Order;
@@ -24,6 +28,7 @@ import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 import com.midorimart.managementsystem.repository.InvoiceRepository;
 import com.midorimart.managementsystem.repository.OrderDetailRepository;
 import com.midorimart.managementsystem.repository.OrderRepository;
+import com.midorimart.managementsystem.repository.ProductQuantityRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.repository.custom.OrderCriteria;
@@ -47,9 +52,12 @@ public class OrderServiceImpl implements OrderService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final OrderCriteria orderCriteria;
+    private final ProductQuantityRepository productQuantityRepository;
 
     @Override
-    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) {
+    @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
+            ObjectOptimisticLockingFailureException.class })
+    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) throws CustomBadRequestException {
         OrderDTOPlace orderDTOPlace = OrderDTOPlacemap.get("orderinformation");
         List<String> address = new ArrayList<>();
         address.add(orderDTOPlace.getAddress().getProvinceId());
@@ -58,8 +66,12 @@ public class OrderServiceImpl implements OrderService {
         address.add(orderDTOPlace.getAddress().getAddressDetail());
         Order order = OrderMapper.toOrder(orderDTOPlace);
         order.setAddress(address);
-        order = orderRepository.save(order);
-        saveOrderDetail(order.getCart(), order);
+        if (CheckQuantityInStock(order.getCart())) {
+            order = orderRepository.save(order);
+            saveOrderDetail(order.getCart(), order);
+        }else{
+            throw new CustomBadRequestException(CustomError.builder().code("400").message("run out of stock").build());
+        }
         if (userService.getUserLogin() != null)
             saveInvoiceForUser(userService.getUserLogin(), order);
 
@@ -70,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
         Invoice invoice = new Invoice();
         invoice.setUser(userLogin);
         invoice.setOrder(order);
+        invoice.setStatus(1);
         invoice = invoiceRepository.save(invoice);
         saveUserProductStatus(invoice.getOrder().getCart(), userLogin);
     }
@@ -81,7 +94,18 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    private boolean CheckQuantityInStock(List<OrderDetail> oDetail) {
+        for (OrderDetail orderDetail : oDetail) {
+            int quantityInStock = productQuantityRepository
+                    .findSumOfQuantityByProductId(orderDetail.getProduct().getId());
+            if (quantityInStock < orderDetail.getQuantity())
+                return false;
+        }
+        return true;
+    }
+
     @Override
+
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         Order order = orderRepository.findByOrderNumber(orderNumber);
@@ -96,9 +120,9 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(order.getStatus() + 1);
             order = orderRepository.save(order);
             // send email if success
+
             if (order.getStatus() == Order.STATUS_SUCCESS) {
-                String sendEmailStatus = emailService.sendSuccessfulOrderNotice(order);
-                System.out.println(sendEmailStatus);
+                emailService.push(order);
             }
             return buildDTOResponse(order);
         }
@@ -107,14 +131,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber) {
-        Order order = orderRepository.findByOrderNumber(orderNumber);
-        if(order.getStatus() == Order.STATUS_NEW_ORDER_OR_PENDING){
+    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers) {
+        Order order = orderRepository.findByOrderNumber(orderNumbers);
+        if (order.getStatus() == Order.STATUS_NEW_ORDER_OR_PENDING) {
             order.setStatus(Order.STATUS_CANCEL);
-        }else if(order.getStatus() == Order.STATUS_SUCCESS){
+        } else if (order.getStatus() == Order.STATUS_SUCCESS) {
             order.setStatus(Order.STATUS_REFUND);
-        }else if (order.getStatus() == Order.STATUS_CANCEL){
-            order.setStatus(Order.STATUS_NEW_ORDER_OR_PENDING);
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);

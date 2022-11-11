@@ -1,12 +1,16 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.midorimart.managementsystem.entity.Order;
@@ -17,23 +21,44 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@EnableScheduling
 public class EmailSenderServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
 
-    public String sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException {
+    private List<MimeMessage> queue = new ArrayList<>();
+
+    public void push(Order order) throws UnsupportedEncodingException, MessagingException{
+        MimeMessage message = sendSuccessfulOrderNotice(order);
+        queue.add(message);
+    }
+
+    @Scheduled(fixedRate = 2000, initialDelay = 10000)
+    public void run(){
+        int success = 0, error = 0;
+        while(!queue.isEmpty()){
+            MimeMessage message = queue.remove(0);
+            try{
+            mailSender.send(message);
+            success++;
+            }catch(Exception e){
+                error++;
+            }
+        }
+        System.out.println("Sent: "+success+", Error: "+error);
+    }
+
+    public MimeMessage sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         helper.setFrom("midorimartapp@gmail.com", "Midori Mart");
         helper.setText(emailDetails.getMsgBody(), true);
         helper.setSubject(emailDetails.getSubject());
         helper.setTo(emailDetails.getRecipient());
-        mailSender.send(message);
-
-        return "Mail sent successfully";
+        return message;
     }
 
     @Override
-    public String sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
+    public MimeMessage sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
         String body = "<p>Xin chào " + order.getFullName() + ",</br>"
                 + "Đơn hàng " + order.getOrderNumber() + " đã được giao thành công vào hồi "

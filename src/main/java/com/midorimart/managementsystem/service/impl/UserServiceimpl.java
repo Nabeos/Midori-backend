@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -24,6 +23,8 @@ import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.mapper.UserMapper;
 import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
+import com.midorimart.managementsystem.model.role.RoleDTOCreate;
+import com.midorimart.managementsystem.model.role.RoleDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
@@ -45,10 +46,8 @@ public class UserServiceimpl implements UserService {
     // "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ
     // ]+$";
     private static final String REGEX_PHONE_NUMBER = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
-    private final String FOLDER_PATH = "\\images\\users";
-    // private final String FOLDER_PATH =
-    // "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP
-    // Project\\midori\\src\\main\\resources\\static\\images";
+    private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\user";
+    // private final String FOLDER_PATH ="C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
@@ -191,8 +190,9 @@ public class UserServiceimpl implements UserService {
 
     private String saveFile(MultipartFile file) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
+        String filePathToSave = "\\images\\user\\"+file.getOriginalFilename();
         User user = getUserLogin();
-        user.setThumbnail(filePath);
+        user.setThumbnail(filePathToSave);
         user = userRepository.save(user);
         file.transferTo(new File(filePath));
         return user.getThumbnail();
@@ -207,5 +207,11 @@ public class UserServiceimpl implements UserService {
         user = userRepository.save(user);
 
         return buildDTOResponse(user);
+    }
+
+    @Override
+    public Map<String, RoleDTOResponse> addNewRole(Map<String, RoleDTOCreate> roleDTOCreateMap) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

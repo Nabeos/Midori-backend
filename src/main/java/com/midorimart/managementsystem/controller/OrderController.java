@@ -63,7 +63,7 @@ public class OrderController {
 
     @Operation(summary = "Add new order")
     @PostMapping("/payment-management/finishOrder")
-    public Map<String, OrderDTOResponse> addNewCart(@RequestBody Map<String, OrderDTOPlace> addNewCartMap) {
+    public Map<String, OrderDTOResponse> addNewCart(@RequestBody Map<String, OrderDTOPlace> addNewCartMap) throws CustomBadRequestException {
         return orderService.addNewOrder(addNewCartMap);
     }
 

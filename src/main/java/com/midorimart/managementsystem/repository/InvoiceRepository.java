@@ -11,4 +11,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer>{
 
     List<Invoice> findByUserId(int userId);
 
+    Invoice findByUserIdAndOrderId(int id, int id2);
+
 }

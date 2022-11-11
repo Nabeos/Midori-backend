@@ -1,6 +1,5 @@
 package com.midorimart.managementsystem.entity;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class Order {
     private int status;
     private String address;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.DETACH)
     private List<OrderDetail> cart;
 
     @Column(name = "full_name")

@@ -14,7 +14,7 @@ import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 
 public interface OrderService {
 
-    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap);
+    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) throws CustomBadRequestException;
 
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status) throws CustomBadRequestException, UnsupportedEncodingException, MessagingException;
 
