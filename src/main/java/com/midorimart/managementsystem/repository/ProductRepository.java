@@ -15,10 +15,17 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     public final String queryForBestSeller = "select Product_ID from "
             + "(select *, DENSE_RANK()over(Partition by Category_ID order by total_number desc) as Product_rank from "
-            + "(select c.id as Category_ID, c.name, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
+            + "(select distinct c.id as Category_ID, c.name, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
             + "from Order_Detail od "
             + "left join Product p on od.product_id = p.id "
             + "left join Category c on p.category_id = c.id where category_id = :categoryId)AA)BB where Product_rank between 1 and 5 order by Category_ID";
+
+    public final String queryForBestSellerInHome = "select Product_ID from "
+            + "(select *, DENSE_RANK()over(Partition by Category_ID order by total_number desc) as Product_rank from "
+            + "(select distinct c.id as Category_ID, c.name, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
+            + "from Order_Detail od "
+            + "left join Product p on od.product_id = p.id "
+            + "left join Category c on p.category_id = c.id)AA)BB order by total_number desc";
 
     Optional<Product> findBySlug(String slug);
 
@@ -29,5 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = queryForBestSeller, nativeQuery = true)
     List<Integer> findBestSellersInEachCategoryCustom(@Param("categoryId") int category_id);
+    @Query(value = queryForBestSellerInHome, nativeQuery = true)
+    List<Integer> findBestSellersInHomeCustom();
 
 }

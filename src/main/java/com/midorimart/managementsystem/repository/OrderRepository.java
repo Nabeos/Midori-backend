@@ -7,5 +7,7 @@ import com.midorimart.managementsystem.entity.Order;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    
+
+    Order findByOrderNumber(String orderNumber);
+
 }

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class UserDTOCreate {
     private String fullname;
     private String email;
+    private int role;
     private String phonenumber;
     private String password;
 }

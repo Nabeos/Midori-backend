@@ -43,6 +43,12 @@ public class ProductController {
         return service.searchProduct(productName);
     }
 
+    @Operation(summary = "Get Best seller in Home Page")
+    @GetMapping("/products/best-sellers")
+    public Map<String, List<ProductDTOResponse>> getBestSellerHomePage() {
+        return service.getBestSellerInHomePage();
+    }
+
     @Operation(summary = "Get best seller in each category by Category ID")
     @GetMapping("/product-management/products/categories/{categoryId}/best-seller")
     public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(@PathVariable int categoryId) {
@@ -85,9 +91,9 @@ public class ProductController {
 
     @Operation(summary = "Upload image after add new Product")
     @PostMapping("/api/v1/product-management/products/{slug}/images")
-    public Map<String, ImageDTOResponse> uploadImage(@RequestParam("files") MultipartFile[] files)
+    public Map<String, List<ImageDTOResponse>> uploadImage(@RequestParam("files") MultipartFile[] files, @PathVariable String slug)
             throws IllegalStateException, IOException {
-        return service.uploadImage(files);
+        return service.uploadImage(files, slug);
     }
 
     @Operation(summary = "Add new Category")

@@ -19,9 +19,4 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 public class EmailController {
     private final EmailService emailService;
-
-    @PostMapping("/api/email-management/emails")
-    public String sendEmail(@RequestBody EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException{
-        return emailService.sendEmail(emailDetails);
-    }
 }

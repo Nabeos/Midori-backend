@@ -1,7 +1,5 @@
 package com.midorimart.managementsystem.service.impl;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.midorimart.managementsystem.entity.Comment;
+import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.CustomError;
@@ -21,6 +20,7 @@ import com.midorimart.managementsystem.repository.CommentRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.service.CommentService;
 import com.midorimart.managementsystem.service.UserService;
+import com.midorimart.managementsystem.utils.NumberHelperUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,14 +32,29 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
 
     @Override
-    public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) {
+    public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) throws CustomBadRequestException {
         CommentDTOCreate commentDTOCreate = commentDTOMap.get("comment");
-        Comment comment = CommentMapper.toComment(commentDTOCreate);
         User user = userService.getUserLogin();
-        comment.setUser(user);
-        comment.setProduct(productRepository.findBySlug(slug).get());
-        comment = commentRepository.save(comment);
-        return buildCommentDTOResponse(comment);
+        Product product = productRepository.findBySlug(slug).get();
+        if(checkBoughtProduct(product, user)){
+            Comment comment = CommentMapper.toComment(commentDTOCreate);
+            comment.setUser(user);
+            comment.setProduct(product);
+            comment = commentRepository.save(comment);
+            return buildCommentDTOResponse(comment);
+        }
+        throw new CustomBadRequestException(CustomError.builder().code("400").message("You must buy product first").build());
+    }
+
+    private boolean checkBoughtProduct(Product product, User user) {
+        boolean isBought = false;
+        for(User u : product.getUsers()){
+            if(u.getId() == user.getId()){
+                isBought = true;
+                return isBought;
+            }
+        }
+        return isBought;
     }
 
     private Map<String, CommentDTOResponse> buildCommentDTOResponse(Comment comment) {
@@ -54,8 +69,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<Double> avgStarOptional = commentRepository.findAvgStarByProduct(id);
         Map<String, Double> wrapper = new HashMap<>();
         if (avgStarOptional.isPresent())
-            wrapper.put("avgStar",
-                    BigDecimal.valueOf(avgStarOptional.get()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+            wrapper.put("avgStar", NumberHelperUtil.fixNumberDecimal(avgStarOptional.get()));
         return wrapper;
     }
 

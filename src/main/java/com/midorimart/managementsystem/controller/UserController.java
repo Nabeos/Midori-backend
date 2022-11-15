@@ -1,6 +1,8 @@
 package com.midorimart.managementsystem.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -13,9 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
+import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
+import com.midorimart.managementsystem.model.role.RoleDTOCreate;
+import com.midorimart.managementsystem.model.role.RoleDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
@@ -52,8 +58,29 @@ public class UserController {
 
     @Operation(summary = "Add new user")
     @PostMapping("/user-management/register")
-    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) throws CustomBadRequestException {
+    public Map<String, UserDTOResponse> register(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap)
+            throws CustomBadRequestException {
+        return userService.register(userDTOCreateMap);
+    }
+
+    @Operation(summary = "Add new User for Admin")
+    @PostMapping("/v1/user-management/users")
+    public Map<String, UserDTOResponse> addNewUser(@RequestBody Map<String, UserDTOCreate> userDTOCreateMap) {
         return userService.addNewUser(userDTOCreateMap);
+
+    }
+
+    @Operation(summary = "Add new Role for Admin")
+    @PostMapping("/v1/user-management/roles")
+    public Map<String, RoleDTOResponse> addNewRole(@RequestBody Map<String, RoleDTOCreate> roleDTOCreateMap) {
+        return userService.addNewRole(roleDTOCreateMap);
+    }
+
+    @Operation(summary = "Upload Avatar")
+    @PostMapping("/v1/user-management/users/image/upload")
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files)
+            throws IllegalStateException, IOException {
+        return userService.uploadImage(files);
     }
 
     @Operation(summary = "Update user profile")
@@ -71,7 +98,7 @@ public class UserController {
 
     @Operation(summary = "Verify forgot password")
     @GetMapping("/v1/user-management/verify?code={verificationCode}")
-    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestBody Map<String, UserDTORetypePassword> userDTORetypeMap,@PathVariable String verificationCode){
+    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestBody Map<String, UserDTORetypePassword> userDTORetypeMap,@PathVariable String verificationCode) throws CustomBadRequestException{
         return userService.verifyForgotPassword(userDTORetypeMap, verificationCode);
     }
 }

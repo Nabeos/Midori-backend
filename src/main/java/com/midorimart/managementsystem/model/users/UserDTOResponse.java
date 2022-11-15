@@ -1,6 +1,6 @@
 package com.midorimart.managementsystem.model.users;
 
-import java.util.List;
+import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDTOResponse {
     private int id;
+    private int roleId;
     private String email;
     private String fullname;
     private String thumbnail;
     private String phonenumber;
-    private List<String> address;
+    private AddressDTOResponse address;
     private String token;
     private String verifyStatus;
 }

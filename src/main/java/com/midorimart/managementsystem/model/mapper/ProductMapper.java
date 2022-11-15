@@ -75,18 +75,18 @@ public class ProductMapper {
     }
 
     public static CountryDTOResponse toCountryDTOResponse(Country country) {
-        return CountryDTOResponse.builder().code(country.getCode()).name(country.getName()).build();
+        return CountryDTOResponse.builder().code(country.getCode()).name(country.getName()).thumbnail(country.getImage()).build();
     }
 
     public static Category toCategory(CategoryDTOCreate categoryDTOCreate) {
         return Category.builder().name(categoryDTOCreate.getName()).build();
     }
 
-    private static List<String> toImageDTOResponse(List<Gallery> galleries) {
+    public static List<String> toImageDTOResponse(List<Gallery> galleries) {
         List<String> imageUrl = new ArrayList<>();
 
         for (Gallery gallery : galleries) {
-            imageUrl.add(gallery.getThumbnail());
+            imageUrl.add(gallery.getThumbnail().replace("\\", "/"));
         }
 
         return imageUrl;

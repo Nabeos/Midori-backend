@@ -15,5 +15,4 @@ public class OrderDetailDTOPlace {
     private int quantity;
     private float price;
     private float totalPrice;
-    
 }

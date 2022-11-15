@@ -51,7 +51,8 @@ public class ProductServiceImpl implements ProductService {
     private final MerchantRepository merchantRepository;
     private final ProductUnitRepository productUnitRepository;
     private final CommentService commentService;
-    private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
+    private final String FOLDER_PATH = "\\images\\products";
+    // private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public String updateDeletedById(int id) {
@@ -106,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
                 product = productRepository.save(product);
             }
             Map<String, String> wrapper = new HashMap<>();
-            wrapper.put("product", "ok");
+            wrapper.put("product", product.getSlug());
             return wrapper;
         }
         throw new CustomBadRequestException(
@@ -163,16 +164,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, ImageDTOResponse> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException {
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files, String slug) throws IllegalStateException, IOException {
+        Map<String, List<ImageDTOResponse>> wrapper = new HashMap<>();
+        List<ImageDTOResponse> imageDTOResponses = new ArrayList<>();
+        Product product = productRepository.findBySlug(slug).get();
         for (MultipartFile file : files) {
-            saveFile(file);
+            String url = saveFile(file, product);
+            String stringBuilder = url.replace("\\", "/");
+            imageDTOResponses.add(ImageDTOResponse.builder().url(stringBuilder).build());
         }
-        return null;
+        wrapper.put("images", imageDTOResponses);
+        return wrapper;
     }
 
-    private String saveFile(MultipartFile file) throws IllegalStateException, IOException {
+    private String saveFile(MultipartFile file, Product product) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
-        Gallery gallery = galleryRepository.save(Gallery.builder().thumbnail(filePath).build());
+        Gallery gallery = Gallery.builder().thumbnail(filePath).build();
+        gallery.setProduct(product);
+        gallery = galleryRepository.save(gallery);
         file.transferTo(new File(filePath));
         return gallery.getThumbnail();
     }
@@ -181,9 +190,10 @@ public class ProductServiceImpl implements ProductService {
     public Map<String, List<ProductDTOResponse>> searchProduct(String title) {
         String query = "%" + title + "%";
         List<Product> products = productRepository.findByTitleOrSlug(query);
-        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
-                .collect(Collectors.toList());
+        .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("products", productDTOResponses);
         return wrapper;
     }
@@ -208,6 +218,7 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
         List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
                 .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
         Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("products", productDTOResponses);
         return wrapper;
@@ -219,10 +230,30 @@ public class ProductServiceImpl implements ProductService {
                         : commentService.getAverageStarForEachProduct(productDTOResponse.getId()).get("avgStar");
         productDTOResponse.setStar(avgStar);
     }
+
+    private void setAvgStarForProductList(List<ProductDTOResponse> productDTOResponses) {
+        for (ProductDTOResponse productDTOResponse : productDTOResponses) {
+            setAvgStarForProduct(productDTOResponse);
+        }
+    }
+
     private void setAvgStarForProduct(ProductDetailDTOResponse productDTOResponse) {
         Double avgStar = commentService.getAverageStarForEachProduct(productDTOResponse.getId())
                 .get("avgStar") == null ? 0
                         : commentService.getAverageStarForEachProduct(productDTOResponse.getId()).get("avgStar");
         productDTOResponse.setStar(avgStar);
+    }
+
+    @Override
+    public Map<String, List<ProductDTOResponse>> getBestSellerInHomePage() {
+        List<Integer> productID = productRepository.findBestSellersInHomeCustom();
+        List<Product> products = productID.stream().map((id) -> (productRepository.findById(id).get()))
+                .collect(Collectors.toList());
+        List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
+                .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("products", productDTOResponses);
+        return wrapper;
     }
 }

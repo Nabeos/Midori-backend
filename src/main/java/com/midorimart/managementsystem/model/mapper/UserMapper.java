@@ -13,9 +13,10 @@ public class UserMapper {
     public static UserDTOResponse toUserDTOResponse(User user) {
         return UserDTOResponse.builder()
                 .id(user.getId())
+                .roleId(user.getRole().getId())
                 .email(user.getEmail())
                 .fullname(user.getFullname())
-                .thumbnail(user.getThumbnail()!=null?user.getThumbnail():null)
+                .thumbnail(user.getThumbnail()!=null?user.getThumbnail().replace("\\", "/"):null)
                 .address(user.getAddress() != null ? user.getAddress() : null)
                 .phonenumber(user.getPhonenumber())
                 .build();

@@ -22,15 +22,18 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> findAllProduct();
 
-    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap) throws CustomBadRequestException, CustomNotFoundException;
+    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
+            throws CustomBadRequestException, CustomNotFoundException;
 
-    public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap) throws CustomBadRequestException;
+    public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap)
+            throws CustomBadRequestException;
 
     public Map<String, Object> getProductByCategoryId(ProductDTOFilter filter);
 
     public Map<String, List<CategoryDTOResponse>> getAllCategories();
 
-    public Map<String, ImageDTOResponse> uploadImage(MultipartFile[] multipartFiles) throws IllegalStateException, IOException;
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] multipartFiles, String slug)
+            throws IllegalStateException, IOException;
 
     public Map<String, List<ProductDTOResponse>> searchProduct(String productName);
 
@@ -38,5 +41,6 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(int categoryId);
 
+    public Map<String, List<ProductDTOResponse>> getBestSellerInHomePage();
 
 }

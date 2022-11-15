@@ -12,17 +12,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name = "[User]")
@@ -35,7 +37,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
 
     @Column(name = "thumbnail")
     private String thumbnail;
@@ -63,8 +64,23 @@ public class User {
     private String verificationCode;
     private int enabled;
 
-    public List<String> getAddress() {
-        return this.address!= null?Arrays.asList(this.address.split(";")):null;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "User_Product", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private Set<Product> products;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Invoice> invoices;
+
+    public AddressDTOResponse getAddress() {
+        if(this.address == null){
+            return null;
+        }
+        return AddressDTOResponse.builder()
+        .provinceId(this.address.split(";")[0])
+        .districtId(this.address.split(";")[1])
+        .wardId(this.address.split(";")[2])
+        .addressDetail(this.address.split(";")[3])
+        .build();
     }
 
     public void setAddress(List<String> addresses) {
@@ -72,7 +88,7 @@ public class User {
         for (String address : addresses) {
             stringBuilder.append(address).append(";");
         }
-        this.address = stringBuilder.substring(0, stringBuilder.length()-1).toString();
+        this.address = stringBuilder.substring(0, stringBuilder.length() - 1).toString();
     }
 
 }
