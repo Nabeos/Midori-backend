@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,19 +25,23 @@ import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.CustomError;
 import com.midorimart.managementsystem.model.mapper.UserMapper;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
+import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
+import com.midorimart.managementsystem.model.users.UserDTORetypePassword;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.service.UserService;
 import com.midorimart.managementsystem.utils.JwtTokenUtil;
 
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceimpl implements UserService {
     private final UserRepository userRepository;
+    private final JavaMailSender mailSender;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private static final String REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d @$!%*?&]{6,32}$";
@@ -155,6 +166,78 @@ public class UserServiceimpl implements UserService {
         HashMap<String, UserDTOResponse> wrapper = new HashMap<>();
         wrapper.put("user", userDTOResponse);
         return wrapper;
+    }
+
+    //Forgot password
+    @Override
+    public Map<String, UserDTOResponse> forgotPassword(Map<String, UserDTOForgotPassword> userDTOForgotPassword) throws UnsupportedEncodingException, MessagingException {
+        UserDTOForgotPassword userDTOForgotPasswordMap=userDTOForgotPassword.get("information");
+        Optional<User> userOptional = userRepository.findByEmail(userDTOForgotPasswordMap.getEmail());
+        if (userOptional.isPresent()){
+            User user=userOptional.get();
+            String randomCode = RandomString.make(64);
+            user.setVerificationCode(randomCode);
+            userRepository.save(user);
+            sendEmail(user);
+
+        }
+        return buildDTOResponse(userOptional.get());
+    }
+
+    @Override
+    public void sendEmail(User user)throws MessagingException, UnsupportedEncodingException{
+        String toAddress=user.getEmail();
+        String fromAddress="midorimartapp@gmail.com";
+        String senderName = "Midori Mart";
+        String subject = "Reset password link";
+        String content = "Dear [[name]],<br>"
+                + "Please click the link below to reset password:<br>"
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+                + "Thank you,<br>"
+                + "Midori Mart";
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(fromAddress,senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+
+        content=content.replace("[[name]]", user.getFullname());
+        String verifyURL="http://localhost:5050/api/v1/user-management/verify?code="+user.getVerificationCode();
+        content=content.replace("[[URL]]", verifyURL);
+        helper.setText(content, true);
+
+        mailSender.send(message);
+
+
+    }
+
+    @Override
+    public Map<String, UserDTOResponse> verifyForgotPassword(Map<String, UserDTORetypePassword> userDTORetypeMap,
+            String verificationCode) throws CustomBadRequestException {
+        Pattern pattern = Pattern.compile(REGEX_PASSWORD);
+        UserDTORetypePassword userDTORetypePassword=userDTORetypeMap.get("information");
+        if (userDTORetypePassword.getPassword().equals(userDTORetypePassword.getRepassword())){
+            if (!pattern.matcher(userDTORetypePassword.getPassword()).matches()) {
+                throw new CustomBadRequestException(CustomError.builder().code("400")
+                        .message(
+                                "Password must be at least 6 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character")
+                        .build());
+            }
+            Optional<User> userOptional=userRepository.findByVerificationCode(verificationCode);
+            if (userOptional.isPresent()){
+                User user=userOptional.get();
+                user.setPassword(passwordEncoder.encode(userDTORetypePassword.getPassword()));
+                user=userRepository.save(user);
+                Map<String, UserDTOResponse> wrapper = new HashMap<>();
+                UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
+                userDTOResponse.setVerifyStatus("successfully changed password");
+                wrapper.put("user", userDTOResponse);
+                return wrapper;
+                
+            }
+        }
+        return null;
     }
 
 }

@@ -19,4 +19,5 @@ public class UserDTOResponse {
     private String phonenumber;
     private List<String> address;
     private String token;
+    private String verifyStatus;
 }

@@ -10,4 +10,5 @@ import com.midorimart.managementsystem.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     public Optional<User> findByEmail(String email);
+    public Optional<User> findByVerificationCode(String verificationCode);
 }

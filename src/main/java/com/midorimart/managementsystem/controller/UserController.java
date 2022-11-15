@@ -1,6 +1,9 @@
 package com.midorimart.managementsystem.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import javax.mail.MessagingException;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
+import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
+import com.midorimart.managementsystem.model.users.UserDTORetypePassword;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 import com.midorimart.managementsystem.service.UserService;
 
@@ -25,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5050")
 @RequiredArgsConstructor
 @Tag(name = "User API")
 public class UserController {
@@ -56,5 +61,17 @@ public class UserController {
     public Map<String, UserDTOResponse> updateUser(@PathVariable int id,
             @RequestBody Map<String, UserDTOUpdate> userUpdateMap) {
         return userService.updateUser(id, userUpdateMap);
+    }
+
+    @Operation(summary = "Forgot password")
+    @PostMapping("/v1/user-management/forgot-password")
+    public Map<String, UserDTOResponse> forgotPassword(@RequestBody Map<String, UserDTOForgotPassword> userDTOForgotPasswordMap) throws UnsupportedEncodingException, MessagingException {
+        return userService.forgotPassword(userDTOForgotPasswordMap);
+    }
+
+    @Operation(summary = "Verify forgot password")
+    @GetMapping("/v1/user-management/verify?code={verificationCode}")
+    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestBody Map<String, UserDTORetypePassword> userDTORetypeMap,@PathVariable String verificationCode){
+        return userService.verifyForgotPassword(userDTORetypeMap, verificationCode);
     }
 }

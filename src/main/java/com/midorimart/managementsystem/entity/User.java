@@ -59,6 +59,9 @@ public class User {
     private Date updatedAt;
     @Column(name = "deleted")
     private int deleted;
+    @Column(name = "verification_code")
+    private String verificationCode;
+    private int enabled;
 
     public List<String> getAddress() {
         return this.address!= null?Arrays.asList(this.address.split(";")):null;
