@@ -27,34 +27,24 @@ public class EmailSenderServiceImpl implements EmailService {
 
     private List<MimeMessage> queue = new ArrayList<>();
 
-    public void push(Order order) throws UnsupportedEncodingException, MessagingException{
+    public void push(Order order) throws UnsupportedEncodingException, MessagingException {
         MimeMessage message = sendSuccessfulOrderNotice(order);
         queue.add(message);
     }
 
     @Scheduled(fixedRate = 2000, initialDelay = 10000)
-    public void run(){
+    public void run() {
         int success = 0, error = 0;
-        while(!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             MimeMessage message = queue.remove(0);
-            try{
-            mailSender.send(message);
-            success++;
-            }catch(Exception e){
+            try {
+                mailSender.send(message);
+                success++;
+            } catch (Exception e) {
                 error++;
             }
         }
-        System.out.println("Sent: "+success+", Error: "+error);
-    }
-
-    public MimeMessage sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("midorimartapp@gmail.com", "Midori Mart");
-        helper.setText(emailDetails.getMsgBody(), true);
-        helper.setSubject(emailDetails.getSubject());
-        helper.setTo(emailDetails.getRecipient());
-        return message;
+        System.out.println("Sent: " + success + ", Error: " + error);
     }
 
     @Override
@@ -68,6 +58,48 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "<p>Vui lòng đăng nhập <a href='#' style='color:red'>Midori Mart</a> để có thể xác nhận sản phẩm cũng như tiến hành hoàn trả trong vòng 3 ngày.</br>"
                 + " Nếu sau 3 ngày quý khách không xác nhận thì chính sách hoàn trả sẽ hết hiệu lực.</p>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã giao thành công");
+        emailDetails.setMsgBody(body);
+        emailDetails.setRecipient(order.getEmail());
+        return sendEmail(emailDetails);
+    }
+
+    public MimeMessage sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("midorimartapp@gmail.com", "Midori Mart");
+        helper.setText(emailDetails.getMsgBody(), true);
+        helper.setSubject(emailDetails.getSubject());
+        helper.setTo(emailDetails.getRecipient());
+        queue.add(message);
+        return message;
+    }
+
+    @Override
+    public MimeMessage sendAcceptedEmail(Order order) throws UnsupportedEncodingException, MessagingException {
+        EmailDetails emailDetails = new EmailDetails();
+        String body = "<p>Xin chào " + order.getFullName() + ",</br>"
+                + "Đơn hàng " + order.getOrderNumber() + " đã được chấp nhận. Đơn hàng sẽ được giao vào hồi "
+                + order.getDeliveryTimeRange() + " "
+                + order.getDeliveryDate().substring(0, 11)
+                + ".</p></br>"
+                + "<p>Rất mong sự hiện diện của quý khách vào thời điểm đã đề cập ở trên</br>"
+                + "</p>"
+                + "<h3>Midori mart,</h3></br>"
+                + "<h3>Thân</h3>";
+        emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã được chấp nhận");
+        emailDetails.setMsgBody(body);
+        emailDetails.setRecipient(order.getEmail());
+        return sendEmail(emailDetails);
+    }
+
+    @Override
+    public MimeMessage sendRejectedEmail(Order order) throws UnsupportedEncodingException, MessagingException {
+        EmailDetails emailDetails = new EmailDetails();
+        String body = "<p>Xin chào " + order.getFullName() + ",</br>"
+                + "Đơn hàng " + order.getOrderNumber() + " đã bị từ chối từ người bán"
+                + "<p>Vui lòng đăng nhập <a href='#' style='color:red'>Midori Mart</a> để có thể xem chi tiết.</p></br>"
+                + "<p>Nếu có thắc mắc xin vui lòng liên hệ</p>";
+        emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " bị từ chối");
         emailDetails.setMsgBody(body);
         emailDetails.setRecipient(order.getEmail());
         return sendEmail(emailDetails);

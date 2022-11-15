@@ -57,8 +57,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
             ObjectOptimisticLockingFailureException.class })
-    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) throws CustomBadRequestException {
+    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap)
+            throws CustomBadRequestException {
         OrderDTOPlace orderDTOPlace = OrderDTOPlacemap.get("orderinformation");
+        // turn address into string to save in db
         List<String> address = new ArrayList<>();
         address.add(orderDTOPlace.getAddress().getProvinceId());
         address.add(orderDTOPlace.getAddress().getDistrictId());
@@ -69,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
         if (CheckQuantityInStock(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
-        }else{
+        } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("run out of stock").build());
         }
         if (userService.getUserLogin() != null)
@@ -78,6 +80,7 @@ public class OrderServiceImpl implements OrderService {
         return buildDTOResponse(order);
     }
 
+    // Save invoice for user
     private void saveInvoiceForUser(User userLogin, Order order) {
         Invoice invoice = new Invoice();
         invoice.setUser(userLogin);
@@ -104,8 +107,8 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
+    // update status for seller
     @Override
-
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         Order order = orderRepository.findByOrderNumber(orderNumber);
@@ -119,10 +122,20 @@ public class OrderServiceImpl implements OrderService {
         else if (order.getStatus() < Order.STATUS_SUCCESS) {
             order.setStatus(order.getStatus() + 1);
             order = orderRepository.save(order);
-            // send email if success
 
+            // Send email for customer if order is accepted
+            if(order.getStatus() == Order.STATUS_IN_PROGRESS){
+                emailService.sendAcceptedEmail(order);
+            }
+
+            // Send email for customer if order is rejected
+            if(order.getStatus() == Order.STATUS_REJECT){
+                emailService.sendRejectedEmail(order);
+            }
+
+            // send email if success
             if (order.getStatus() == Order.STATUS_SUCCESS) {
-                emailService.push(order);
+                emailService.sendSuccessfulOrderNotice(order);
             }
             return buildDTOResponse(order);
         }

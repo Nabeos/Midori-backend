@@ -12,4 +12,6 @@ public interface EmailService {
     public MimeMessage sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException;
     public MimeMessage sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException;
     public void push(Order order) throws UnsupportedEncodingException, MessagingException;
+    public MimeMessage sendAcceptedEmail(Order order) throws UnsupportedEncodingException, MessagingException;
+    public MimeMessage sendRejectedEmail(Order order) throws UnsupportedEncodingException, MessagingException;
 }
