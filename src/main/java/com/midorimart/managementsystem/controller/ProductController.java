@@ -43,6 +43,12 @@ public class ProductController {
         return service.searchProduct(productName);
     }
 
+    @Operation(summary = "Get Best seller category")
+    @GetMapping("/product-management/products/best-seller/categories")
+    public Map<String, List<ProductDTOResponse>> getBestSellerCategory(@PathVariable int categoryId) {
+        return service.getBestSellerInEachCategory(categoryId);
+    }
+
     @Operation(summary = "Get best seller in each category by Category ID")
     @GetMapping("/product-management/products/categories/{categoryId}/best-seller")
     public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(@PathVariable int categoryId) {
