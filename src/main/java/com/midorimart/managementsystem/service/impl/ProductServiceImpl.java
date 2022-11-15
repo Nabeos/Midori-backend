@@ -243,4 +243,17 @@ public class ProductServiceImpl implements ProductService {
                         : commentService.getAverageStarForEachProduct(productDTOResponse.getId()).get("avgStar");
         productDTOResponse.setStar(avgStar);
     }
+
+    @Override
+    public Map<String, List<ProductDTOResponse>> getBestSellerInHomePage() {
+        List<Integer> productID = productRepository.findBestSellersInHomeCustom();
+        List<Product> products = productID.stream().map((id) -> (productRepository.findById(id).get()))
+                .collect(Collectors.toList());
+        List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
+                .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("products", productDTOResponses);
+        return wrapper;
+    }
 }
