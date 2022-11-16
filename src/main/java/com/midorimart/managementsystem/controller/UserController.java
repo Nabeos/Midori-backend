@@ -44,12 +44,6 @@ public class UserController {
         return userService.getCurrentUser();
     }
 
-    @Operation(summary = "Get All Role")
-    @GetMapping("/v1/user-management/users/roles")
-    public Map<String, List<RoleDTOResponse>> getAllRoles() throws CustomNotFoundException {
-        return userService.getAllRoles();
-    }
-
     @Operation(summary = "login")
     @PostMapping("/user-management/login")
     public Map<String, UserDTOResponse> login(@RequestBody Map<String, UserDTOLoginRequest> userLoginRequestMap)
