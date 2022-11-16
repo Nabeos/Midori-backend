@@ -9,17 +9,29 @@ import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 
 public class UserMapper {
-    //convert from User to UserDTO
+    // convert from User to UserDTO
     public static UserDTOResponse toUserDTOResponse(User user) {
         return UserDTOResponse.builder()
                 .id(user.getId())
                 .roleId(user.getRole().getId())
                 .email(user.getEmail())
                 .fullname(user.getFullname())
-                .thumbnail(user.getThumbnail()!=null?user.getThumbnail().replace("\\", "/"):null)
+                .status(getStatus(user.getDeleted()))
+                .thumbnail(user.getThumbnail() != null ? user.getThumbnail().replace("\\", "/") : null)
                 .address(user.getAddress() != null ? user.getAddress() : null)
                 .phonenumber(user.getPhonenumber())
                 .build();
+    }
+
+    private static String getStatus(int deleted) {
+        switch (deleted) {
+            case 0:
+                return "Đang hoạt động";
+            case 1:
+                return "Ngừng hoạt động";
+            default:
+                return "error";
+        }
     }
 
     public static User toUser(UserDTOCreate userDTOCreate) {

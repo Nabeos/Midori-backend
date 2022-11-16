@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.role.RoleDTOCreate;
 import com.midorimart.managementsystem.model.role.RoleDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
+import com.midorimart.managementsystem.model.users.UserDTOFilter;
 import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
@@ -47,6 +49,16 @@ public class UserController {
     @GetMapping("/v1/user-management/user")
     public Map<String, UserDTOResponse> getCurrentUser() throws CustomNotFoundException {
         return userService.getCurrentUser();
+    }
+
+    @Operation(summary = "Get All users for admin")
+    @GetMapping("/v1/user-management/users")
+    public Map<String, Object> getUsers(
+            @RequestParam(name = "offset", required = false, defaultValue = "0") Integer offset,
+            @RequestParam(name = "limit", required = false, defaultValue = "20") Integer limit)
+            {
+        UserDTOFilter filter = UserDTOFilter.builder().offset(offset).limit(limit).build();
+        return userService.getUsers(filter);
     }
 
     @Operation(summary = "login")

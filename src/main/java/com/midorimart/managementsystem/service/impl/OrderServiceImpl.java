@@ -116,13 +116,6 @@ public class OrderServiceImpl implements OrderService {
         if (status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS && order.getStatus() == 0) {
             order.setStatus(status);
             order = orderRepository.save(order);
-            return buildDTOResponse(order);
-        }
-        // update status
-        else if (order.getStatus() < Order.STATUS_SUCCESS) {
-            order.setStatus(order.getStatus() + 1);
-            order = orderRepository.save(order);
-
             // Send email for customer if order is accepted
             if(order.getStatus() == Order.STATUS_IN_PROGRESS){
                 emailService.sendAcceptedEmail(order);
@@ -132,6 +125,13 @@ public class OrderServiceImpl implements OrderService {
             if(order.getStatus() == Order.STATUS_REJECT){
                 emailService.sendRejectedEmail(order);
             }
+            return buildDTOResponse(order);
+        }
+        // update status
+        else if (order.getStatus() < Order.STATUS_SUCCESS) {
+            order.setStatus(order.getStatus() + 1);
+            order = orderRepository.save(order);
+
 
             // send email if success
             if (order.getStatus() == Order.STATUS_SUCCESS) {

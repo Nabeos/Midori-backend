@@ -19,6 +19,7 @@ public class UserDTOResponse {
     private String thumbnail;
     private String phonenumber;
     private AddressDTOResponse address;
+    private String status;
     private String token;
     private String verifyStatus;
 }

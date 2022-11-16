@@ -1,7 +1,5 @@
 package com.midorimart.managementsystem.model.users;
 
-import java.util.List;
-
 import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
 
 import lombok.AllArgsConstructor;

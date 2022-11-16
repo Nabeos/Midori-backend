@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.model.mapper;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ public class CommentMapper {
     public static List<CommentDTOResponse> toListCommentDTOResponse(List<Comment> comments) {
         List<CommentDTOResponse> commentDTOResponses = comments.stream().map(CommentMapper::toCommentDTOResponse)
                 .collect(Collectors.toList());
+        Collections.reverse(commentDTOResponses);
         return commentDTOResponses;
     }
 
