@@ -230,21 +230,13 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public Map<String, UserDTOResponse> verifyForgotPassword(Map<String, UserDTORetypePassword> userDTORetypeMap,
-            String verificationCode) throws CustomBadRequestException {
-        Pattern pattern = Pattern.compile(REGEX_PASSWORD);
-        UserDTORetypePassword userDTORetypePassword=userDTORetypeMap.get("information");
-        if (userDTORetypePassword.getPassword().equals(userDTORetypePassword.getRepassword())){
-            if (!pattern.matcher(userDTORetypePassword.getPassword()).matches()) {
-                throw new CustomBadRequestException(CustomError.builder().code("400")
-                        .message(
-                                "Password must be at least 6 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character")
-                        .build());
-            }
+    public Map<String, UserDTOResponse> verifyForgotPassword(String verificationCode){
+        
             Optional<User> userOptional=userRepository.findByVerificationCode(verificationCode);
             if (userOptional.isPresent()){
                 User user=userOptional.get();
-                user.setPassword(passwordEncoder.encode(userDTORetypePassword.getPassword()));
+                String randomCode = RandomString.make(64);
+                user.setPassword(passwordEncoder.encode(randomCode));
                 user=userRepository.save(user);
                 Map<String, UserDTOResponse> wrapper = new HashMap<>();
                 UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
@@ -253,9 +245,10 @@ public class UserServiceimpl implements UserService {
                 return wrapper;
                 
             }
+            return null;
         }
-        return null;
-    }
+        
+    
 
     @Override
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files)

@@ -39,8 +39,7 @@ public interface UserService {
 
     public Map<String, UserDTOResponse> forgotPassword(Map<String, UserDTOForgotPassword> userDTOForgotPassword) throws UnsupportedEncodingException, MessagingException;
 
-    public Map<String, UserDTOResponse> verifyForgotPassword(Map<String, UserDTORetypePassword> userDTORetypeMap,
-            String verificationCode) throws CustomBadRequestException;
+    public Map<String, UserDTOResponse> verifyForgotPassword(String verificationCode);
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException;
 
     public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap);
