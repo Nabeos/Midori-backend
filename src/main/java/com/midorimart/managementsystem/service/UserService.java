@@ -13,6 +13,7 @@ import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.role.RoleDTOCreate;
 import com.midorimart.managementsystem.model.role.RoleDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
+import com.midorimart.managementsystem.model.users.UserDTOFilter;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
@@ -36,4 +37,6 @@ public interface UserService {
     public Map<String, RoleDTOResponse> addNewRole(Map<String, RoleDTOCreate> roleDTOCreateMap);
 
     public Map<String, List<RoleDTOResponse>> getAllRoles();
+
+    public Map<String, Object> getUsers(UserDTOFilter filter);
 }
