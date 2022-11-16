@@ -211,6 +211,7 @@ public class UserServiceimpl implements UserService {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
         User user = UserMapper.toUser(userDTOCreate);
         user.setRole(Role.builder().id(userDTOCreate.getRole()).build());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         // user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString().replaceAll("_", "").substring(0, 8)));
         user = userRepository.save(user);
 
