@@ -82,7 +82,7 @@ public class ProductController {
         return service.getAllCategories();
     }
 
-    @Operation(summary = "Get All Categories")
+    @Operation(summary = "Get Top 3 Bestseller Categories")
     @GetMapping("/category-management/categories/bestseller")
     public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategories() {
         return service.getTop3BestsellerCategory();
