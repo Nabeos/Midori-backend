@@ -43,4 +43,6 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> getBestSellerInHomePage();
 
+    public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategory();
+
 }

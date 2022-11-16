@@ -102,6 +102,7 @@ public class UserServiceimpl implements UserService {
         if (userRepository.findByEmail(userDTOCreate.getEmail()).isEmpty()) {
             User user = UserMapper.toUser(userDTOCreate);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(Role.builder().id(Role.CUSTOMER).build());
             user = userRepository.save(user);
             return buildDTOResponseForLogin(user);
         }
@@ -210,7 +211,7 @@ public class UserServiceimpl implements UserService {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
         User user = UserMapper.toUser(userDTOCreate);
         user.setRole(Role.builder().id(userDTOCreate.getRole()).build());
-        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString().replaceAll("_", "").substring(0, 8)));
+        // user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString().replaceAll("_", "").substring(0, 8)));
         user = userRepository.save(user);
 
         return buildDTOResponse(user);

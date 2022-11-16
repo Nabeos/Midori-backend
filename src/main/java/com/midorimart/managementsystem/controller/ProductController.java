@@ -82,6 +82,12 @@ public class ProductController {
         return service.getAllCategories();
     }
 
+    @Operation(summary = "Get All Categories")
+    @GetMapping("/category-management/categories/bestseller")
+    public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategories() {
+        return service.getTop3BestsellerCategory();
+    }
+
     @Operation(summary = "Add new Product")
     @PostMapping("/api/v1/product-management/products")
     public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap)

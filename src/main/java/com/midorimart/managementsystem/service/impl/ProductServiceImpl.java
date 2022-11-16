@@ -256,4 +256,13 @@ public class ProductServiceImpl implements ProductService {
         wrapper.put("products", productDTOResponses);
         return wrapper;
     }
+
+    @Override
+    public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategory() {
+        List<Category> categories = productRepository.findBestsellerCategoryCustom();
+        List<CategoryDTOResponse> categoryDTOResponses = categories.stream().map(ProductMapper::toCategoryDTOResponse).collect(Collectors.toList());
+        Map<String, List<CategoryDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("categories", categoryDTOResponses);
+        return wrapper;
+    }
 }
