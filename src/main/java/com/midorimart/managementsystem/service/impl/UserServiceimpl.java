@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
 import com.midorimart.managementsystem.model.CustomError;
+import com.midorimart.managementsystem.model.mapper.RoleMapper;
 import com.midorimart.managementsystem.model.mapper.UserMapper;
 import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.role.RoleDTOCreate;
@@ -29,6 +31,7 @@ import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
+import com.midorimart.managementsystem.repository.RoleRepository;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.service.UserService;
 import com.midorimart.managementsystem.utils.JwtTokenUtil;
@@ -39,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceimpl implements UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private static final String REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d @$!%*?&]{6,32}$";
@@ -213,5 +217,14 @@ public class UserServiceimpl implements UserService {
     public Map<String, RoleDTOResponse> addNewRole(Map<String, RoleDTOCreate> roleDTOCreateMap) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Map<String, List<RoleDTOResponse>> getAllRoles() {
+        List<Role> roles = roleRepository.findAll();
+        List<RoleDTOResponse> roleDTOResponses = roles.stream().map(RoleMapper::toRoleDTOResponse).collect(Collectors.toList());
+        Map<String, List<RoleDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("roles", roleDTOResponses);
+        return wrapper;
     }
 }

@@ -34,4 +34,6 @@ public interface UserService {
     public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap);
 
     public Map<String, RoleDTOResponse> addNewRole(Map<String, RoleDTOCreate> roleDTOCreateMap);
+
+    public Map<String, List<RoleDTOResponse>> getAllRoles();
 }
