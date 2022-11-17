@@ -259,7 +259,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategory() {
-        List<Category> categories = productRepository.findBestsellerCategoryCustom();
+        List<Integer> categoriesId = productRepository.findBestsellerCategoryCustom();
+        List<Category> categories = categoriesId.stream().map((id)->(categoryRepository.findById(id).get())).collect(Collectors.toList());
         List<CategoryDTOResponse> categoryDTOResponses = categories.stream().map(ProductMapper::toCategoryDTOResponse).collect(Collectors.toList());
         Map<String, List<CategoryDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("categories", categoryDTOResponses);
