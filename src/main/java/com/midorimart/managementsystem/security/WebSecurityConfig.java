@@ -25,7 +25,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register","/api/paymentmanagement/finishOrder","/api/v1/user-management/forgot-password"};
+        String[] listPermitAll = new String[] { "/api/user-management/login", "/api/user-management/register",
+                "/api/payment-management/finishOrder", "/api/v1/user-management/forgot-password" };
         httpSecurity.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(listPermitAll).permitAll()
