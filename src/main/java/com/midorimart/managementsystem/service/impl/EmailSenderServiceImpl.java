@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.midorimart.managementsystem.entity.Order;
+import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.model.EmailDetails;
 import com.midorimart.managementsystem.service.EmailService;
 
@@ -104,4 +105,52 @@ public class EmailSenderServiceImpl implements EmailService {
         emailDetails.setRecipient(order.getEmail());
         return sendEmail(emailDetails);
     }
+
+    @Override
+    public MimeMessage sendVerificationEmail(User user) throws UnsupportedEncodingException, MessagingException {
+        EmailDetails emailDetails = new EmailDetails();
+        String toAddress=user.getEmail();
+        
+        String subject = "Reset password link";
+        String content = "Dear [[name]],<br>"
+                + "Please click the link below to reset password:<br>"
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+                + "Thank you,<br>"
+                + "Midori Mart";
+
+        content=content.replace("[[name]]", user.getFullname());
+        String verifyURL="http://localhost:5050/api/v1/user-management/verify?code="+user.getVerificationCode();
+        content=content.replace("[[URL]]", verifyURL);
+
+        emailDetails.setSubject(subject);
+        emailDetails.setMsgBody(content);
+        emailDetails.setRecipient(toAddress);
+        return sendEmail(emailDetails);
+        
+    }
+
+    @Override
+    public MimeMessage sendResetPasswordEmail(User user, String randomCode) throws UnsupportedEncodingException, MessagingException {
+        EmailDetails emailDetails = new EmailDetails();
+        String toAddress=user.getEmail();
+        
+        String subject = "Reset password link";
+        String content = "Dear [[name]],<br>"
+                + "Your password has been reset as requested.<br>"
+                + "Your new password is: [[password]] <br>"
+                + "Please re login and change your password immediately. <br> "
+                + "Thank you,<br>"
+                + "Midori Mart";
+
+        content=content.replace("[[name]]", user.getFullname());
+        content=content.replace("[[password]]", randomCode);
+
+        emailDetails.setSubject(subject);
+        emailDetails.setMsgBody(content);
+        emailDetails.setRecipient(toAddress);
+        return sendEmail(emailDetails);
+    }
+
+    
+
 }
