@@ -266,4 +266,17 @@ public class ProductServiceImpl implements ProductService {
         wrapper.put("categories", categoryDTOResponses);
         return wrapper;
     }
+
+    @Override
+    public Map<String, List<ProductDTOResponse>> getTop20BestSellerInEachCategory(int categoryId) {
+        List<Integer> productID = productRepository.findTop20BestSellersInCategoryCustom(categoryId);
+        List<Product> products = productID.stream().map((id) -> (productRepository.findById(id).get()))
+                .collect(Collectors.toList());
+        List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
+                .collect(Collectors.toList());
+        setAvgStarForProductList(productDTOResponses);
+        Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("products", productDTOResponses);
+        return wrapper;
+    }
 }

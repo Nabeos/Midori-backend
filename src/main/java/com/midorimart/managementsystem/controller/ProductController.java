@@ -55,6 +55,12 @@ public class ProductController {
         return service.getBestSellerInEachCategory(categoryId);
     }
 
+    @Operation(summary = "Get top 20 bestseller in top 3 category by Category ID")
+    @GetMapping("/product-management/products/best-seller")
+    public Map<String, List<ProductDTOResponse>> getTop20BestSellerInEachCategory(@RequestParam(name = "category", required = true) int categoryId) {
+        return service.getTop20BestSellerInEachCategory(categoryId);
+    }
+
     @Operation(summary = "Get Product Detail")
     @GetMapping("/product-management/products/{slug}")
     public Map<String, ProductDetailDTOResponse> getProductBySlug(@PathVariable String slug)
