@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 
 import com.midorimart.managementsystem.entity.Role;
 import com.midorimart.managementsystem.entity.User;
@@ -45,6 +46,7 @@ import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 import com.midorimart.managementsystem.repository.RoleRepository;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.repository.custom.UserCriteria;
+import com.midorimart.managementsystem.service.EmailService;
 import com.midorimart.managementsystem.service.UserService;
 import com.midorimart.managementsystem.utils.JwtTokenUtil;
 
@@ -54,6 +56,7 @@ import net.bytebuddy.utility.RandomString;
 @Service
 @RequiredArgsConstructor
 public class UserServiceimpl implements UserService {
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
     private final RoleRepository roleRepository;
@@ -66,7 +69,9 @@ public class UserServiceimpl implements UserService {
     // ]+$";
     private static final String REGEX_PHONE_NUMBER = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
     private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\user";
-    // private final String FOLDER_PATH ="C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
+    // private final String FOLDER_PATH
+    // ="C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP
+    // Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
@@ -192,70 +197,45 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
-    //Forgot password
+    // Forgot password
     @Override
-    public Map<String, UserDTOResponse> forgotPassword(Map<String, UserDTOForgotPassword> userDTOForgotPassword) throws UnsupportedEncodingException, MessagingException {
-        UserDTOForgotPassword userDTOForgotPasswordMap=userDTOForgotPassword.get("information");
+    public Map<String, UserDTOResponse> forgotPassword(Map<String, UserDTOForgotPassword> userDTOForgotPassword)
+            throws UnsupportedEncodingException, MessagingException {
+
+        UserDTOForgotPassword userDTOForgotPasswordMap = userDTOForgotPassword.get("information");
         Optional<User> userOptional = userRepository.findByEmail(userDTOForgotPasswordMap.getEmail());
-        if (userOptional.isPresent()){
-            User user=userOptional.get();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             String randomCode = RandomString.make(64);
             user.setVerificationCode(randomCode);
             userRepository.save(user);
-            sendEmail(user);
+            emailService.sendVerificationEmail(user);
 
         }
         return buildDTOResponse(userOptional.get());
     }
 
     @Override
-    public void sendEmail(User user)throws MessagingException, UnsupportedEncodingException{
-        String toAddress=user.getEmail();
-        String fromAddress="midorimartapp@gmail.com";
-        String senderName = "Midori Mart";
-        String subject = "Reset password link";
-        String content = "Dear [[name]],<br>"
-                + "Please click the link below to reset password:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
-                + "Thank you,<br>"
-                + "Midori Mart";
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+    public Map<String, UserDTOResponse> verifyForgotPassword(String verificationCode)
+            throws UnsupportedEncodingException, MessagingException, CustomNotFoundException {
 
-        helper.setFrom(fromAddress,senderName);
-        helper.setTo(toAddress);
-        helper.setSubject(subject);
+        Optional<User> userOptional = userRepository.findByVerificationCode(verificationCode);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            String randomCode = RandomString.make(64);
+            user.setPassword(passwordEncoder.encode(randomCode));
+            user = userRepository.save(user);
+            emailService.sendResetPasswordEmail(user, randomCode);
+            Map<String, UserDTOResponse> wrapper = new HashMap<>();
+            UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
+            userDTOResponse.setVerifyStatus("Successfully changed password");
+            wrapper.put("user", userDTOResponse);
+            return wrapper;
 
-        content=content.replace("[[name]]", user.getFullname());
-        String verifyURL="http://localhost:5050/api/v1/user-management/verify?code="+user.getVerificationCode();
-        content=content.replace("[[URL]]", verifyURL);
-        helper.setText(content, true);
-
-        mailSender.send(message);
-
-
-    }
-
-    @Override
-    public Map<String, UserDTOResponse> verifyForgotPassword(String verificationCode){
-        
-            Optional<User> userOptional=userRepository.findByVerificationCode(verificationCode);
-            if (userOptional.isPresent()){
-                User user=userOptional.get();
-                String randomCode = RandomString.make(64);
-                user.setPassword(passwordEncoder.encode(randomCode));
-                user=userRepository.save(user);
-                Map<String, UserDTOResponse> wrapper = new HashMap<>();
-                UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
-                userDTOResponse.setVerifyStatus("successfully changed password");
-                wrapper.put("user", userDTOResponse);
-                return wrapper;
-                
-            }
-            return null;
         }
-        
-    
+        throw new CustomNotFoundException(
+                CustomError.builder().code("404").message("Verification code not found").build());
+    }
 
     @Override
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files)
@@ -274,7 +254,7 @@ public class UserServiceimpl implements UserService {
 
     private String saveFile(MultipartFile file) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
-        String filePathToSave = "\\images\\user\\"+file.getOriginalFilename();
+        String filePathToSave = "\\images\\user\\" + file.getOriginalFilename();
         User user = getUserLogin();
         user.setThumbnail(filePathToSave);
         user = userRepository.save(user);
@@ -302,7 +282,8 @@ public class UserServiceimpl implements UserService {
     @Override
     public Map<String, List<RoleDTOResponse>> getAllRoles() {
         List<Role> roles = roleRepository.findAll();
-        List<RoleDTOResponse> roleDTOResponses = roles.stream().map(RoleMapper::toRoleDTOResponse).collect(Collectors.toList());
+        List<RoleDTOResponse> roleDTOResponses = roles.stream().map(RoleMapper::toRoleDTOResponse)
+                .collect(Collectors.toList());
         Map<String, List<RoleDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("roles", roleDTOResponses);
         return wrapper;
@@ -313,10 +294,26 @@ public class UserServiceimpl implements UserService {
         Map<String, Object> userMap = userCriteria.getAllUsers(filter);
         List<User> users = (List<User>) userMap.get("users");
         Long totalUsers = (Long) userMap.get("totalUsers");
-        List<UserDTOResponse> userDTOResponses = users.stream().map(UserMapper::toUserDTOResponse).collect(Collectors.toList());
+        List<UserDTOResponse> userDTOResponses = users.stream().map(UserMapper::toUserDTOResponse)
+                .collect(Collectors.toList());
         Map<String, Object> wrapper = new HashMap<>();
         wrapper.put("totalUsers", totalUsers);
         wrapper.put("users", userDTOResponses);
+        return wrapper;
+    }
+
+    @Override
+    public Map<String, UserDTOResponse> updateUserStatus(int id) {
+        User user = userRepository.findById(id).get();
+        if (user.getDeleted() == 0) {
+            user.setDeleted(1);
+        } else if (user.getDeleted() == 1) {
+            user.setDeleted(0);
+        }
+        userRepository.save(user);
+        UserDTOResponse userDTOResponse = UserMapper.toUserDTOResponse(user);
+        HashMap<String, UserDTOResponse> wrapper = new HashMap<>();
+        wrapper.put("user", userDTOResponse);
         return wrapper;
     }
 }

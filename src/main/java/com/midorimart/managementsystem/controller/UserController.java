@@ -102,6 +102,13 @@ public class UserController {
         return userService.updateUser(id, userUpdateMap);
     }
 
+    @Operation(summary = "Activate deactive user profile")
+    @PutMapping("/user-management/users/{id}/status")
+    public Map<String, UserDTOResponse> updateUserStatus(@PathVariable int id) {
+        return userService.updateUserStatus(id);
+    }
+    
+
     @Operation(summary = "Forgot password")
     @PostMapping("/v1/user-management/forgot-password")
     public Map<String, UserDTOResponse> forgotPassword(@RequestBody Map<String, UserDTOForgotPassword> userDTOForgotPasswordMap) throws UnsupportedEncodingException, MessagingException {
@@ -109,8 +116,8 @@ public class UserController {
     }
 
     @Operation(summary = "Verify forgot password")
-    @GetMapping("/v1/user-management/verify?code={verificationCode}")
-    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestBody Map<String, UserDTORetypePassword> userDTORetypeMap,@PathVariable String verificationCode) throws CustomBadRequestException{
-        return userService.verifyForgotPassword(userDTORetypeMap, verificationCode);
+    @GetMapping("/user-management/verify")
+    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestParam(name = "code") String verificationCode) throws CustomNotFoundException, UnsupportedEncodingException, MessagingException{
+        return userService.verifyForgotPassword(verificationCode);
     }
 }

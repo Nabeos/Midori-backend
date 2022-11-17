@@ -34,13 +34,11 @@ public interface UserService {
 
     public User getUserLogin();
 
-    public void sendEmail(User user)throws MessagingException, UnsupportedEncodingException;
-
     public Map<String, UserDTOResponse> updateUser(int id, Map<String, UserDTOUpdate> userUpdateMap);
 
     public Map<String, UserDTOResponse> forgotPassword(Map<String, UserDTOForgotPassword> userDTOForgotPassword) throws UnsupportedEncodingException, MessagingException;
 
-    public Map<String, UserDTOResponse> verifyForgotPassword(String verificationCode);
+    public Map<String, UserDTOResponse> verifyForgotPassword(String verificationCode) throws UnsupportedEncodingException, MessagingException, CustomNotFoundException;
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files) throws IllegalStateException, IOException;
 
     public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap);
@@ -50,4 +48,6 @@ public interface UserService {
     public Map<String, List<RoleDTOResponse>> getAllRoles();
 
     public Map<String, Object> getUsers(UserDTOFilter filter);
+
+    public Map<String, UserDTOResponse> updateUserStatus(int id);
 }
