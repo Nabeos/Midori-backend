@@ -43,7 +43,6 @@ public class UserMapper {
                 .fullname(userDTOCreate.getFullname())
                 .createdAt(now)
                 .updatedAt(now)
-                .role(Role.builder().id(2).build())
                 .deleted(0)
                 .build();
     }
