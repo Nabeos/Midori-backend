@@ -61,7 +61,7 @@ public class User {
     private int deleted;
     @Column(name = "verification_code")
     private String verificationCode;
-    private int enabled;
+    
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "User_Product", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
