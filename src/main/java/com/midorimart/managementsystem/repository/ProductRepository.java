@@ -27,12 +27,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                         + "left join Product p on od.product_id = p.id "
                         + "left join Category c on p.category_id = c.id where category_id = :categoryId)AA)BB where Product_rank between 1 and 20 order by Category_ID";
 
-        public final String queryForBestSellerInHome = "select top 6 Product_ID from "
+        public final String queryForBestSellerInHome = "select Product_ID from "
                         + "(select *, DENSE_RANK()over(Partition by Category_ID order by total_number desc) as Product_rank from "
                         + "(select distinct c.id as Category_ID, c.name, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
                         + "from Order_Detail od "
                         + "left join Product p on od.product_id = p.id "
-                        + "left join Category c on p.category_id = c.id)AA)BB order by total_number desc";
+                        + "left join Category c on p.category_id = c.id where order_id in (select id from [Order] where DATEDIFF(DAY, order_date, GETDATE()) <= 7))AA)BB order by total_number desc";
 
         public final String queryForBestCategory = "select distinct top 3 Category_ID from "
                         + "(select *, DENSE_RANK()over(Partition by Category_ID order by total_number desc) as Product_rank from "
