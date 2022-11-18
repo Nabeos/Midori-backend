@@ -119,7 +119,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "Midori Mart";
 
         content=content.replace("[[name]]", user.getFullname());
-        String verifyURL="http://localhost:3000/emailverification?code="+user.getVerificationCode();
+        String verifyURL="http://localhost:3000/emailverification/"+user.getVerificationCode();
         content=content.replace("[[URL]]", verifyURL);
 
         emailDetails.setSubject(subject);
