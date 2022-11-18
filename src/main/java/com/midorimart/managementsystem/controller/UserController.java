@@ -1,7 +1,7 @@
 package com.midorimart.managementsystem.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +28,6 @@ import com.midorimart.managementsystem.model.users.UserDTOFilter;
 import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
-import com.midorimart.managementsystem.model.users.UserDTORetypePassword;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 import com.midorimart.managementsystem.service.UserService;
 
@@ -38,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5050")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @Tag(name = "User API")
 public class UserController {
@@ -107,7 +106,7 @@ public class UserController {
     public Map<String, UserDTOResponse> updateUserStatus(@PathVariable int id) {
         return userService.updateUserStatus(id);
     }
-    
+
 
     @Operation(summary = "Forgot password")
     @PostMapping("/v1/user-management/forgot-password")

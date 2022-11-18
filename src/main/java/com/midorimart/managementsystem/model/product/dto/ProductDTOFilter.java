@@ -17,4 +17,5 @@ public class ProductDTOFilter {
     private String priceDesc;
     private int limit;
     private int offset;
+    private int merchantId;
 }
