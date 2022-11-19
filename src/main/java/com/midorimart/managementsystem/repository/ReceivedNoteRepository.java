@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.midorimart.managementsystem.entity.ReceivedNote;
 
 @Repository
-public interface ReceivedNoteRepository extends JpaRepository<Integer, ReceivedNote>{
+public interface ReceivedNoteRepository extends JpaRepository<ReceivedNote, Integer>{
 
 }

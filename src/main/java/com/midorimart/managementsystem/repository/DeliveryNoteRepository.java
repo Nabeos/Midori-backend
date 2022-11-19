@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.midorimart.managementsystem.entity.DeliveryNote;
 
 @Repository
-public interface DeliveryNoteRepository extends JpaRepository<Integer, DeliveryNote>{
+public interface DeliveryNoteRepository extends JpaRepository<DeliveryNote, Integer>{
 
 }
