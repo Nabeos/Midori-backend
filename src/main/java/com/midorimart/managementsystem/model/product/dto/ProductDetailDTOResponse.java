@@ -29,6 +29,7 @@ public class ProductDetailDTOResponse{
     private Date updated_at;
     private int deleted;
     private double amount;
+    private int quantity;
     private double star;
     private MerchantDTOResponse merchant;
     private ProductUnitDTOResponse unit;

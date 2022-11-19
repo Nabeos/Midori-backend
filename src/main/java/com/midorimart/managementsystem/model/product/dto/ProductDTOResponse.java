@@ -21,6 +21,7 @@ public class ProductDTOResponse {
     private String title;
     private double price;
     private int discount;
+    private int quantity;
     private List<String> thumbnails;
     private String description;
     private String status;
