@@ -44,6 +44,7 @@ public class Product {
     private double price;
     private double amount;
     private int discount;
+    private int quantity;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
