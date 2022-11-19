@@ -269,7 +269,8 @@ public class UserServiceimpl implements UserService {
         User user = UserMapper.toUser(userDTOCreate);
         user.setRole(Role.builder().id(userDTOCreate.getRole()).build());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString().replaceAll("_", "").substring(0, 8)));
+        // user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString().replaceAll("_",
+        // "").substring(0, 8)));
         user = userRepository.save(user);
 
         return buildDTOResponse(user);
@@ -317,5 +318,35 @@ public class UserServiceimpl implements UserService {
         HashMap<String, UserDTOResponse> wrapper = new HashMap<>();
         wrapper.put("user", userDTOResponse);
         return wrapper;
+    }
+
+    @Override
+    public Map<String, UserDTOResponse> changePassword(Map<String, UserDTORetypePassword> retypeMap)
+            throws CustomBadRequestException {
+        User user = getUserLogin();
+        Pattern pattern = Pattern.compile(REGEX_PASSWORD);
+        UserDTORetypePassword userDTORetypePassword = retypeMap.get("information");
+        String newPassword = userDTORetypePassword.getPassword();
+        String retypePassword = userDTORetypePassword.getRepassword();
+        if (newPassword.equals(retypePassword)) {
+            if (!pattern.matcher(newPassword).matches()) {
+                throw new CustomBadRequestException(CustomError.builder().code("400")
+                        .message(
+                                "Password must be at least 6 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character")
+                        .build());
+            }
+            if (passwordEncoder.encode(user.getPassword()).equals(passwordEncoder.encode(newPassword))) {
+                throw new CustomBadRequestException(CustomError.builder().code("400")
+                        .message(
+                                "You can not use old password")
+                        .build());
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return buildDTOResponse(user);
+        }
+        throw new CustomBadRequestException(
+                CustomError.builder().code("404").message("New passwords are mismatched").build());
+
     }
 }
