@@ -28,6 +28,7 @@ import com.midorimart.managementsystem.model.users.UserDTOFilter;
 import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
+import com.midorimart.managementsystem.model.users.UserDTORetypePassword;
 import com.midorimart.managementsystem.model.users.UserDTOUpdate;
 import com.midorimart.managementsystem.service.UserService;
 
@@ -118,5 +119,10 @@ public class UserController {
     @GetMapping("/user-management/verify")
     public Map<String, UserDTOResponse> verifyForgotPassword(@RequestParam(name = "code") String verificationCode) throws CustomNotFoundException, UnsupportedEncodingException, MessagingException{
         return userService.verifyForgotPassword(verificationCode);
+    }
+    @Operation(summary = "Change password")
+    @PostMapping("/v1/user/changePassword")
+    public Map<String, UserDTOResponse> changePassword(@RequestBody Map<String, UserDTORetypePassword> retypeMap) throws CustomBadRequestException{
+        return userService.changePassword(retypeMap);
     }
 }
