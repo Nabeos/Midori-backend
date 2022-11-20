@@ -326,8 +326,15 @@ public class UserServiceimpl implements UserService {
         User user = getUserLogin();
         Pattern pattern = Pattern.compile(REGEX_PASSWORD);
         UserDTORetypePassword userDTORetypePassword = retypeMap.get("information");
+        String currentPassword = userDTORetypePassword.getCurrentPassword();
         String newPassword = userDTORetypePassword.getPassword();
         String retypePassword = userDTORetypePassword.getRepassword();
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())){
+            throw new CustomBadRequestException(CustomError.builder().code("400")
+                        .message(
+                                "Current password is incorrect")
+                        .build());
+        }
         if (newPassword.equals(retypePassword)) {
             if (!pattern.matcher(newPassword).matches()) {
                 throw new CustomBadRequestException(CustomError.builder().code("400")
@@ -335,7 +342,7 @@ public class UserServiceimpl implements UserService {
                                 "Password must be at least 6 characters and contain at least 1 uppercase, 1 lowercase, 1 digit and 1 special character")
                         .build());
             }
-            if (passwordEncoder.encode(user.getPassword()).equals(passwordEncoder.encode(newPassword))) {
+            if (passwordEncoder.matches(newPassword, user.getPassword())) {
                 throw new CustomBadRequestException(CustomError.builder().code("400")
                         .message(
                                 "You can not use old password")

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTORetypePassword {
+    String currentPassword;
     String password;
     String repassword;
     
