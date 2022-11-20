@@ -84,7 +84,7 @@ public class EmailSenderServiceImpl implements EmailService {
         EmailDetails emailDetails = new EmailDetails();
         String bodyCart = "<tr>";
         for (OrderDetail od : order.getCart()) {
-            Product product = productRepository.findById(od.getId()).get();
+            Product product = productRepository.findById(od.getProduct().getId()).get();
             bodyCart += "<td>" + product.getTitle() + "</td>";
             bodyCart += "<td>" + product.getSku() + "</td>";
             bodyCart += "<td>" + od.getPrice() + "</td>";
@@ -114,7 +114,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "</div>"
                 + "</div></div><div style='margin-left: 10px; margin-top: 10px'>"
                 + "<span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span> Dự kiến giao hàng "
-                + order.getDeliveryDate() + " " + order.getDeliveryTimeRange()
+                + order.getDeliveryDate().substring(0, 10) + " " + order.getDeliveryTimeRange()
                 + "</div><h4 style='order-bottom: 1px solid lightgray; padding-bottom: 10px; color:#0c6e21'>CHI TIẾT ĐƠN HÀNG</h4><div>"
                 + "<table>"
                 + "  <tr>"
