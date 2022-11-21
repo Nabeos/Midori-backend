@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     private final MerchantRepository merchantRepository;
     private final ProductUnitRepository productUnitRepository;
     private final CommentService commentService;
-    private final String FOLDER_PATH = "\\images\\products";
+    private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\product";
     // private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
@@ -179,7 +179,8 @@ public class ProductServiceImpl implements ProductService {
 
     private String saveFile(MultipartFile file, Product product) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
-        Gallery gallery = Gallery.builder().thumbnail(filePath).build();
+        String fileToSave= "\\images\\product\\"+file.getOriginalFilename();
+        Gallery gallery = Gallery.builder().thumbnail(fileToSave).build();
         gallery.setProduct(product);
         gallery = galleryRepository.save(gallery);
         file.transferTo(new File(filePath));

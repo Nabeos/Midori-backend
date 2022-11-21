@@ -1,30 +1,24 @@
 package com.midorimart.managementsystem.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
-import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.webjars.NotFoundException;
 
 import com.midorimart.managementsystem.entity.Role;
 import com.midorimart.managementsystem.entity.User;
@@ -37,8 +31,8 @@ import com.midorimart.managementsystem.model.product.dto.ImageDTOResponse;
 import com.midorimart.managementsystem.model.role.RoleDTOCreate;
 import com.midorimart.managementsystem.model.role.RoleDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
-import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOFilter;
+import com.midorimart.managementsystem.model.users.UserDTOForgotPassword;
 import com.midorimart.managementsystem.model.users.UserDTOLoginRequest;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;
 import com.midorimart.managementsystem.model.users.UserDTORetypePassword;
@@ -329,11 +323,11 @@ public class UserServiceimpl implements UserService {
         String currentPassword = userDTORetypePassword.getCurrentPassword();
         String newPassword = userDTORetypePassword.getPassword();
         String retypePassword = userDTORetypePassword.getRepassword();
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())){
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new CustomBadRequestException(CustomError.builder().code("400")
-                        .message(
-                                "Current password is incorrect")
-                        .build());
+                    .message(
+                            "Current password is incorrect")
+                    .build());
         }
         if (newPassword.equals(retypePassword)) {
             if (!pattern.matcher(newPassword).matches()) {
