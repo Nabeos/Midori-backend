@@ -295,6 +295,7 @@ public class ProductServiceImpl implements ProductService {
         existedProduct.setDescription(productUpdate.getDescription());
         existedProduct.setMerchant(Merchant.builder().id(productUpdate.getMerchantId()).build());
         existedProduct.setUnit(ProductUnit.builder().id(productUpdate.getProductUnit()).build());
+        existedProduct = productRepository.save(existedProduct);
         return buildDTODetailResponse(existedProduct);
     }
 
