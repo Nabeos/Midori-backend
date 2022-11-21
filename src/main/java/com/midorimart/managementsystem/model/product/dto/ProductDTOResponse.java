@@ -22,6 +22,7 @@ public class ProductDTOResponse {
     private double price;
     private int discount;
     private int quantity;
+    private String origin;
     private List<String> thumbnails;
     private String description;
     private String status;

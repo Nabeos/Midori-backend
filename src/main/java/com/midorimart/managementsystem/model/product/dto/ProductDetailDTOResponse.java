@@ -1,6 +1,5 @@
 package com.midorimart.managementsystem.model.product.dto;
 
-import java.util.Date;
 import java.util.List;
 
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
@@ -22,6 +21,7 @@ public class ProductDetailDTOResponse{
     private String title;
     private double price;
     private int discount;
+    private String origin;
     private List<String> thumbnails;
     private String description;
     private String status;
