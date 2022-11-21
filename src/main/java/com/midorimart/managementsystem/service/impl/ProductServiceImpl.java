@@ -53,7 +53,9 @@ public class ProductServiceImpl implements ProductService {
     private final ProductUnitRepository productUnitRepository;
     private final CommentService commentService;
     private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\product";
-    // private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
+    // private final String FOLDER_PATH =
+    // "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP
+    // Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public String updateDeletedById(int id) {
@@ -164,7 +166,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files, String slug) throws IllegalStateException, IOException {
+    public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files, String slug)
+            throws IllegalStateException, IOException {
         Map<String, List<ImageDTOResponse>> wrapper = new HashMap<>();
         List<ImageDTOResponse> imageDTOResponses = new ArrayList<>();
         Product product = productRepository.findBySlug(slug).get();
@@ -179,7 +182,7 @@ public class ProductServiceImpl implements ProductService {
 
     private String saveFile(MultipartFile file, Product product) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
-        String fileToSave= "\\images\\product\\"+file.getOriginalFilename();
+        String fileToSave = "\\images\\product\\" + file.getOriginalFilename();
         Gallery gallery = Gallery.builder().thumbnail(fileToSave).build();
         gallery.setProduct(product);
         gallery = galleryRepository.save(gallery);
@@ -188,11 +191,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, List<ProductDTOResponse>> searchProduct(String title) {
+    public Map<String, List<ProductDTOResponse>> searchProduct(String title, int limit, int offset) {
         String query = "%" + title + "%";
-        List<Product> products = productRepository.findByTitleOrSlug(query);
+        List<Product> products = productRepository.findByTitleOrSlug(query, limit, offset);
         List<ProductDTOResponse> productDTOResponses = products.stream().map(ProductMapper::toProductDTOResponse)
-        .collect(Collectors.toList());
+                .collect(Collectors.toList());
         setAvgStarForProductList(productDTOResponses);
         Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("products", productDTOResponses);
@@ -261,8 +264,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategory() {
         List<Integer> categoriesId = productRepository.findBestsellerCategoryCustom();
-        List<Category> categories = categoriesId.stream().map((id)->(categoryRepository.findById(id).get())).collect(Collectors.toList());
-        List<CategoryDTOResponse> categoryDTOResponses = categories.stream().map(ProductMapper::toCategoryDTOResponse).collect(Collectors.toList());
+        List<Category> categories = categoriesId.stream().map((id) -> (categoryRepository.findById(id).get()))
+                .collect(Collectors.toList());
+        List<CategoryDTOResponse> categoryDTOResponses = categories.stream().map(ProductMapper::toCategoryDTOResponse)
+                .collect(Collectors.toList());
         Map<String, List<CategoryDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("categories", categoryDTOResponses);
         return wrapper;
@@ -282,15 +287,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug) throws CustomNotFoundException {
+    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug)
+            throws CustomNotFoundException {
         Product existedProduct = productRepository.findBySlug(slug).get();
         ProductDTOCreate productUpdate = productDTOMap.get("product");
         existedProduct.setAmount(productUpdate.getAmount());
         existedProduct.setCategory(categoryRepository.findById(productUpdate.getCategory()).get());
-        existedProduct.setTitle(productUpdate.getTitle());
-        if(!checkProductName(productUpdate.getTitle())){
-            existedProduct.setSlug(SlugUtil.getSlug(productUpdate.getTitle(), existedProduct.getSku()));;
-        }else throw new CustomNotFoundException(CustomError.builder().code("404").message("Product already existed").build());
+
+
+        if (!checkProductName(productUpdate.getTitle(), existedProduct)) {
+            existedProduct.setTitle(productUpdate.getTitle());
+            existedProduct.setSlug(SlugUtil.getSlug(productUpdate.getTitle(), existedProduct.getSku()));
+        } else
+            throw new CustomNotFoundException(
+                    CustomError.builder().code("404").message("Product name already existed").build());
+
         existedProduct.setPrice(productUpdate.getPrice());
         existedProduct.setCountry(Country.builder().code(productUpdate.getOrigin()).build());
         existedProduct.setDescription(productUpdate.getDescription());
@@ -300,10 +311,11 @@ public class ProductServiceImpl implements ProductService {
         return buildDTODetailResponse(existedProduct);
     }
 
-    private boolean checkProductName(String title) {
+    private boolean checkProductName(String title, Product existedProduct) {
         Optional<Product> productOptional = productRepository.findByTitle(title);
-        if(productOptional.isPresent()){
-            return true;
+        if (productOptional.isPresent()) {
+            if (existedProduct.getId() != productOptional.get().getId())
+                return true;
         }
         return false;
     }

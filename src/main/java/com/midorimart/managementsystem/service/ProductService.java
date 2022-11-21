@@ -35,7 +35,7 @@ public interface ProductService {
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] multipartFiles, String slug)
             throws IllegalStateException, IOException;
 
-    public Map<String, List<ProductDTOResponse>> searchProduct(String productName);
+    public Map<String, List<ProductDTOResponse>> searchProduct(String productName, int offset, int limit);
 
     public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) throws CustomNotFoundException;
 

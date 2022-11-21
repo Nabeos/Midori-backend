@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
@@ -43,8 +44,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
         Optional<Product> findBySlug(String slug);
 
-        @Query(value = "select * from Product where title Like ?1 or slug LIKE ?1", nativeQuery = true)
-        List<Product> findByTitleOrSlug(String query);
+        @Query(value = "select * from Product where title Like ?1 or slug LIKE ?1 order by created_at desc OFFSET ?2 ROWS FETCH NEXT ?3 ROWS ONLY ", nativeQuery = true)
+        List<Product> findByTitleOrSlug(String query, int offset, int limit);
 
         Optional<Product> findByTitle(String title);
 
