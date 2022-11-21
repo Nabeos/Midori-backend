@@ -16,12 +16,12 @@ import com.midorimart.managementsystem.model.category.dto.CategoryDTOCreate;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.country.dto.CountryDTOResponse;
 import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
-import com.midorimart.managementsystem.model.merchant.dto.MerchantUserDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
 import com.midorimart.managementsystem.model.productQuantityInStock.dto.ProductQuantityDTOResponse;
 import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
+import com.midorimart.managementsystem.utils.DateHelper;
 
 public class ProductMapper {
     public static ProductDTOResponse toProductDTOResponse(Product product) {
@@ -36,8 +36,8 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .discount(product.getDiscount())
                 .category(toCategoryDTOResponse(product.getCategory()))
-                .created_at(product.getCreated_at())
-                .updated_at(product.getUpdated_at())
+                .created_at(DateHelper.convertDate(product.getCreated_at()))
+                .updated_at(DateHelper.convertDate(product.getUpdated_at()))
                 .merchant(toMerchantDtoResponse(product.getMerchant()))
                 .amount(product.getAmount())
                 .quantity(product.getQuantity())
@@ -55,7 +55,6 @@ public class ProductMapper {
                 .price(productDTOCreate.getPrice())
                 .created_at(now)
                 .updated_at(now)
-                .merchant(Merchant.builder().id(0).build())
                 .discount(0)
                 .deleted(0)
                 .status("in_stock")
@@ -106,8 +105,8 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .discount(product.getDiscount())
                 .category(toCategoryDTOResponse(product.getCategory()))
-                .created_at(product.getCreated_at())
-                .updated_at(product.getUpdated_at())
+                .created_at(DateHelper.convertDate(product.getCreated_at()))
+                .updated_at(DateHelper.convertDate(product.getUpdated_at()))
                 .merchant(toMerchantDtoResponse(product.getMerchant()))
                 .amount(product.getAmount())
                 .quantity(product.getQuantity())

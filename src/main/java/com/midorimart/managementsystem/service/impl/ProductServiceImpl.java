@@ -3,6 +3,7 @@ package com.midorimart.managementsystem.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,18 +282,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug) {
+    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug) throws CustomNotFoundException {
         Product existedProduct = productRepository.findBySlug(slug).get();
         ProductDTOCreate productUpdate = productDTOMap.get("product");
         existedProduct.setAmount(productUpdate.getAmount());
-        existedProduct.setCategory(Category.builder().id(productUpdate.getCategory()).build());
+        existedProduct.setCategory(categoryRepository.findById(productUpdate.getCategory()).get());
         existedProduct.setTitle(productUpdate.getTitle());
+        if(!checkProductName(productUpdate.getTitle())){
+            existedProduct.setSlug(SlugUtil.getSlug(productUpdate.getTitle(), existedProduct.getSku()));;
+        }else throw new CustomNotFoundException(CustomError.builder().code("404").message("Product already existed").build());
         existedProduct.setPrice(productUpdate.getPrice());
         existedProduct.setCountry(Country.builder().code(productUpdate.getOrigin()).build());
         existedProduct.setDescription(productUpdate.getDescription());
+        existedProduct.setUpdated_at(new Date());
         existedProduct.setUnit(ProductUnit.builder().id(productUpdate.getProductUnit()).build());
         existedProduct = productRepository.save(existedProduct);
         return buildDTODetailResponse(existedProduct);
+    }
+
+    private boolean checkProductName(String title) {
+        Optional<Product> productOptional = productRepository.findByTitle(title);
+        if(productOptional.isPresent()){
+            return true;
+        }
+        return false;
     }
 
     private Map<String, ProductDetailDTOResponse> buildDTODetailResponse(Product existedProduct) {

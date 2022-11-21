@@ -47,6 +47,6 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> getTop20BestSellerInEachCategory(int categoryId);
 
-    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug);
+    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug) throws CustomNotFoundException;
 
 }

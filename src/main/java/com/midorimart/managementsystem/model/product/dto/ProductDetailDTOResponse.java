@@ -25,8 +25,8 @@ public class ProductDetailDTOResponse{
     private List<String> thumbnails;
     private String description;
     private String status;
-    private Date created_at;
-    private Date updated_at;
+    private String created_at;
+    private String updated_at;
     private int deleted;
     private double amount;
     private int quantity;

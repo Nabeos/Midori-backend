@@ -103,7 +103,7 @@ public class ProductController {
     }
 
     @Operation(summary = "Update Product")
-    @PutMapping("/api/v1/product-management/products/{slug}")
+    @PutMapping("/api/v1/product-management/product/{slug}")
     public Map<String, ProductDetailDTOResponse> updateProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap, @PathVariable String slug)
             throws CustomBadRequestException, CustomNotFoundException {
         return service.updateProduct(productDTOMap, slug);
