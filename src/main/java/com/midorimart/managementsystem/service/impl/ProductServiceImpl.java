@@ -51,8 +51,8 @@ public class ProductServiceImpl implements ProductService {
     private final MerchantRepository merchantRepository;
     private final ProductUnitRepository productUnitRepository;
     private final CommentService commentService;
-    private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\product";
-    // private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
+    // private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\product";
+    private final String FOLDER_PATH = "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP Project\\midori\\src\\main\\resources\\static\\images";
 
     @Override
     public String updateDeletedById(int id) {

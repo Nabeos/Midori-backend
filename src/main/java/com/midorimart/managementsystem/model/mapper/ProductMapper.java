@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.model.mapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,7 +90,7 @@ public class ProductMapper {
         for (Gallery gallery : galleries) {
             imageUrl.add(gallery.getThumbnail().replace("\\", "/"));
         }
-
+        Collections.reverse(imageUrl);
         return imageUrl;
     }
 
