@@ -94,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
                 product.setCategory(categoryOptional.get());
                 product.setUnit(productUnitOptional.get());
                 product.setAmount(productDTOCreate.getAmount());
+                product.setMerchant(merchantRepository.findById(0).get());
             } else {
                 throw new CustomNotFoundException(CustomError.builder().code("404")
                         .message("Category, merchant or unit are not existed").build());
