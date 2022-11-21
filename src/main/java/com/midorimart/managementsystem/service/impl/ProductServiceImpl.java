@@ -30,12 +30,14 @@ import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
 import com.midorimart.managementsystem.repository.CategoryRepository;
+import com.midorimart.managementsystem.repository.CountryRepository;
 import com.midorimart.managementsystem.repository.GalleryRepository;
 import com.midorimart.managementsystem.repository.MerchantRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.ProductUnitRepository;
 import com.midorimart.managementsystem.repository.custom.ProductCriteria;
 import com.midorimart.managementsystem.service.CommentService;
+import com.midorimart.managementsystem.service.CountryService;
 import com.midorimart.managementsystem.service.ProductService;
 import com.midorimart.managementsystem.utils.SkuUtil;
 import com.midorimart.managementsystem.utils.SlugUtil;
@@ -52,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
     private final MerchantRepository merchantRepository;
     private final ProductUnitRepository productUnitRepository;
     private final CommentService commentService;
+    private final CountryRepository countryRepository;
     private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\product";
     // private final String FOLDER_PATH =
     // "C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP
@@ -303,7 +306,7 @@ public class ProductServiceImpl implements ProductService {
                     CustomError.builder().code("404").message("Product name already existed").build());
 
         existedProduct.setPrice(productUpdate.getPrice());
-        existedProduct.setCountry(Country.builder().code(productUpdate.getOrigin()).build());
+        existedProduct.setCountry(countryRepository.findByCode(productUpdate.getOrigin()));
         existedProduct.setDescription(productUpdate.getDescription());
         existedProduct.setUpdated_at(new Date());
         existedProduct.setUnit(ProductUnit.builder().id(productUpdate.getProductUnit()).build());
