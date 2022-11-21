@@ -28,4 +28,7 @@ public class Country {
     private List<Merchant> merchants;
     @Column(name = "image")
     private String image;
+
+    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
+    private List<Product> products;
 }

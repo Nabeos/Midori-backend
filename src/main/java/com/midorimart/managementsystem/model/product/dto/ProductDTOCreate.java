@@ -10,13 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTOCreate {
-    private String slug;
-    private String sku;
     private int category;
     private String title;
     private double price;
     private double amount;
     private String description;
+    private String origin;
     private int merchantId;
     private int productUnit;
 }

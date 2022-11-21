@@ -58,6 +58,10 @@ public class Product {
     private int deleted;
 
     @ManyToOne
+    @JoinColumn(name = "country_code")
+    private Country country;
+
+    @ManyToOne
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
     @Column(name = "slug", unique = true)
