@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.midorimart.managementsystem.entity.Category;
 import com.midorimart.managementsystem.entity.Country;
 import com.midorimart.managementsystem.entity.Gallery;
-import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.ProductUnit;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
@@ -29,7 +28,6 @@ import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
-import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
 import com.midorimart.managementsystem.repository.CategoryRepository;
 import com.midorimart.managementsystem.repository.GalleryRepository;
 import com.midorimart.managementsystem.repository.MerchantRepository;
@@ -92,10 +90,8 @@ public class ProductServiceImpl implements ProductService {
             Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
             Optional<ProductUnit> productUnitOptional = productUnitRepository
                     .findById(productDTOCreate.getProductUnit());
-            Optional<Merchant> merchantOptional = merchantRepository.findById(productDTOCreate.getMerchantId());
-            if (categoryOptional.isPresent() && productUnitOptional.isPresent() && merchantOptional.isPresent()) {
+            if (categoryOptional.isPresent() && productUnitOptional.isPresent()) {
                 product.setCategory(categoryOptional.get());
-                product.setMerchant(merchantOptional.get());
                 product.setUnit(productUnitOptional.get());
                 product.setAmount(productDTOCreate.getAmount());
             } else {
@@ -293,7 +289,6 @@ public class ProductServiceImpl implements ProductService {
         existedProduct.setPrice(productUpdate.getPrice());
         existedProduct.setCountry(Country.builder().code(productUpdate.getOrigin()).build());
         existedProduct.setDescription(productUpdate.getDescription());
-        existedProduct.setMerchant(Merchant.builder().id(productUpdate.getMerchantId()).build());
         existedProduct.setUnit(ProductUnit.builder().id(productUpdate.getProductUnit()).build());
         existedProduct = productRepository.save(existedProduct);
         return buildDTODetailResponse(existedProduct);

@@ -16,6 +16,5 @@ public class ProductDTOCreate {
     private double amount;
     private String description;
     private String origin;
-    private int merchantId;
     private int productUnit;
 }

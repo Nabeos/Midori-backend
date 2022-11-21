@@ -55,6 +55,7 @@ public class ProductMapper {
                 .price(productDTOCreate.getPrice())
                 .created_at(now)
                 .updated_at(now)
+                .merchant(Merchant.builder().id(0).build())
                 .discount(0)
                 .deleted(0)
                 .status("in_stock")
