@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.entity.Category;
+import com.midorimart.managementsystem.entity.Country;
 import com.midorimart.managementsystem.entity.Gallery;
 import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.entity.Product;
@@ -28,6 +29,7 @@ import com.midorimart.managementsystem.model.product.dto.ProductDTOCreate;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 import com.midorimart.managementsystem.model.product.dto.ProductDTOResponse;
 import com.midorimart.managementsystem.model.product.dto.ProductDetailDTOResponse;
+import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
 import com.midorimart.managementsystem.repository.CategoryRepository;
 import com.midorimart.managementsystem.repository.GalleryRepository;
 import com.midorimart.managementsystem.repository.MerchantRepository;
@@ -278,6 +280,28 @@ public class ProductServiceImpl implements ProductService {
         setAvgStarForProductList(productDTOResponses);
         Map<String, List<ProductDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("products", productDTOResponses);
+        return wrapper;
+    }
+
+    @Override
+    public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug) {
+        Product existedProduct = productRepository.findBySlug(slug).get();
+        ProductDTOCreate productUpdate = productDTOMap.get("product");
+        existedProduct.setAmount(productUpdate.getAmount());
+        existedProduct.setCategory(Category.builder().id(productUpdate.getCategory()).build());
+        existedProduct.setTitle(productUpdate.getTitle());
+        existedProduct.setPrice(productUpdate.getPrice());
+        existedProduct.setCountry(Country.builder().code(productUpdate.getOrigin()).build());
+        existedProduct.setDescription(productUpdate.getDescription());
+        existedProduct.setMerchant(Merchant.builder().id(productUpdate.getMerchantId()).build());
+        existedProduct.setUnit(ProductUnit.builder().id(productUpdate.getProductUnit()).build());
+        return buildDTODetailResponse(existedProduct);
+    }
+
+    private Map<String, ProductDetailDTOResponse> buildDTODetailResponse(Product existedProduct) {
+        ProductDetailDTOResponse productDetailDTOResponse = ProductMapper.toProductDetail(existedProduct);
+        Map<String, ProductDetailDTOResponse> wrapper = new HashMap<>();
+        wrapper.put("product", productDetailDTOResponse);
         return wrapper;
     }
 }

@@ -102,6 +102,13 @@ public class ProductController {
         return service.addNewProduct(productDTOMap);
     }
 
+    @Operation(summary = "Update Product")
+    @PutMapping("/api/v1/product-management/products/{slug}")
+    public Map<String, ProductDetailDTOResponse> updateProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap, @PathVariable String slug)
+            throws CustomBadRequestException, CustomNotFoundException {
+        return service.updateProduct(productDTOMap, slug);
+    }
+
     @Operation(summary = "Upload image after add new Product")
     @PostMapping("/api/v1/product-management/products/{slug}/images")
     public Map<String, List<ImageDTOResponse>> uploadImage(@RequestParam("files") MultipartFile[] files, @PathVariable String slug)
