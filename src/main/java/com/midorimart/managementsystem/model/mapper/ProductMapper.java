@@ -35,7 +35,7 @@ public class ProductMapper {
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
-                .origin(product.getCountry().getName())
+                .origin(product.getCountry()!=null?product.getCountry().getCode():"VNI")
                 .category(toCategoryDTOResponse(product.getCategory()))
                 .created_at(DateHelper.convertDate(product.getCreated_at()))
                 .updated_at(DateHelper.convertDate(product.getUpdated_at()))
