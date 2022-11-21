@@ -15,5 +15,4 @@ public class MerchantDTOResponse {
     private int id;
     private CountryDTOResponse country;
     private String name;
-    private MerchantUserDTOResponse user;
 }

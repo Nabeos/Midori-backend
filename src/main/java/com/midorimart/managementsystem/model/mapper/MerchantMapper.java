@@ -23,7 +23,6 @@ public class MerchantMapper {
                 .name(merchant.getMerchantName())
                 .country(CountryDTOResponse.builder().code(merchant.getCountry().getCode())
                         .name(merchant.getCountry().getName()).build())
-                .user(MerchantUserDTOResponse.builder().email(merchant.getUser().getEmail()).build())
                 .build();
     }
 

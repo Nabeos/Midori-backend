@@ -71,8 +71,6 @@ public class ProductMapper {
     public static MerchantDTOResponse toMerchantDtoResponse(Merchant merchant) {
         return MerchantDTOResponse.builder().id(merchant.getId()).name(merchant.getMerchantName())
                 .country(toCountryDTOResponse(merchant.getCountry()))
-                .user(MerchantUserDTOResponse.builder().email(merchant.getUser().getEmail())
-                        .fullname(merchant.getUser().getFullname()).build())
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,9 +23,16 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 public class CountryController {
     private final CountryService countryService;
-    @GetMapping("/country/{code}")
+
+    @GetMapping("/countries/{code}")
     @Operation(summary = "Get Country By Code")
-    public Map<String, CountryDTOResponse> getCountryByCode(@PathVariable String code){
-return countryService.getCountryByCode(code);
+    public Map<String, CountryDTOResponse> getCountryByCode(@PathVariable String code) {
+        return countryService.getCountryByCode(code);
+    }
+
+    @GetMapping("/countries")
+    @Operation(summary = "Get All Country")
+    public Map<String, List<CountryDTOResponse>> getAllCountries() {
+        return countryService.getAllCountries();
     }
 }

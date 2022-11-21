@@ -1,8 +1,10 @@
 package com.midorimart.managementsystem.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +30,11 @@ public class MerchantController {
     @PostMapping("/merchants")
     public Map<String, MerchantDTOResponse> addNewMerchant(@RequestBody Map<String, MerchantDTOCreate> merchantDTOMap){
         return merchantService.addNewMerchant(merchantDTOMap);
+    }
+
+    @Operation(summary = "Get All Merchants")
+    @GetMapping("/merchants")
+    public Map<String, List<MerchantDTOResponse>> getAllMerchant(){
+        return merchantService.getAllMerchant();
     }
 }
