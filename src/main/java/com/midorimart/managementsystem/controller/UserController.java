@@ -55,8 +55,7 @@ public class UserController {
     @GetMapping("/v1/user-management/users")
     public Map<String, Object> getUsers(
             @RequestParam(name = "offset", required = false, defaultValue = "0") Integer offset,
-            @RequestParam(name = "limit", required = false, defaultValue = "20") Integer limit)
-            {
+            @RequestParam(name = "limit", required = false, defaultValue = "20") Integer limit) {
         UserDTOFilter filter = UserDTOFilter.builder().offset(offset).limit(limit).build();
         return userService.getUsers(filter);
     }
@@ -108,21 +107,34 @@ public class UserController {
         return userService.updateUserStatus(id);
     }
 
-
     @Operation(summary = "Forgot password")
     @PostMapping("/v1/user-management/forgot-password")
-    public Map<String, UserDTOResponse> forgotPassword(@RequestBody Map<String, UserDTOForgotPassword> userDTOForgotPasswordMap) throws UnsupportedEncodingException, MessagingException {
+    public Map<String, UserDTOResponse> forgotPassword(
+            @RequestBody Map<String, UserDTOForgotPassword> userDTOForgotPasswordMap)
+            throws UnsupportedEncodingException, MessagingException {
         return userService.forgotPassword(userDTOForgotPasswordMap);
     }
 
     @Operation(summary = "Verify forgot password")
     @GetMapping("/user-management/verify")
-    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestParam(name = "code") String verificationCode) throws CustomNotFoundException, UnsupportedEncodingException, MessagingException{
+    public Map<String, UserDTOResponse> verifyForgotPassword(@RequestParam(name = "code") String verificationCode)
+            throws CustomNotFoundException, UnsupportedEncodingException, MessagingException {
         return userService.verifyForgotPassword(verificationCode);
     }
+
     @Operation(summary = "Change password")
     @PostMapping("/v1/user/changePassword")
-    public Map<String, UserDTOResponse> changePassword(@RequestBody Map<String, UserDTORetypePassword> retypeMap) throws CustomBadRequestException{
+    public Map<String, UserDTOResponse> changePassword(@RequestBody Map<String, UserDTORetypePassword> retypeMap)
+            throws CustomBadRequestException {
         return userService.changePassword(retypeMap);
+    }
+
+    @Operation(summary = "Search user")
+    @GetMapping("/v1/user-management/searchUser")
+    public Map<String, List<UserDTOResponse>> searchUser(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "offset", defaultValue = "0", required = true) int offset,
+            @RequestParam(name = "limit", defaultValue = "20", required = true) int limit) {
+        return userService.searchUser(name, offset, limit);
     }
 }

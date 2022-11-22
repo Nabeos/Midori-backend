@@ -350,4 +350,14 @@ public class UserServiceimpl implements UserService {
                 CustomError.builder().code("404").message("New passwords are mismatched").build());
 
     }
+
+    @Override
+    public Map<String, List<UserDTOResponse>> searchUser(String name, int offset, int limit) {
+        String keyword="%"+name+"%";
+        List<User> userList=userRepository.findByNameOrEmailOrPhoneNumber(keyword, offset, limit);
+        List<UserDTOResponse> userDTOResponses = userList.stream().map(UserMapper::toUserDTOResponse).collect(Collectors.toList());
+        Map<String, List<UserDTOResponse>> wrapper=new HashMap<>();
+        wrapper.put("users",userDTOResponses); 
+        return wrapper;
+    }
 }
