@@ -350,4 +350,15 @@ public class UserServiceimpl implements UserService {
                 CustomError.builder().code("404").message("New passwords are mismatched").build());
 
     }
+
+    @Override
+    public Map<String, Object> getSellers() {
+        List<User> sellers = userRepository.findAllByRoleId(4);
+        List<UserDTOResponse> dtoResponses = sellers.stream().map(
+                (u) -> (UserDTOResponse.builder().id(u.getId()).email(u.getEmail()).fullname(u.getFullname()).build()))
+                .collect(Collectors.toList());
+        Map<String, Object> wrapper = new HashMap<>();
+        wrapper.put("user", dtoResponses);
+        return wrapper;
+    }
 }

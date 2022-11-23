@@ -1,13 +1,19 @@
 package com.midorimart.managementsystem.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,12 +28,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@DynamicUpdate
+@DynamicInsert
 public class ReceivedNoteDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @Column(name = "expiry_date")
+    private Date expiryDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "received_id")
     private ReceivedNote receivedNote;
     @ManyToOne

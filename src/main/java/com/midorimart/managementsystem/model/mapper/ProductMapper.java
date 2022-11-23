@@ -125,7 +125,7 @@ public class ProductMapper {
 
     public static ProductQuantityDTOResponse toProductQuantityDTOResponse(ProductQuantity product) {
         return ProductQuantityDTOResponse.builder().quantity(product.getQuantity())
-                .manufacturingDate(product.getManufacturingDate()).expiryDate(product.getExpiryDate())
+                .manufacturingDate(product.getManufacturingDate()).expiryDate(DateHelper.convertDate(product.getExpiryDate()))
                 .createdDate(product.getCreatedDate()).updatedDate(product.getUpdatedDate()).build();
     }
 }

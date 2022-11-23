@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductQuantityDTOResponse {
     private int quantity;
-    private int expiryDate;
+    private String expiryDate;
     private Date manufacturingDate;
     private Date createdDate;
     private Date updatedDate;

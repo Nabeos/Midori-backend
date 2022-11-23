@@ -40,9 +40,9 @@ public class ProductController {
     @GetMapping("/product-management/search-product")
     public Map<String, List<ProductDTOResponse>> searchProduct(
             @RequestParam(name = "title", required = false) String productName,
-            @RequestParam(name = "offset", defaultValue = "0",  required = true) int offset,
+            @RequestParam(name = "offset", defaultValue = "0", required = true) int offset,
             @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
-                ProductDTOFilter filter = ProductDTOFilter.builder()
+        ProductDTOFilter filter = ProductDTOFilter.builder()
                 .offset(offset).limit(limit)
                 .build();
         return service.searchProduct(productName, offset, limit);
@@ -61,11 +61,9 @@ public class ProductController {
     }
 
     @Operation(summary = "Get top 20 bestseller in top 3 category by Category ID")
-
-
-
     @GetMapping("/product-management/products/best-seller")
-    public Map<String, List<ProductDTOResponse>> getTop20BestSellerInEachCategory(@RequestParam(name = "category", required = true) int categoryId) {
+    public Map<String, List<ProductDTOResponse>> getTop20BestSellerInEachCategory(
+            @RequestParam(name = "category", required = true) int categoryId) {
         return service.getTop20BestSellerInEachCategory(categoryId);
     }
 
@@ -110,22 +108,20 @@ public class ProductController {
         return service.addNewProduct(productDTOMap);
     }
 
-
     @Operation(summary = "Update Product")
 
-
     @PutMapping("/api/v1/product-management/product/{slug}")
-    public Map<String, ProductDetailDTOResponse> updateProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap, @PathVariable String slug)
+    public Map<String, ProductDetailDTOResponse> updateProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap,
+            @PathVariable String slug)
             throws CustomBadRequestException, CustomNotFoundException {
         return service.updateProduct(productDTOMap, slug);
     }
 
-
     @Operation(summary = "Upload image after add new Product")
 
-
     @PostMapping("/api/v1/product-management/products/{slug}/images")
-    public Map<String, List<ImageDTOResponse>> uploadImage(@RequestParam("files") MultipartFile[] files, @PathVariable String slug)
+    public Map<String, List<ImageDTOResponse>> uploadImage(@RequestParam("files") MultipartFile[] files,
+            @PathVariable String slug)
             throws IllegalStateException, IOException {
         return service.uploadImage(files, slug);
     }

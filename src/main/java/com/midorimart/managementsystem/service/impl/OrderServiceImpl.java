@@ -68,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
         address.add(orderDTOPlace.getAddress().getAddressDetail());
         Order order = OrderMapper.toOrder(orderDTOPlace);
         order.setAddress(address);
-        if (CheckQuantityInStock(order.getCart())) {
+        if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
         } else {
@@ -78,6 +78,15 @@ public class OrderServiceImpl implements OrderService {
             saveInvoiceForUser(userService.getUserLogin(), order);
 
         return buildDTOResponse(order);
+    }
+
+    private boolean CheckQuantity(List<OrderDetail> cart) {
+        for (OrderDetail orderDetail : cart) {
+            int quantityInStock = productRepository.findById(orderDetail.getProduct().getId()).get().getQuantity();
+            if (quantityInStock < orderDetail.getQuantity())
+                return false;
+        }
+        return true;
     }
 
     // Save invoice for user

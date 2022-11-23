@@ -52,4 +52,6 @@ public interface UserService {
     public Map<String, UserDTOResponse> updateUserStatus(int id);
 
     public Map<String, UserDTOResponse> changePassword(Map<String, UserDTORetypePassword> retypeMap) throws CustomBadRequestException;
+
+    public Map<String, Object> getSellers();
 }

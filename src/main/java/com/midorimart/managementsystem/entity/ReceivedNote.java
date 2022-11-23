@@ -14,6 +14,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,11 +30,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@DynamicInsert
+@DynamicUpdate
 public class ReceivedNote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String note;
     private String name;
     private int status;
 
@@ -46,6 +52,6 @@ public class ReceivedNote {
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
-    @OneToMany(mappedBy = "receivedNote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receivedNote", cascade = CascadeType.DETACH)
     private List<ReceivedNoteDetail> receivedNoteDetail;
 }
