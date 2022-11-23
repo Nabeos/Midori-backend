@@ -30,41 +30,41 @@ public class ReceivedNoteController {
     @GetMapping("/api/v1/received-notes")
     public Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = true, defaultValue = "0") int limit) {
+            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
         return receivedNoteService.getAllReceivedNote(offset, limit);
     }
 
     @Operation(summary = "Search Received note By User")
-    @GetMapping("/api/v1/received-note/users")
-    public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByUser(@RequestParam(name = "id") int id,
+    @GetMapping("/api/v1/received-notes/users")
+    public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByUser(@RequestParam(name = "id", required = true) int id,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = true, defaultValue = "0") int limit) {
+            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
         return receivedNoteService.getReceivedNoteByUser(id, limit, offset);
     }
 
     @Operation(summary = "Search Received note By Month")
-    @GetMapping("/api/v1/received-note/month")
+    @GetMapping("/api/v1/received-notes/month")
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByMonth(@RequestParam(name = "month") int month,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = true, defaultValue = "0") int limit) {
+            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
         return receivedNoteService.getReceivedNoteByUser(month,limit, offset);
     }
 
     @Operation(summary = "Search Received note By Date Range")
-    @GetMapping("/api/v1/received-note/range")
+    @GetMapping("/api/v1/received-notes/range")
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByDate(
             @RequestParam(name = "firstDate") String firstDate, @RequestParam(name = "secondDate") String secondDate,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = true, defaultValue = "0") int limit) {
+            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
         return receivedNoteService.getReceivedNoteByDate(firstDate, secondDate, limit, offset);
     }
 
     @Operation(summary = "Get Received note By Merchant")
-    @GetMapping("/api/v1/received-note/merchant")
+    @GetMapping("/api/v1/received-notes/merchant")
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByMerchant(
-            @RequestParam(name = "merchant") int id,
+            @RequestParam(name = "id") int id,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = true, defaultValue = "0") int limit) {
+            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
         return receivedNoteService.getReceivedNoteByMerchant(id, limit, offset);
     }
 

@@ -113,19 +113,19 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
 
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByUser(int id, int offset, int limit) {
-        List<ReceivedNote> receivedNote = receivedNoteRepository.findByUserId(id, offset, limit);
+        List<ReceivedNote> receivedNote = receivedNoteRepository.findByUserId(id, limit, offset);
         return buildDTOListResponse(receivedNote);
     }
 
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByDate(String firstDate, String secondDate, int offset, int limit) {
-        List<ReceivedNote> receivedNote = receivedNoteRepository.findByDateRange(firstDate, secondDate, offset, limit);
+        List<ReceivedNote> receivedNote = receivedNoteRepository.findByDateRange(firstDate+" 00:00:00", secondDate+" 00:00:00", limit, offset);
         return buildDTOListResponse(receivedNote);
     }
 
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByMerchant(int id, int offset, int limit) {
-        List<ReceivedNote> receivedNote = receivedNoteRepository.findByMerchantId(id, offset, limit);
+        List<ReceivedNote> receivedNote = receivedNoteRepository.findByMerchantId(id, limit, offset);
         return buildDTOListResponse(receivedNote);
     }
 

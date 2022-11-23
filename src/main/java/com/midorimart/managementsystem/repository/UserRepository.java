@@ -14,6 +14,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public Optional<User> findByEmail(String email);
     public Optional<User> findByVerificationCode(String verificationCode);
     public List<User> findAllByRoleId(int i);
-    @Query(value ="select * from [User] where email Like ?1 or full_name LIKE ?1 or phone_number LIKE ?1 order by id asc OFFSET ?2 ROWS FETCH NEXT ?3 ROWS ONLY " , nativeQuery=true)
+    @Query(value ="select * from [User] where email Like ?1 or full_name LIKE ?1 or phone_number LIKE ?1 order by id asc OFFSET ?2 ROWS FETCH NEXT ?3 ROWS ONLY" , nativeQuery=true)
     public List<User> findByNameOrEmailOrPhoneNumber(String keyword, int offset, int limit);
 }
