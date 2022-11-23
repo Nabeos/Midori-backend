@@ -134,4 +134,13 @@ public class UserController {
             throws CustomBadRequestException {
         return userService.changePassword(retypeMap);
     }
+
+    @Operation(summary = "Search user")
+    @GetMapping("/v1/user-management/searchUser")
+    public Map<String, List<UserDTOResponse>> searchUser(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "offset", defaultValue = "0", required = true) int offset,
+            @RequestParam(name = "limit", defaultValue = "20", required = true) int limit) {
+        return userService.searchUser(name, offset, limit);
+    }
 }

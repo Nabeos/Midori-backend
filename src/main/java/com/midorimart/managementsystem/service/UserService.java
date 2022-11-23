@@ -1,12 +1,11 @@
 package com.midorimart.managementsystem.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,4 +53,5 @@ public interface UserService {
     public Map<String, UserDTOResponse> changePassword(Map<String, UserDTORetypePassword> retypeMap) throws CustomBadRequestException;
 
     public Map<String, Object> getSellers();
+    public Map<String, List<UserDTOResponse>> searchUser(String name, int offset, int limit);
 }
