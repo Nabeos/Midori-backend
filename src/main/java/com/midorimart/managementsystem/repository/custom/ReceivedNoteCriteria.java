@@ -24,23 +24,24 @@ public class ReceivedNoteCriteria {
     private final EntityManager em;
 
     public Map<String, List<ReceivedNote>> getAllReceivedNote(ReceivedNoteDTOFilter filter) {
-        StringBuilder query = new StringBuilder("select rn from ReceivedNote rn inner join rn.user ru inner join rn.merchant rm where 1=1");
+        StringBuilder query = new StringBuilder(
+                "select rn from ReceivedNote rn inner join rn.user ru inner join rn.merchant rm where 1=1");
         Map<String, Object> params = new HashMap<>();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date firstDate = null;
         Date secondDate = null;
-        if(filter.getUserId() != 0){
+        if (filter.getUserId() != 0) {
             query.append(" and ru.id = :userId");
             params.put("userId", filter.getUserId());
         }
-        if(filter.getMerchantId() >=0){
+        if (filter.getMerchantId() >= 0) {
             query.append(" and rm.id = :merchantId");
             params.put("merchantId", filter.getMerchantId());
         }
-        if(filter.getFirstDate() != null && filter.getSecondDate() != null){
+        if (filter.getFirstDate() != null && filter.getSecondDate() != null) {
             try {
-                firstDate = df.parse(filter.getFirstDate());
-                secondDate = df.parse(filter.getSecondDate());
+                firstDate = df.parse(filter.getFirstDate()+" 00:00:00");
+                secondDate = df.parse(filter.getSecondDate()+ " 23:59:59");
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -50,7 +51,7 @@ public class ReceivedNoteCriteria {
         }
 
         TypedQuery<ReceivedNote> tQuery = em.createQuery(query.toString(), ReceivedNote.class);
-        params.forEach((k,v)->{
+        params.forEach((k, v) -> {
             tQuery.setParameter(k, v);
         });
         tQuery.setMaxResults(filter.getLimit());

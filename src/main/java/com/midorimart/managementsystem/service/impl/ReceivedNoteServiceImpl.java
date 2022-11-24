@@ -1,7 +1,6 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,8 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
 
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(ReceivedNoteDTOFilter filter) {
-        Map<String, List<ReceivedNote>> result = (Map<String, List<ReceivedNote>>) receivedNoteCriteria.getAllReceivedNote(filter);
+        Map<String, List<ReceivedNote>> result = (Map<String, List<ReceivedNote>>) receivedNoteCriteria
+                .getAllReceivedNote(filter);
         List<ReceivedNote> receivedNote = result.get("receivedNote");
         return buildDTOListResponse(receivedNote);
     }
@@ -69,18 +69,21 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     }
 
     // @Override
-    // public Map<String, ReceivedNoteDTOResponse> updateReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap,
-    //         int id) {
-    //     ReceivedNoteDTOCreate receivedNoteDTOCreate = receivedNoteMap.get("receivedNote");
-    //     ReceivedNote updateNote = ReceivedNoteMapper.toReceivedNote(receivedNoteDTOCreate);
-    //     ReceivedNote existedNote = receivedNoteRepository.findById(id).get();
-    //     existedNote.setUser(userService.getUserLogin());
-    //     existedNote.setName(receivedNoteDTOCreate.getName());
-    //     existedNote.setNote(receivedNoteDTOCreate.getNote());
-    //     existedNote.setMerchant(merchantRepository.findById(receivedNoteDTOCreate.getMerchant()).get());
-    //     existedNote.setReceivedNoteDetail(updateNote.getReceivedNoteDetail());
-    //     existedNote = receivedNoteRepository.save(existedNote);
-    //     return buildDTOResponse(existedNote);
+    // public Map<String, ReceivedNoteDTOResponse> updateReceivedNote(Map<String,
+    // ReceivedNoteDTOCreate> receivedNoteMap,
+    // int id) {
+    // ReceivedNoteDTOCreate receivedNoteDTOCreate =
+    // receivedNoteMap.get("receivedNote");
+    // ReceivedNote updateNote =
+    // ReceivedNoteMapper.toReceivedNote(receivedNoteDTOCreate);
+    // ReceivedNote existedNote = receivedNoteRepository.findById(id).get();
+    // existedNote.setUser(userService.getUserLogin());
+    // existedNote.setName(receivedNoteDTOCreate.getName());
+    // existedNote.setNote(receivedNoteDTOCreate.getNote());
+    // existedNote.setMerchant(merchantRepository.findById(receivedNoteDTOCreate.getMerchant()).get());
+    // existedNote.setReceivedNoteDetail(updateNote.getReceivedNoteDetail());
+    // existedNote = receivedNoteRepository.save(existedNote);
+    // return buildDTOResponse(existedNote);
     // }
 
     private void saveReceivedNoteDetail(List<ReceivedNoteDetail> receivedNoteDetailList, ReceivedNote receivedNote) {
@@ -124,8 +127,10 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     }
 
     @Override
-    public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByDate(String firstDate, String secondDate, int offset, int limit) {
-        List<ReceivedNote> receivedNote = receivedNoteRepository.findByDateRange(firstDate+" 00:00:00", secondDate+" 00:00:00", limit, offset);
+    public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByDate(String firstDate, String secondDate,
+            int offset, int limit) {
+        List<ReceivedNote> receivedNote = receivedNoteRepository.findByDateRange(firstDate + " 00:00:00",
+                secondDate + " 23:59:59", limit, offset);
         return buildDTOListResponse(receivedNote);
     }
 
