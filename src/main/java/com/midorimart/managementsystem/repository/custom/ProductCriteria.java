@@ -23,7 +23,6 @@ public class ProductCriteria {
     public Map<String, Object> getProductList(ProductDTOFilter filter) {
         StringBuilder query = new StringBuilder("select p from Product p inner join p.category pc inner join p.merchant pm where 1=1");
         Map<String, Object> params = new HashMap<>();
-
         if(Integer.valueOf(filter.getMerchantId()) != 0){
             query.append(" and pm.id = :merchant");
             params.put("merchant", filter.getMerchantId());

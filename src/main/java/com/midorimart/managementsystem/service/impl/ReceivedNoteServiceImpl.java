@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +16,14 @@ import com.midorimart.managementsystem.entity.ReceivedNote;
 import com.midorimart.managementsystem.entity.ReceivedNoteDetail;
 import com.midorimart.managementsystem.model.mapper.ReceivedNoteMapper;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOCreate;
+import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOFilter;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOResponse;
 import com.midorimart.managementsystem.repository.MerchantRepository;
 import com.midorimart.managementsystem.repository.ProductQuantityRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.ReceivedNoteDetailRepository;
 import com.midorimart.managementsystem.repository.ReceivedNoteRepository;
+import com.midorimart.managementsystem.repository.custom.ReceivedNoteCriteria;
 import com.midorimart.managementsystem.service.ReceivedNoteService;
 import com.midorimart.managementsystem.service.UserService;
 
@@ -31,14 +34,16 @@ import lombok.RequiredArgsConstructor;
 public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     private final ReceivedNoteRepository receivedNoteRepository;
     private final ReceivedNoteDetailRepository receivedNoteDetailRepository;
+    private final ReceivedNoteCriteria receivedNoteCriteria;
     private final ProductRepository productRepository;
     private final UserService userService;
     private final MerchantRepository merchantRepository;
     private final ProductQuantityRepository productQuantityRepository;
 
     @Override
-    public Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(int offset, int limit) {
-        List<ReceivedNote> receivedNote = receivedNoteRepository.findAll();
+    public Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(ReceivedNoteDTOFilter filter) {
+        Map<String, List<ReceivedNote>> result = (Map<String, List<ReceivedNote>>) receivedNoteCriteria.getAllReceivedNote(filter);
+        List<ReceivedNote> receivedNote = result.get("receivedNote");
         return buildDTOListResponse(receivedNote);
     }
 
@@ -106,6 +111,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     public Map<String, String> deleteReceivedNote(int id) {
         ReceivedNote existedNote = receivedNoteRepository.findById(id).get();
         existedNote.setStatus(0);
+        receivedNoteRepository.save(existedNote);
         Map<String, String> wrapper = new HashMap<>();
         wrapper.put("receivedNote", "delete successfully");
         return wrapper;

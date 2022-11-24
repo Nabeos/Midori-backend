@@ -1,5 +1,6 @@
 package com.midorimart.managementsystem.controller;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOCreate;
+import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOFilter;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOResponse;
 import com.midorimart.managementsystem.service.ReceivedNoteService;
 
@@ -29,14 +31,21 @@ public class ReceivedNoteController {
     @Operation(summary = "Get All received note")
     @GetMapping("/api/v1/received-notes")
     public Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(
+            @RequestParam(name = "user", required = true, defaultValue = "0") int userId,
+            @RequestParam(name = "firstDate", required = false) String firstDate,
+            @RequestParam(name = "secondDate", required = false) String secondDate,
+            @RequestParam(name = "merchant", defaultValue = "-1", required = true) int merchantId,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
-            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
-        return receivedNoteService.getAllReceivedNote(offset, limit);
+            @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) throws ParseException {
+        ReceivedNoteDTOFilter filter = ReceivedNoteDTOFilter.builder().userId(userId).firstDate(firstDate)
+                .secondDate(secondDate).merchantId(merchantId).offset(offset).limit(limit).build();
+        return receivedNoteService.getAllReceivedNote(filter);
     }
 
     @Operation(summary = "Search Received note By User")
     @GetMapping("/api/v1/received-notes/users")
-    public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByUser(@RequestParam(name = "id", required = true) int id,
+    public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByUser(
+            @RequestParam(name = "id", required = true) int id,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
             @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
         return receivedNoteService.getReceivedNoteByUser(id, limit, offset);
@@ -47,7 +56,7 @@ public class ReceivedNoteController {
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByMonth(@RequestParam(name = "month") int month,
             @RequestParam(name = "offset", required = true, defaultValue = "0") int offset,
             @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
-        return receivedNoteService.getReceivedNoteByUser(month,limit, offset);
+        return receivedNoteService.getReceivedNoteByUser(month, limit, offset);
     }
 
     @Operation(summary = "Search Received note By Date Range")
