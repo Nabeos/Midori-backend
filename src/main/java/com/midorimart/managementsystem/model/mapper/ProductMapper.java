@@ -44,7 +44,7 @@ public class ProductMapper {
                 .quantity(product.getQuantity())
                 .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
                         .build())
-                .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
+                // .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
     }
 
@@ -59,6 +59,7 @@ public class ProductMapper {
                 .discount(0)
                 .deleted(0)
                 .status("in_stock")
+                .country(Country.builder().code(productDTOCreate.getOrigin()).build())
                 .build();
     }
 
@@ -115,7 +116,7 @@ public class ProductMapper {
                 .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
                         .build())
                 .comments(CommentMapper.toListCommentDTOResponse(product.getComments()))
-                .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
+                // .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
     }
 
