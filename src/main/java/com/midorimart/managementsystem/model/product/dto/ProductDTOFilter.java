@@ -1,5 +1,7 @@
 package com.midorimart.managementsystem.model.product.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +20,5 @@ public class ProductDTOFilter {
     private int limit;
     private int offset;
     private int merchantId;
+    private List<String> origin;
 }

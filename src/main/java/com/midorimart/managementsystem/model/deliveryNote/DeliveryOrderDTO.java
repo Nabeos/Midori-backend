@@ -11,6 +11,4 @@ public class DeliveryOrderDTO {
     private String orderNumber;
     private String receiveProductsMethod;
     private float totalBill;
-    private String notes;
-    private String status;
 }

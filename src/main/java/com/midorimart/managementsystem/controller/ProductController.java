@@ -75,13 +75,14 @@ public class ProductController {
     @GetMapping("/product-management/products")
     public Map<String, Object> getProductByCategoryId(
             @RequestParam(name = "category", defaultValue = "0", required = false) Integer categoryId,
-            @RequestParam(name = "origin", defaultValue = "0", required = false) Integer merchantId,
+            @RequestParam(name = "merchant", defaultValue = "0", required = false) Integer merchantId,
             @RequestParam(name = "priceAsc", required = false) String priceAsc,
             @RequestParam(name = "priceDesc", required = false) String priceDesc,
+            @RequestParam(name = "origin", required = false) List<String> origins,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit,
             @RequestParam(name = "offset", defaultValue = "0") Integer offset) {
         ProductDTOFilter filter = ProductDTOFilter.builder().categoryId(categoryId).priceAsc(priceAsc)
-                .priceDesc(priceDesc).offset(offset).limit(limit).merchantId(merchantId)
+                .priceDesc(priceDesc).offset(offset).limit(limit).merchantId(merchantId).origin(origins)
                 .build();
         return service.getProductByCategoryId(filter);
     }

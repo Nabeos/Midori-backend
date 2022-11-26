@@ -21,11 +21,16 @@ public class ProductCriteria {
     private final EntityManager em;
 
     public Map<String, Object> getProductList(ProductDTOFilter filter) {
-        StringBuilder query = new StringBuilder("select p from Product p inner join p.category pc inner join p.merchant pm where 1=1");
+        StringBuilder query = new StringBuilder(
+                "select p from Product p inner join p.category pc inner join p.merchant pm inner join p.country py where 1=1");
         Map<String, Object> params = new HashMap<>();
-        if(Integer.valueOf(filter.getMerchantId()) != 0){
+        if (Integer.valueOf(filter.getMerchantId()) != 0) {
             query.append(" and pm.id = :merchant");
             params.put("merchant", filter.getMerchantId());
+        }
+        if(filter.getOrigin() != null){
+            query.append(" and py.code in :origin");
+            params.put("origin", filter.getOrigin());
         }
         if (Integer.valueOf(filter.getCategoryId()) != 0) {
             query.append(" and pc.id = :category");
@@ -33,12 +38,12 @@ public class ProductCriteria {
         }
         String query1 = null;
         if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
-            query1 = filter.getPriceAsc()!=null?"order by p.price asc":"order by p.price desc";
-            query.append(filter.getPriceAsc()!=null?" order by p.price asc":" order by p.price desc");
+            query1 = filter.getPriceAsc() != null ? "order by p.price asc" : "order by p.price desc";
+            query.append(filter.getPriceAsc() != null ? " order by p.price asc" : " order by p.price desc");
         }
         String queryForCount = query.toString();
-        if(filter.getPriceAsc() != null || filter.getPriceDesc() != null){
-            queryForCount = queryForCount.substring(0, queryForCount.length()-1-query1.length());
+        if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
+            queryForCount = queryForCount.substring(0, queryForCount.length() - 1 - query1.length());
         }
         TypedQuery<Product> tQuery = em.createQuery(query.toString(), Product.class);
 

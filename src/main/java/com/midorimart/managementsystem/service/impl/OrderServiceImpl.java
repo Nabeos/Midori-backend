@@ -163,6 +163,7 @@ public class OrderServiceImpl implements OrderService {
                 + "Chú thích của Đơn Hàng: " + order.getNote());
         deliveryNote.setUser(userService.getUserLogin());
         deliveryNote.setOrder(order);
+        deliveryNote.setStatus(1);
         DeliveryNote newDelivery = deliveryNoteServiceImpl.addNewDeliveryNote(deliveryNote, order.getCart());
 
         return newDelivery;
