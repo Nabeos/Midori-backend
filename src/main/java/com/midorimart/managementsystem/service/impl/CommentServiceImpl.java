@@ -40,6 +40,8 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = CommentMapper.toComment(commentDTOCreate);
             comment.setUser(user);
             comment.setProduct(product);
+            product.setStar(getAverageStarForEachProduct(product.getId()).get("avgStar"));
+            productRepository.save(product);
             comment = commentRepository.save(comment);
             return buildCommentDTOResponse(comment);
         }

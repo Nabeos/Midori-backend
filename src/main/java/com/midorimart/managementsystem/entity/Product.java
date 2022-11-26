@@ -58,6 +58,7 @@ public class Product {
     private Date created_at;
     private Date updated_at;
     private int deleted;
+    private double star;
 
     @ManyToOne
     @JoinColumn(name = "country_code")

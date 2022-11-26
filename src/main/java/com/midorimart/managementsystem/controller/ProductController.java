@@ -79,10 +79,11 @@ public class ProductController {
             @RequestParam(name = "priceAsc", required = false) String priceAsc,
             @RequestParam(name = "priceDesc", required = false) String priceDesc,
             @RequestParam(name = "origin", required = false) List<String> origins,
+            @RequestParam(name = "star", required = false) List<Integer> star,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit,
             @RequestParam(name = "offset", defaultValue = "0") Integer offset) {
         ProductDTOFilter filter = ProductDTOFilter.builder().categoryId(categoryId).priceAsc(priceAsc)
-                .priceDesc(priceDesc).offset(offset).limit(limit).merchantId(merchantId).origin(origins)
+                .priceDesc(priceDesc).offset(offset).limit(limit).merchantId(merchantId).origin(origins).star(star)
                 .build();
         return service.getProductByCategoryId(filter);
     }

@@ -297,7 +297,6 @@ public class ProductServiceImpl implements ProductService {
         existedProduct.setAmount(productUpdate.getAmount());
         existedProduct.setCategory(categoryRepository.findById(productUpdate.getCategory()).get());
 
-
         if (!checkProductName(productUpdate.getTitle(), existedProduct)) {
             existedProduct.setTitle(productUpdate.getTitle());
             existedProduct.setSlug(SlugUtil.getSlug(productUpdate.getTitle(), existedProduct.getSku()));

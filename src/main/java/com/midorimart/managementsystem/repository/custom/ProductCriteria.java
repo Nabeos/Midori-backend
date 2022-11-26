@@ -28,9 +28,13 @@ public class ProductCriteria {
             query.append(" and pm.id = :merchant");
             params.put("merchant", filter.getMerchantId());
         }
-        if(filter.getOrigin() != null){
+        if (filter.getOrigin() != null) {
             query.append(" and py.code in :origin");
             params.put("origin", filter.getOrigin());
+        }
+        if (filter.getStar() != null) {
+            query.append(" and p.star in :stars");
+            params.put("stars", filter.getStar());
         }
         if (Integer.valueOf(filter.getCategoryId()) != 0) {
             query.append(" and pc.id = :category");

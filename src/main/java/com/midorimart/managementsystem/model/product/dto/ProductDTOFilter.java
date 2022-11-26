@@ -21,4 +21,5 @@ public class ProductDTOFilter {
     private int offset;
     private int merchantId;
     private List<String> origin;
+    private List<Integer> star;
 }
