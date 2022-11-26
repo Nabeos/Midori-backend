@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
-@Tag(name = "Delivery Note API")
+@Tag(name = "Received Note API")
 public class ReceivedNoteController {
     private final ReceivedNoteService receivedNoteService;
 

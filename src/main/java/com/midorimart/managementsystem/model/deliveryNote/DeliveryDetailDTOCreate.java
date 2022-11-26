@@ -1,4 +1,4 @@
-package com.midorimart.managementsystem.model.receivedNote;
+package com.midorimart.managementsystem.model.deliveryNote;
 
 import java.util.Date;
 
@@ -13,9 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ReceivedDetailDTOCreate {
+public class DeliveryDetailDTOCreate {
     private int productId;
-    private int quantityImport;
+    private int quantityExport;
     private Date expiryDate;
     private double price;
     private double totalPrice;

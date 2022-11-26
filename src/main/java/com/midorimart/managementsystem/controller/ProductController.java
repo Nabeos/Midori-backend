@@ -42,9 +42,6 @@ public class ProductController {
             @RequestParam(name = "title", required = false) String productName,
             @RequestParam(name = "offset", defaultValue = "0", required = true) int offset,
             @RequestParam(name = "limit", required = true, defaultValue = "20") int limit) {
-        ProductDTOFilter filter = ProductDTOFilter.builder()
-                .offset(offset).limit(limit)
-                .build();
         return service.searchProduct(productName, offset, limit);
     }
 

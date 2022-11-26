@@ -1,7 +1,10 @@
 package com.midorimart.managementsystem.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,9 +29,11 @@ public class DeliveryNoteDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
     private DeliveryNote deliveryNote;
+    @Column(name = "expiry_date")
+    private Date expiryDate;
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;

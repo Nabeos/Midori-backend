@@ -31,7 +31,7 @@ public class ProductMapper {
                 .sku(product.getSku())
                 .title(product.getTitle())
                 .thumbnails(toImageDTOResponse(product.getGalleries()))
-                .status(product.getStatus())
+                .status(getStatus(product.getStatus()))
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
@@ -48,6 +48,19 @@ public class ProductMapper {
                 .build();
     }
 
+    private static String getStatus(String status) {
+        switch(status){
+            case "0":
+                return "Hết Hàng";
+            case "1":
+                return "Sắp Hết Hàng";
+            case "2":
+                return "Còn Hàng";
+            default:
+                return "Lỗi";
+        }
+    }
+
     public static Product toProduct(ProductDTOCreate productDTOCreate) {
         Date now = new Date();
         return Product.builder()
@@ -58,7 +71,7 @@ public class ProductMapper {
                 .updated_at(now)
                 .discount(0)
                 .deleted(0)
-                .status("in_stock")
+                .status("0")
                 .country(Country.builder().code(productDTOCreate.getOrigin()).build())
                 .build();
     }

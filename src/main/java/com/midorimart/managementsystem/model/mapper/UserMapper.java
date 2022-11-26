@@ -2,7 +2,6 @@ package com.midorimart.managementsystem.model.mapper;
 
 import java.util.Date;
 
-import com.midorimart.managementsystem.entity.Role;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.model.users.UserDTOCreate;
 import com.midorimart.managementsystem.model.users.UserDTOResponse;

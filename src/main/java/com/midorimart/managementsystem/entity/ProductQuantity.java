@@ -38,6 +38,8 @@ public class ProductQuantity {
     private Date createdDate;
     @Column(name = "manufacturing_date")
     private Date manufacturingDate;
+    @Column(name = "isDisabled")
+    private int isDisabled;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

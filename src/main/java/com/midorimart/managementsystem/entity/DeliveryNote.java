@@ -34,6 +34,7 @@ public class DeliveryNote {
 
     private String name;
     private int status;
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
@@ -46,6 +47,6 @@ public class DeliveryNote {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToMany(mappedBy = "deliveryNote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "deliveryNote", cascade = CascadeType.DETACH)
     private List<DeliveryNoteDetail> deliveryNoteDetails;
 }

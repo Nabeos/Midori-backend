@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,24 +69,6 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         return buildDTOResponse(receivedNote);
     }
 
-    // @Override
-    // public Map<String, ReceivedNoteDTOResponse> updateReceivedNote(Map<String,
-    // ReceivedNoteDTOCreate> receivedNoteMap,
-    // int id) {
-    // ReceivedNoteDTOCreate receivedNoteDTOCreate =
-    // receivedNoteMap.get("receivedNote");
-    // ReceivedNote updateNote =
-    // ReceivedNoteMapper.toReceivedNote(receivedNoteDTOCreate);
-    // ReceivedNote existedNote = receivedNoteRepository.findById(id).get();
-    // existedNote.setUser(userService.getUserLogin());
-    // existedNote.setName(receivedNoteDTOCreate.getName());
-    // existedNote.setNote(receivedNoteDTOCreate.getNote());
-    // existedNote.setMerchant(merchantRepository.findById(receivedNoteDTOCreate.getMerchant()).get());
-    // existedNote.setReceivedNoteDetail(updateNote.getReceivedNoteDetail());
-    // existedNote = receivedNoteRepository.save(existedNote);
-    // return buildDTOResponse(existedNote);
-    // }
-
     private void saveReceivedNoteDetail(List<ReceivedNoteDetail> receivedNoteDetailList, ReceivedNote receivedNote) {
         for (ReceivedNoteDetail receivedNoteDetail : receivedNoteDetailList) {
             receivedNoteDetail.setReceivedNote(receivedNote);
@@ -96,11 +79,11 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     }
 
     private void saveQuantityInStock(ReceivedNoteDetail receivedNoteDetail, Product product) {
-        ProductQuantity productQuantity = new ProductQuantity();
-        productQuantity.setQuantity(receivedNoteDetail.getQuantity());
-        productQuantity.setProduct(product);
-        productQuantity.setExpiryDate(receivedNoteDetail.getExpiryDate());
-        productQuantity = productQuantityRepository.save(productQuantity);
+        ProductQuantity existedQuantity = productQuantityRepository.findByProductIdAndisDisabled(product.getId());
+        existedQuantity.setQuantity(receivedNoteDetail.getQuantity());
+        existedQuantity.setUpdatedDate(new Date());
+        existedQuantity.setExpiryDate(receivedNoteDetail.getExpiryDate());
+        existedQuantity = productQuantityRepository.save(existedQuantity);
     }
 
     private Map<String, ReceivedNoteDTOResponse> buildDTOResponse(ReceivedNote receivedNote) {

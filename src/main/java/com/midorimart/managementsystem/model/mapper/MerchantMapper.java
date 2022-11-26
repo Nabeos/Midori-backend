@@ -6,7 +6,6 @@ import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.model.country.dto.CountryDTOResponse;
 import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOCreate;
 import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
-import com.midorimart.managementsystem.model.merchant.dto.MerchantUserDTOResponse;
 
 public class MerchantMapper {
 

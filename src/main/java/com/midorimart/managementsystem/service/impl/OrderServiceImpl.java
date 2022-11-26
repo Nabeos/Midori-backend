@@ -3,6 +3,7 @@ package com.midorimart.managementsystem.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.midorimart.managementsystem.entity.DeliveryNote;
+import com.midorimart.managementsystem.entity.DeliveryNoteDetail;
 import com.midorimart.managementsystem.entity.Invoice;
 import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
@@ -34,7 +37,6 @@ import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.repository.custom.OrderCriteria;
 import com.midorimart.managementsystem.service.EmailService;
 import com.midorimart.managementsystem.service.OrderService;
-import com.midorimart.managementsystem.service.ProductService;
 import com.midorimart.managementsystem.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +47,6 @@ import lombok.RequiredArgsConstructor;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final ProductService productService;
     private final ProductRepository productRepository;
     private final EmailService emailService;
     private final InvoiceRepository invoiceRepository;
@@ -53,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final OrderCriteria orderCriteria;
     private final ProductQuantityRepository productQuantityRepository;
+    private final DeliveryNoteServiceImpl deliveryNoteServiceImpl;
 
     @Override
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
@@ -126,14 +128,13 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(status);
             order = orderRepository.save(order);
             // Send email for customer if order is accepted
-            if(order.getStatus() == Order.STATUS_IN_PROGRESS){
-                System.out.println("vào send accept email");
+            if (order.getStatus() == Order.STATUS_IN_PROGRESS) {
                 emailService.sendAcceptedEmail(order);
+                DeliveryNote deliveryNote = createdDeliveryNote(order);
             }
 
             // Send email for customer if order is rejected
-            if(order.getStatus() == Order.STATUS_REJECT){
-                System.out.println("vào reject");
+            if (order.getStatus() == Order.STATUS_REJECT) {
                 emailService.sendRejectedEmail(order);
             }
             return buildDTOResponse(order);
@@ -151,6 +152,20 @@ public class OrderServiceImpl implements OrderService {
         }
         throw new CustomBadRequestException(
                 CustomError.builder().code("400").message("You can not update status anymore").build());
+    }
+
+    private DeliveryNote createdDeliveryNote(Order order) {
+        DeliveryNote deliveryNote = new DeliveryNote();
+        deliveryNote.setCreatedAt(new Date());
+        deliveryNote.setName("XUAT" + order.getOrderNumber());
+        deliveryNote.setNote("Phiếu xuất kho cho đơn hàng " + order.getOrderNumber() + " giao lúc "
+                + order.getDeliveryDate().substring(0, 10) + " " + order.getDeliveryTimeRange() + "\n"
+                + "Chú thích của Đơn Hàng: " + order.getNote());
+        deliveryNote.setUser(userService.getUserLogin());
+        deliveryNote.setOrder(order);
+        DeliveryNote newDelivery = deliveryNoteServiceImpl.addNewDeliveryNote(deliveryNote, order.getCart());
+
+        return newDelivery;
     }
 
     @Override
@@ -175,30 +190,6 @@ public class OrderServiceImpl implements OrderService {
         wrapper.put("order_response", orderDTOResponse);
         return wrapper;
     }
-
-    // @Override
-    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(String
-    // orderNumber) {
-    // Order order = orderRepository.findByOrderNumber(orderNumber);
-    // CustomerOrderDTOResponse customerOrderDTOResponse =
-    // setOrderDetailForEachProduct(order);
-    // Map<String, CustomerOrderDTOResponse> wrapper = new HashMap<>();
-    // wrapper.put("customerOrderDetailInformation", customerOrderDTOResponse);
-    // return wrapper;
-    // }
-
-    // //Get Order Detail For Each Product
-    // private CustomerOrderDTOResponse setOrderDetailForEachProduct(Order order) {
-    // List<OrderDetail> orderDetails =
-    // orderDetailRepository.findByOrderId(order.getId());
-    // CustomerOrderDTOResponse customerOrderDTOResponse =
-    // OrderMapper.toCustomerOrderDTOResponse(order);
-    // Map<String, List<OrderDetailDTOResponse>> cart = new HashMap<>();
-    // cart.put("productItem",
-    // OrderMapper.toListOrderDetailDTOResponse(orderDetails));
-    // customerOrderDTOResponse.setCart(cart);
-    // return customerOrderDTOResponse;
-    // }
 
     @Override
     public List<Invoice> getInvoiceByUser(int userId) {

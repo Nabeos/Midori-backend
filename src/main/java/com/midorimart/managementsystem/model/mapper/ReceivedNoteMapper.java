@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.midorimart.managementsystem.entity.Merchant;
 import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.ReceivedNote;
 import com.midorimart.managementsystem.entity.ReceivedNoteDetail;
@@ -34,8 +33,10 @@ public class ReceivedNoteMapper {
         return receivedDetail.stream().map(ReceivedNoteMapper::toReceivedNoteDetail).collect(Collectors.toList());
     }
 
-    private static List<ReceivedDetailDTOResponse> toListReceivedNoteDetailDTOResponses(List<ReceivedNoteDetail> receivedDetail) {
-        return receivedDetail.stream().map(ReceivedNoteMapper::toReceivedNoteDetailDTOResponse).collect(Collectors.toList());
+    private static List<ReceivedDetailDTOResponse> toListReceivedNoteDetailDTOResponses(
+            List<ReceivedNoteDetail> receivedDetail) {
+        return receivedDetail.stream().map(ReceivedNoteMapper::toReceivedNoteDetailDTOResponse)
+                .collect(Collectors.toList());
     }
 
     private static ReceivedNoteDetail toReceivedNoteDetail(ReceivedDetailDTOCreate receivedDetailDTOCreate) {
@@ -62,15 +63,15 @@ public class ReceivedNoteMapper {
 
     public static ReceivedNoteDTOResponse toReceivedNoteDTOResponse(ReceivedNote receivedNote) {
         return ReceivedNoteDTOResponse.builder()
-        .id(receivedNote.getId())
-        .name(receivedNote.getName())
-        .note(receivedNote.getNote())
-        .createdAt(DateHelper.convertDate(receivedNote.getCreatedAt()))
-        .createdBy(receivedNote.getUser().getFullname())
-        .merchant(MerchantMapper.toMerchantDTOResponse(receivedNote.getMerchant()))
-        .status(receivedNote.getStatus())
-        .receivedDetail(toListReceivedNoteDetailDTOResponses(receivedNote.getReceivedNoteDetail()))
-        .build();
+                .id(receivedNote.getId())
+                .name(receivedNote.getName())
+                .note(receivedNote.getNote())
+                .createdAt(DateHelper.convertDate(receivedNote.getCreatedAt()))
+                .createdBy(receivedNote.getUser().getFullname())
+                .merchant(MerchantMapper.toMerchantDTOResponse(receivedNote.getMerchant()))
+                .status(receivedNote.getStatus())
+                .receivedDetail(toListReceivedNoteDetailDTOResponses(receivedNote.getReceivedNoteDetail()))
+                .build();
     }
 
 }
