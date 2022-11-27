@@ -1,9 +1,9 @@
 package com.midorimart.managementsystem.model.product.dto;
 
-import java.util.Date;
 import java.util.List;
 
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
+import com.midorimart.managementsystem.model.country.dto.CountryDTOResponse;
 import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
 import com.midorimart.managementsystem.model.productQuantityInStock.dto.ProductQuantityDTOResponse;
 import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
@@ -22,7 +22,7 @@ public class ProductDTOResponse {
     private double price;
     private int discount;
     private int quantity;
-    private String origin;
+    private CountryDTOResponse origin;
     private List<String> thumbnails;
     private String description;
     private String status;

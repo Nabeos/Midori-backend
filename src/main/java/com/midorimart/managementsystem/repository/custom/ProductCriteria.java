@@ -34,6 +34,11 @@ public class ProductCriteria {
         }
         if (filter.getStar() != null) {
             query.append(" and p.star in :stars");
+            for (Double star : filter.getStar()) {
+                if (star != 5) {
+
+                }
+            }
             params.put("stars", filter.getStar());
         }
         if (Integer.valueOf(filter.getCategoryId()) != 0) {

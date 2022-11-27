@@ -147,9 +147,9 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDTOResponse> listProductDTOResponses = productList.stream().map(ProductMapper::toProductDTOResponse)
                 .collect(Collectors.toList());
         // Set star for each Product
-        for (ProductDTOResponse productDTOResponse : listProductDTOResponses) {
-            setAvgStarForProduct(productDTOResponse);
-        }
+        // for (ProductDTOResponse productDTOResponse : listProductDTOResponses) {
+        //     setAvgStarForProduct(productDTOResponse);
+        // }
         Map<String, Object> wrapper = new HashMap<>();
         wrapper.put("product", listProductDTOResponses);
         wrapper.put("totalProducts", totalProducts);

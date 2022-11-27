@@ -34,8 +34,9 @@ public class ProductMapper {
                 .status(getStatus(product.getStatus()))
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
+                .star(product.getStar())
                 .discount(product.getDiscount())
-                .origin(product.getCountry()!=null?product.getCountry().getCode():"VNI")
+                .origin(product.getCountry()!=null?toCountryDTOResponse(product.getCountry()):CountryDTOResponse.builder().code("VNM").build())
                 .category(toCategoryDTOResponse(product.getCategory()))
                 .created_at(DateHelper.convertDate(product.getCreated_at()))
                 .updated_at(DateHelper.convertDate(product.getUpdated_at()))
@@ -72,6 +73,7 @@ public class ProductMapper {
                 .discount(0)
                 .deleted(0)
                 .status("0")
+                .star(5)
                 .country(Country.builder().code(productDTOCreate.getOrigin()).build())
                 .build();
     }
@@ -119,7 +121,7 @@ public class ProductMapper {
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
-                .origin(product.getCountry().getCode())
+                .origin(product.getCountry()!=null?toCountryDTOResponse(product.getCountry()):CountryDTOResponse.builder().code("VNM").build())
                 .category(toCategoryDTOResponse(product.getCategory()))
                 .created_at(DateHelper.convertDate(product.getCreated_at()))
                 .updated_at(DateHelper.convertDate(product.getUpdated_at()))
