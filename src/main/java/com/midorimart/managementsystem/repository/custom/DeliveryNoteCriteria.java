@@ -49,7 +49,7 @@ public class DeliveryNoteCriteria {
             params.put("firstDate", firstDate);
             params.put("secondDate", secondDate);
         }
-        query.append(" order by rn.createdAt desc");
+        query.append(" and rn.status = 1 order by rn.createdAt desc");
         TypedQuery<DeliveryNote> tQuery = em.createQuery(query.toString(), DeliveryNote.class);
         params.forEach((k, v) -> {
             tQuery.setParameter(k, v);

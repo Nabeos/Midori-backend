@@ -49,7 +49,7 @@ public class ReceivedNoteCriteria {
             params.put("firstDate", firstDate);
             params.put("secondDate", secondDate);
         }
-
+        query.append(" and rn.status = 1 order by rn.createdAt desc");
         TypedQuery<ReceivedNote> tQuery = em.createQuery(query.toString(), ReceivedNote.class);
         params.forEach((k, v) -> {
             tQuery.setParameter(k, v);
