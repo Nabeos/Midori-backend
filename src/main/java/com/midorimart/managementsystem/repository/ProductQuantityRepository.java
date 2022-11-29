@@ -13,7 +13,7 @@ public interface ProductQuantityRepository extends JpaRepository<ProductQuantity
 
     ProductQuantity findByProductId(int id);
 
-    @Query(value = "select * from Product_Quantity where product_id = ?1 and isDisabled = 0", nativeQuery = true)
+    @Query(value = "select * from Product_Quantity where product_id = ?1", nativeQuery = true)
     ProductQuantity findByProductIdAndisDisabled(int id);
 
 }

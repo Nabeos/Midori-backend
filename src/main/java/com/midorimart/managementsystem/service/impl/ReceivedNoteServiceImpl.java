@@ -80,10 +80,20 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
 
     private void saveQuantityInStock(ReceivedNoteDetail receivedNoteDetail, Product product) {
         ProductQuantity existedQuantity = productQuantityRepository.findByProductIdAndisDisabled(product.getId());
-        existedQuantity.setQuantity(receivedNoteDetail.getQuantity());
-        existedQuantity.setUpdatedDate(new Date());
-        existedQuantity.setExpiryDate(receivedNoteDetail.getExpiryDate());
-        existedQuantity = productQuantityRepository.save(existedQuantity);
+        if(existedQuantity != null){
+            existedQuantity.setQuantity(receivedNoteDetail.getQuantity());
+            existedQuantity.setUpdatedDate(new Date());
+            existedQuantity.setExpiryDate(receivedNoteDetail.getExpiryDate());
+            existedQuantity = productQuantityRepository.save(existedQuantity);
+        }else{
+            ProductQuantity quantity = new ProductQuantity();
+            quantity.setCreatedDate(new Date());
+            quantity.setUpdatedDate(new Date());
+            quantity.setExpiryDate(receivedNoteDetail.getExpiryDate());
+            quantity.setQuantity(receivedNoteDetail.getQuantity());
+            quantity.setProduct(product);
+            quantity = productQuantityRepository.save(quantity);
+        }
     }
 
     private Map<String, ReceivedNoteDTOResponse> buildDTOResponse(ReceivedNote receivedNote) {
