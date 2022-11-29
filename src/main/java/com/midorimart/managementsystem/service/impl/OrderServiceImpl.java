@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.midorimart.managementsystem.entity.DeliveryNote;
-import com.midorimart.managementsystem.entity.DeliveryNoteDetail;
 import com.midorimart.managementsystem.entity.Invoice;
 import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
@@ -73,6 +72,13 @@ public class OrderServiceImpl implements OrderService {
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
+            try {
+                emailService.sendPlaceOrderNotice(order);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("run out of stock").build());
         }

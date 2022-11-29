@@ -12,4 +12,5 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 public class EmailController {
     // private final EmailService emailService;
+
 }

@@ -53,6 +53,10 @@ public class OrderMapper {
 
     public static OrderDTOResponse toOrderDTOResponse(Order order, int id) {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String orderDate = order.getDeliveryDate().substring(0, 10);
+        String orderDay = orderDate.split("-")[2];
+        String oMonth = orderDate.split("-")[1];
+        String oYear = orderDate.split("-")[0];
         return OrderDTOResponse.builder()
                 .id(order.getId())
                 .totalBill(order.getTotalMoney())

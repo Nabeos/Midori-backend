@@ -17,4 +17,5 @@ public interface EmailService {
     public MimeMessage sendRejectedEmail(Order order) throws UnsupportedEncodingException, MessagingException;
     public MimeMessage sendVerificationEmail(User user) throws UnsupportedEncodingException, MessagingException;
     public MimeMessage sendResetPasswordEmail(User user, String randomCode) throws UnsupportedEncodingException, MessagingException;
+    public MimeMessage sendPlaceOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException;
 }
