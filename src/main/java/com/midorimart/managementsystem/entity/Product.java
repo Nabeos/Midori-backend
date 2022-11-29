@@ -54,7 +54,7 @@ public class Product {
     @ToStringExclude
     private List<Gallery> galleries;
     private String description;
-    private String status;
+    private int status;
     private Date created_at;
     private Date updated_at;
     private int deleted;

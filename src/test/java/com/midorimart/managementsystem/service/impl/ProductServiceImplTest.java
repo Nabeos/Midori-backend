@@ -91,7 +91,7 @@ public class ProductServiceImplTest {
                 .sku("sku")
                 .title("title")
                 .galleries(java.util.Arrays.asList(Gallery.builder().thumbnail("gallery").build()))
-                .status("in_stock")
+                .status(0)
                 .deleted(0)
                 .price(3.99)
                 .discount(0)

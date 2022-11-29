@@ -46,14 +46,22 @@ public class ProductCriteria {
             params.put("category", filter.getCategoryId());
         }
         query.append(" and p.deleted = 0");
-        String query1 = null;
+        String query1 = "";
+        String query2 = "";
         if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
-            query1 = filter.getPriceAsc() != null ? "order by p.price asc" : "order by p.price desc";
-            query.append(filter.getPriceAsc() != null ? " order by p.price asc" : " order by p.price desc");
+            query1 = filter.getPriceAsc() != null ? "order by p.price asc, p.status asc"
+                    : "order by p.price desc, p.status asc";
+            query.append(filter.getPriceAsc() != null ? " order by p.price asc, p.status asc"
+                    : " order by p.price desc, p.status asc");
+        } else {
+            query2 = "order by p.status asc";
+            query.append(" order by p.status asc");
         }
         String queryForCount = query.toString();
         if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
             queryForCount = queryForCount.substring(0, queryForCount.length() - 1 - query1.length());
+        } else {
+            queryForCount = queryForCount.substring(0, queryForCount.length() - 1 - query2.length());
         }
         TypedQuery<Product> tQuery = em.createQuery(query.toString(), Product.class);
 

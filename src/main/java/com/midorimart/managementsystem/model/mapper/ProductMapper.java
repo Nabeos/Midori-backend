@@ -49,13 +49,13 @@ public class ProductMapper {
                 .build();
     }
 
-    private static String getStatus(String status) {
+    private static String getStatus(int status) {
         switch(status){
-            case "0":
+            case 0:
                 return "Hết Hàng";
-            case "1":
+            case 1:
                 return "Sắp Hết Hàng";
-            case "2":
+            case 2:
                 return "Còn Hàng";
             default:
                 return "Lỗi";
@@ -72,7 +72,7 @@ public class ProductMapper {
                 .updated_at(now)
                 .discount(0)
                 .deleted(0)
-                .status("0")
+                .status(0)
                 .star(5)
                 .country(Country.builder().code(productDTOCreate.getOrigin()).build())
                 .build();
@@ -116,7 +116,7 @@ public class ProductMapper {
                 .sku(product.getSku())
                 .title(product.getTitle())
                 .thumbnails(toImageDTOResponse(product.getGalleries()))
-                .status(product.getStatus())
+                .status(getStatus(product.getStatus()))
                 .description(product.getDescription())
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
