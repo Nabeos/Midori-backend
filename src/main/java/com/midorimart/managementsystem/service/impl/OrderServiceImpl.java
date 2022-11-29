@@ -20,6 +20,7 @@ import com.midorimart.managementsystem.entity.Invoice;
 import com.midorimart.managementsystem.entity.Order;
 import com.midorimart.managementsystem.entity.OrderDetail;
 import com.midorimart.managementsystem.entity.Product;
+import com.midorimart.managementsystem.entity.ProductQuantity;
 import com.midorimart.managementsystem.entity.User;
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.CustomError;
@@ -180,11 +181,37 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findByOrderNumber(orderNumbers);
         if (order.getStatus() == Order.STATUS_NEW_ORDER_OR_PENDING) {
             order.setStatus(Order.STATUS_CANCEL);
+            refillProductQuantityList(order.getCart());
         } else if (order.getStatus() == Order.STATUS_SUCCESS) {
             order.setStatus(Order.STATUS_REFUND);
+            refillInventory(order.getCart());
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);
+    }
+
+    private void refillProductQuantityList(List<OrderDetail> list) {
+        for (OrderDetail product : list) {
+            refillProductQuantity(product);
+        }
+    }
+
+    private void refillInventory(List<OrderDetail> cart) {
+        for (OrderDetail product : cart) {
+            refillQuantityInStock(product);
+        }
+    }
+
+    private void refillQuantityInStock(OrderDetail od) {
+        ProductQuantity existed = productQuantityRepository.findByProductId(od.getProduct().getId());
+        existed.setQuantity(existed.getQuantity() + od.getQuantity());
+        existed = productQuantityRepository.save(existed);
+    }
+
+    private void refillProductQuantity(OrderDetail product) {
+        Product p = productRepository.findById(product.getProduct().getId()).get();
+        p.setQuantity(p.getQuantity() + product.getQuantity());
+        p = productRepository.save(p);
     }
 
     private Map<String, OrderDTOResponse> buildDTOResponse(Order order) {
