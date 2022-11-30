@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
             throws CustomBadRequestException {
         OrderDTOPlace orderDTOPlace = OrderDTOPlacemap.get("orderinformation");
         // turn address into string to save in db
-        if(orderDTOPlace.getCart() == null){
+        if(orderDTOPlace.getCart() == null || orderDTOPlace.getCart().isEmpty()){
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Chưa có sản phẩm").build());
         }
         List<String> address = new ArrayList<>();
