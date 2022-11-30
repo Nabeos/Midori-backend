@@ -80,12 +80,12 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
 
     private void saveQuantityInStock(ReceivedNoteDetail receivedNoteDetail, Product product) {
         ProductQuantity existedQuantity = productQuantityRepository.findByProductIdAndisDisabled(product.getId());
-        if(existedQuantity != null){
-            existedQuantity.setQuantity(receivedNoteDetail.getQuantity());
+        if (existedQuantity != null) {
+            existedQuantity.setQuantity(receivedNoteDetail.getQuantity() + existedQuantity.getQuantity());
             existedQuantity.setUpdatedDate(new Date());
             existedQuantity.setExpiryDate(receivedNoteDetail.getExpiryDate());
             existedQuantity = productQuantityRepository.save(existedQuantity);
-        }else{
+        } else {
             ProductQuantity quantity = new ProductQuantity();
             quantity.setCreatedDate(new Date());
             quantity.setUpdatedDate(new Date());
