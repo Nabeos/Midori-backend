@@ -14,6 +14,6 @@ public class DeliveryNoteDTOResponse {
     private String createdBy;
     private String note;
     private DeliveryOrderDTO order;
-    private int status;
+    private String status;
     private List<DeliveryDetailDTOResponse> deliveryDetail;
 }

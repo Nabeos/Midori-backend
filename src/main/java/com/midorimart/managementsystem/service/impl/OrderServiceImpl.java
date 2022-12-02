@@ -28,6 +28,7 @@ import com.midorimart.managementsystem.model.mapper.OrderMapper;
 import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
+import com.midorimart.managementsystem.repository.DeliveryNoteRepository;
 import com.midorimart.managementsystem.repository.InvoiceRepository;
 import com.midorimart.managementsystem.repository.OrderDetailRepository;
 import com.midorimart.managementsystem.repository.OrderRepository;
@@ -55,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderCriteria orderCriteria;
     private final ProductQuantityRepository productQuantityRepository;
     private final DeliveryNoteServiceImpl deliveryNoteServiceImpl;
+    private final DeliveryNoteRepository deliveryNoteRepository;
 
     @Override
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
@@ -63,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
             throws CustomBadRequestException {
         OrderDTOPlace orderDTOPlace = OrderDTOPlacemap.get("orderinformation");
         // turn address into string to save in db
-        if(orderDTOPlace.getCart() == null || orderDTOPlace.getCart().isEmpty()){
+        if (orderDTOPlace.getCart() == null || orderDTOPlace.getCart().isEmpty()) {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Chưa có sản phẩm").build());
         }
         List<String> address = new ArrayList<>();
@@ -128,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    // update status for seller
+    // update status for seller (accept, reject, shipping, successful)
     @Override
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
@@ -164,6 +166,7 @@ public class OrderServiceImpl implements OrderService {
                 CustomError.builder().code("400").message("You can not update status anymore").build());
     }
 
+    // Create Delivery Note
     private DeliveryNote createdDeliveryNote(Order order) {
         DeliveryNote deliveryNote = new DeliveryNote();
         deliveryNote.setCreatedAt(new Date());
@@ -179,6 +182,7 @@ public class OrderServiceImpl implements OrderService {
         return newDelivery;
     }
 
+    // Update status for Customer (refund, cancel)
     @Override
     public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers) {
         Order order = orderRepository.findByOrderNumber(orderNumbers);
@@ -188,17 +192,26 @@ public class OrderServiceImpl implements OrderService {
         } else if (order.getStatus() == Order.STATUS_SUCCESS) {
             order.setStatus(Order.STATUS_REFUND);
             refillInventory(order.getCart());
+            updateStatusForDeliveryNote(order);
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);
     }
 
+    private void updateStatusForDeliveryNote(Order order) {
+        DeliveryNote existed = deliveryNoteRepository.findByOrderId(order.getId());
+        existed.setStatus(Order.STATUS_REFUND);
+        existed = deliveryNoteRepository.save(existed);
+    }
+
+    // Return the quantity of product before Buying
     private void refillProductQuantityList(List<OrderDetail> list) {
         for (OrderDetail product : list) {
             refillProductQuantity(product);
         }
     }
 
+    // Return the quantity of product before Buying in Inventory
     private void refillInventory(List<OrderDetail> cart) {
         for (OrderDetail product : cart) {
             refillQuantityInStock(product);

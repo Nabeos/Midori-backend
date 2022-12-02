@@ -35,8 +35,10 @@ public class DeliveryNoteMapper {
         return receivedDetail.stream().map(DeliveryNoteMapper::toDeliveryNoteDetail).collect(Collectors.toList());
     }
 
-    private static List<DeliveryDetailDTOResponse> toListDeliveryNoteDetailDTOResponses(List<DeliveryNoteDetail> receivedDetail) {
-        return receivedDetail.stream().map(DeliveryNoteMapper::toDeliveryNoteDetailDTOResponse).collect(Collectors.toList());
+    private static List<DeliveryDetailDTOResponse> toListDeliveryNoteDetailDTOResponses(
+            List<DeliveryNoteDetail> receivedDetail) {
+        return receivedDetail.stream().map(DeliveryNoteMapper::toDeliveryNoteDetailDTOResponse)
+                .collect(Collectors.toList());
     }
 
     private static DeliveryNoteDetail toDeliveryNoteDetail(DeliveryDetailDTOCreate deliveryDetailDTOCreate) {
@@ -60,28 +62,40 @@ public class DeliveryNoteMapper {
                 .build();
     }
 
-    public static DeliveryNoteDTOResponse toDeliveryNoteDTOResponse(DeliveryNote DeliveryNote) {
+    public static DeliveryNoteDTOResponse toDeliveryNoteDTOResponse(DeliveryNote deliveryNote) {
         return DeliveryNoteDTOResponse.builder()
-        .id(DeliveryNote.getId())
-        .name(DeliveryNote.getName())
-        .note(DeliveryNote.getNote())
-        .order(toDeliveryOrderDTO(DeliveryNote.getOrder()))
-        .createdAt(DateHelper.convertDate(DeliveryNote.getCreatedAt()))
-        .createdBy(DeliveryNote.getUser().getFullname())
-        .status(DeliveryNote.getStatus())
-        .deliveryDetail(toListDeliveryNoteDetailDTOResponses(DeliveryNote.getDeliveryNoteDetails()))
-        .build();
+                .id(deliveryNote.getId())
+                .name(deliveryNote.getName())
+                .note(deliveryNote.getNote())
+                .order(toDeliveryOrderDTO(deliveryNote.getOrder()))
+                .createdAt(DateHelper.convertDate(deliveryNote.getCreatedAt()))
+                .createdBy(deliveryNote.getUser().getFullname())
+                .status(getStatus(deliveryNote.getStatus()))
+                .deliveryDetail(toListDeliveryNoteDetailDTOResponses(deliveryNote.getDeliveryNoteDetails()))
+                .build();
+    }
+
+    private static String getStatus(int status) {
+        switch (status) {
+            case 1:
+                return "Xuất Kho Thành Công";
+            case 5:
+                return "Hoàn Tiền";
+            default:
+                return "Error";
+        }
     }
 
     private static DeliveryOrderDTO toDeliveryOrderDTO(Order order) {
         return DeliveryOrderDTO.builder()
-        .id(order.getId())
-        .orderDate(DateHelper.convertDate(order.getOrderDate()))
-        .orderNumber(order.getOrderNumber())
-        .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
-        .totalBill(order.getTotalMoney())
-        .build();
+                .id(order.getId())
+                .orderDate(DateHelper.convertDate(order.getOrderDate()))
+                .orderNumber(order.getOrderNumber())
+                .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
+                .totalBill(order.getTotalMoney())
+                .build();
     }
+
     public static String getReceiveMethod(int receive) {
         switch (receive) {
             case 1:

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.midorimart.managementsystem.entity.Category;
-import com.midorimart.managementsystem.entity.Country;
 import com.midorimart.managementsystem.entity.Gallery;
 import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.ProductUnit;
@@ -37,7 +36,6 @@ import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.ProductUnitRepository;
 import com.midorimart.managementsystem.repository.custom.ProductCriteria;
 import com.midorimart.managementsystem.service.CommentService;
-import com.midorimart.managementsystem.service.CountryService;
 import com.midorimart.managementsystem.service.ProductService;
 import com.midorimart.managementsystem.utils.SkuUtil;
 import com.midorimart.managementsystem.utils.SlugUtil;
@@ -86,16 +84,19 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    //Add new Product
     @Override
     public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
             throws CustomNotFoundException, CustomBadRequestException {
         ProductDTOCreate productDTOCreate = productDTOMap.get("product");
         Product product = ProductMapper.toProduct(productDTOCreate);
         Optional<Product> productOptional = productRepository.findByTitle(product.getTitle());
+        //Check existed product
         if (productOptional.isEmpty()) {
             Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
             Optional<ProductUnit> productUnitOptional = productUnitRepository
                     .findById(productDTOCreate.getProductUnit());
+            // Not allow null in category and unit
             if (categoryOptional.isPresent() && productUnitOptional.isPresent()) {
                 product.setCategory(categoryOptional.get());
                 product.setUnit(productUnitOptional.get());
@@ -106,6 +107,7 @@ public class ProductServiceImpl implements ProductService {
                         .message("Category, merchant or unit are not existed").build());
             }
             product = productRepository.save(product);
+            // Set sku and slug
             if (Integer.valueOf(product.getId()) != null) {
                 product.setSku(SkuUtil.getSku(product.getCategory().getId(), product.getId()));
                 product.setSlug(SlugUtil.getSlug(product.getTitle(), product.getSku()));
@@ -119,6 +121,7 @@ public class ProductServiceImpl implements ProductService {
                 CustomError.builder().code("400").message("Already had the same Product name").build());
     }
 
+    // Add new category
     @Override
     public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap)
             throws CustomBadRequestException {
@@ -137,6 +140,7 @@ public class ProductServiceImpl implements ProductService {
                 CustomError.builder().code("400").message("Already had this category").build());
     }
 
+    // Get Products by filter
     @Override
     public Map<String, Object> getProductByCategoryId(ProductDTOFilter filter) {
         Map<String, Object> results = productCriteria.getProductList(filter);
@@ -146,10 +150,6 @@ public class ProductServiceImpl implements ProductService {
         // convert to ProductDTOResponse
         List<ProductDTOResponse> listProductDTOResponses = productList.stream().map(ProductMapper::toProductDTOResponse)
                 .collect(Collectors.toList());
-        // Set star for each Product
-        // for (ProductDTOResponse productDTOResponse : listProductDTOResponses) {
-        //     setAvgStarForProduct(productDTOResponse);
-        // }
         Map<String, Object> wrapper = new HashMap<>();
         wrapper.put("product", listProductDTOResponses);
         wrapper.put("totalProducts", totalProducts);
@@ -205,6 +205,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Get product detail
     @Override
     public Map<String, ProductDetailDTOResponse> getProductBySlug(String slug) throws CustomNotFoundException {
         Optional<Product> productOptional = productRepository.findBySlug(slug);

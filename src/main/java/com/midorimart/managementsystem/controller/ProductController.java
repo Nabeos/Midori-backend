@@ -108,7 +108,6 @@ public class ProductController {
     }
 
     @Operation(summary = "Update Product")
-
     @PutMapping("/api/v1/product-management/product/{slug}")
     public Map<String, ProductDetailDTOResponse> updateProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap,
             @PathVariable String slug)
@@ -117,7 +116,6 @@ public class ProductController {
     }
 
     @Operation(summary = "Upload image after add new Product")
-
     @PostMapping("/api/v1/product-management/products/{slug}/images")
     public Map<String, List<ImageDTOResponse>> uploadImage(@RequestParam("files") MultipartFile[] files,
             @PathVariable String slug)
@@ -134,7 +132,7 @@ public class ProductController {
 
     @Operation(summary = "Delete product by update deleted id")
     @PutMapping("/api/v1/product-management/products/{id}")
-    public String deleteUser(@PathVariable("id") int id) {
+    public String deleteProduct(@PathVariable("id") int id) {
         return service.updateDeletedById(id);
     }
 
