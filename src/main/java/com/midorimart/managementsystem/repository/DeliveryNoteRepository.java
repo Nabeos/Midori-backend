@@ -8,4 +8,6 @@ import com.midorimart.managementsystem.entity.DeliveryNote;
 @Repository
 public interface DeliveryNoteRepository extends JpaRepository<DeliveryNote, Integer>{
 
+    DeliveryNote findByOrderId(int id);
+
 }
