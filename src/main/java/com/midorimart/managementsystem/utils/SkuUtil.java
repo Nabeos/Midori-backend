@@ -15,7 +15,7 @@ public class SkuUtil {
         } else if (productId < 1000) {
             sku += "0" + productId;
         } else {
-            sku += categoryId + "";
+            sku += productId+"";
         }
         return sku;
     }
