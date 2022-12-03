@@ -41,9 +41,8 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
-    private final List<String> listDontNeedAuthentication = Arrays.asList("/api/usermanagement/login",
-            "/api/productManagement/getProductsByCategoryId", "/api/usermanagement/addNewUser",
-            "/api/productManagement/getAllCategories");
+    private final List<String> listDontNeedAuthentication = Arrays.asList(
+            "/api/user/purchases/");
     private final JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
@@ -53,7 +52,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String url = request.getRequestURI();
         String method = request.getMethod();
-        // if (listDontNeedAuthentication.stream().anyMatch(o -> o.equals(url))) {
+        System.out.println(listDontNeedAuthentication.get(0));
+        // if (listDontNeedAuthentication.stream().anyMatch(o -> url.startsWith(o))) {
         // filterChain.doFilter(request, response);
         // return;
         // }
@@ -90,7 +90,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         String route = path.split("[/]")[3];
                         path = "/api/v1/" + route;
                     }
-                    System.out.println(path);
                     Optional<Permission> permissionOptional = permissionRepository.findByPathAndMethod(path, method);
                     if (permissionOptional.isEmpty()) {
                         CustomError customError = CustomError.builder().code("access denied")
@@ -132,6 +131,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private boolean needCheckPermission(Role userRole, String url, String method) {
         if (url.startsWith("/api/v1/user-management") && method.equalsIgnoreCase("PUT"))
             return true;
+        if (url.startsWith(listDontNeedAuthentication.get(0)))
+            return false;
         return userRole.getId() != Role.ADMIN;
     }
 

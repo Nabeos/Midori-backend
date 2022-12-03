@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 
@@ -184,18 +185,37 @@ public class OrderServiceImpl implements OrderService {
 
     // Update status for Customer (refund, cancel)
     @Override
-    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers) {
+    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers) throws CustomBadRequestException {
         Order order = orderRepository.findByOrderNumber(orderNumbers);
+        // Check order belonging
+        if (!isCustomerOrder(order)) {
+            throw new CustomBadRequestException(
+                    CustomError.builder().code("400").message("This is not your order").build());
+        }
         if (order.getStatus() == Order.STATUS_NEW_ORDER_OR_PENDING) {
             order.setStatus(Order.STATUS_CANCEL);
             refillProductQuantityList(order.getCart());
         } else if (order.getStatus() == Order.STATUS_SUCCESS) {
             order.setStatus(Order.STATUS_REFUND);
-            refillInventory(order.getCart());
             updateStatusForDeliveryNote(order);
+            refillInventory(order.getCart());
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);
+    }
+
+
+    // Check order belong to customer or not
+    private boolean isCustomerOrder(Order order) {
+        boolean isCustomerOrder = false;
+        if (invoiceRepository.findByOrderId(order.getId()) != null && userService.getUserLogin() == null) {
+            return isCustomerOrder;
+        }
+        if (userService.getUserLogin() != null) {
+            if (getInvoiceByUser(userService.getUserLogin(), order) != null)
+                isCustomerOrder = true;
+        }
+        return isCustomerOrder;
     }
 
     private void updateStatusForDeliveryNote(Order order) {
@@ -241,9 +261,12 @@ public class OrderServiceImpl implements OrderService {
         return wrapper;
     }
 
-    @Override
-    public List<Invoice> getInvoiceByUser(int userId) {
-        return invoiceRepository.findByUserId(userId) != null ? invoiceRepository.findByUserId(userId) : null;
+    private Invoice getInvoiceByUser(User user, Order order) {
+        Optional<Invoice> invoice = invoiceRepository.findByUserIdAndOrderId(user.getId(), order.getId());
+        if (invoice.isPresent()) {
+            return invoice.get();
+        }
+        return null;
     }
 
     @Override

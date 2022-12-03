@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.midorimart.managementsystem.entity.DeliveryNote;
 import com.midorimart.managementsystem.entity.DeliveryNoteDetail;
 import com.midorimart.managementsystem.entity.OrderDetail;
-import com.midorimart.managementsystem.entity.Product;
 import com.midorimart.managementsystem.entity.ProductQuantity;
 import com.midorimart.managementsystem.model.deliveryNote.DeliveryNoteDTOFilter;
 import com.midorimart.managementsystem.model.deliveryNote.DeliveryNoteDTOResponse;
@@ -69,7 +68,8 @@ public class DeliveryNoteServiceImpl implements DeliveryNoteService {
 
     @Override
     public Map<String, List<DeliveryNoteDTOResponse>> getAllDeliveryNote(DeliveryNoteDTOFilter filter) {
-        Map<String, List<DeliveryNote>> result = (Map<String, List<DeliveryNote>>) deliveryNoteCriteria.getAllDeliveryNote(filter);
+        Map<String, List<DeliveryNote>> result = (Map<String, List<DeliveryNote>>) deliveryNoteCriteria
+                .getAllDeliveryNote(filter);
         List<DeliveryNote> deliveryNotes = result.get("deliveryNotes");
         return buildDTOListResponse(deliveryNotes);
     }

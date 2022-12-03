@@ -79,7 +79,7 @@ public class OrderController {
     @PutMapping("/user/purchases/{order-number}")
     public Map<String, OrderDTOResponse> updateStatusForCustomer(
             @PathVariable(name = "order-number") String orderNumber,
-            @RequestParam(name = "status", required = false, defaultValue = "8") int status) {
+            @RequestParam(name = "status", required = false, defaultValue = "8") int status) throws CustomBadRequestException {
         return orderService.updateStatusForCustomer(orderNumber);
     }
 }

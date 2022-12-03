@@ -10,4 +10,6 @@ public interface DeliveryNoteRepository extends JpaRepository<DeliveryNote, Inte
 
     DeliveryNote findByOrderId(int id);
 
+    DeliveryNote findByOrder(int id);
+
 }

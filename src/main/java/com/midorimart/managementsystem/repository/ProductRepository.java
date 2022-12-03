@@ -9,12 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.midorimart.managementsystem.entity.Product;
-import com.midorimart.managementsystem.model.product.dto.ProductDTOFilter;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-        public final String queryForBestSeller = "select top 10 Product_ID from "
+        public final String queryForBestSeller = "select top 6 Product_ID from "
                         + "(select *, DENSE_RANK()over(Partition by Category_ID order by total_number desc) as Product_rank from "
                         + "(select distinct c.id as Category_ID, c.name, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
                         + "from Order_Detail od "
