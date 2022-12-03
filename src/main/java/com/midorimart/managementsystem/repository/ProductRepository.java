@@ -34,12 +34,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                         + "left join Product p on od.product_id = p.id "
                         + "left join Category c on p.category_id = c.id where order_id in (select id from [Order] where DATEDIFF(DAY, order_date, GETDATE()) <= 7))AA)BB order by total_number desc";
 
-        public final String queryForBestCategory = "select distinct top 3 Category_ID from "
-                        + "(select *, DENSE_RANK()over(Partition by Category_ID order by total_number desc) as Product_rank from "
-                        + "(select distinct c.id as Category_ID, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
-                        + "from Order_Detail od "
-                        + "left join Product p on od.product_id = p.id "
-                        + "left join Category c on p.category_id = c.id)AA)BB where Product_rank between 1 and 5";
+        public final String queryForBestCategory = "select category_id from "
+                        + "(select *, Row_Number() over(order by total_appear desc) as category_rank from "
+                        + "(select distinct category_id, COUNT(product_id) over(partition by category_id) as total_appear from Order_Detail od "
+                        + "join Product p on od.product_id = p.id "
+                        + "join Category c on p.category_id = c.id)AA)BB where category_rank between 1 and 3";
 
         Optional<Product> findBySlug(String slug);
 
