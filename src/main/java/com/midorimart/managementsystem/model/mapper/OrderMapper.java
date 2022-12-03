@@ -53,10 +53,6 @@ public class OrderMapper {
 
     public static OrderDTOResponse toOrderDTOResponse(Order order, int id) {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String orderDate = order.getDeliveryDate().substring(0, 10);
-        String orderDay = orderDate.split("-")[2];
-        String oMonth = orderDate.split("-")[1];
-        String oYear = orderDate.split("-")[0];
         return OrderDTOResponse.builder()
                 .id(order.getId())
                 .totalBill(order.getTotalMoney())
@@ -136,7 +132,8 @@ public class OrderMapper {
 
     public static OrderDetailDTOResponse toOrderDetailDTOResponse(OrderDetail orderDetails) {
         String thumbnails = null;
-        if (orderDetails.getProduct().getGalleries() != null && orderDetails.getProduct().getGalleries().isEmpty() == false) {
+        if (orderDetails.getProduct().getGalleries() != null
+                && orderDetails.getProduct().getGalleries().isEmpty() == false) {
             thumbnails = orderDetails.getProduct().getGalleries().get(0).getThumbnail().replace("\\", "/");
         }
         return OrderDetailDTOResponse.builder().sku(orderDetails.getProduct().getSku())

@@ -144,16 +144,25 @@ public class OrderServiceImpl implements OrderService {
             if (order.getStatus() == Order.STATUS_IN_PROGRESS) {
                 emailService.sendAcceptedEmail(order);
                 DeliveryNote deliveryNote = createdDeliveryNote(order);
+                return buildDTOResponse(order);
             }
 
             // Send email for customer if order is rejected
             if (order.getStatus() == Order.STATUS_REJECT) {
                 emailService.sendRejectedEmail(order);
+                return buildDTOResponse(order);
             }
-            return buildDTOResponse(order);
         }
         // update status
-        else if (order.getStatus() < Order.STATUS_SUCCESS) {
+        else if (order.getStatus() == Order.STATUS_IN_PROGRESS && order.getReceiveProductsMethod() != 1) {
+            order.setStatus(Order.STATUS_SUCCESS);
+            order = orderRepository.save(order);
+            // send email if success
+            if (order.getStatus() == Order.STATUS_SUCCESS) {
+                emailService.sendSuccessfulOrderNotice(order);
+            }
+            return buildDTOResponse(order);
+        } else if (order.getStatus() < Order.STATUS_SUCCESS) {
             order.setStatus(order.getStatus() + 1);
             order = orderRepository.save(order);
 
@@ -203,7 +212,6 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
         return buildDTOResponse(order);
     }
-
 
     // Check order belong to customer or not
     private boolean isCustomerOrder(Order order) {
