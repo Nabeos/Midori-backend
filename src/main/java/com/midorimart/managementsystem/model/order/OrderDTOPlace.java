@@ -26,6 +26,4 @@ public class OrderDTOPlace {
     private String deliveryTimeRange;
     private String note;
     private float totalBill;
-
-
 }

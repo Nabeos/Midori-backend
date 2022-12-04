@@ -201,7 +201,7 @@ public class UserServiceimpl implements UserService {
         Optional<User> userOptional = userRepository.findByEmail(userDTOForgotPasswordMap.getEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            String randomCode = RandomString.make(64);
+            String randomCode = RandomString.make(32);
             user.setVerificationCode(randomCode);
             userRepository.save(user);
             emailService.sendVerificationEmail(user);
