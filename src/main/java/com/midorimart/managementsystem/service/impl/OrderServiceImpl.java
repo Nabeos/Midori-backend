@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.mail.MessagingException;
 
@@ -78,6 +77,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = OrderMapper.toOrder(orderDTOPlace);
         order.setOrderCode(RandomString.make(10) + order.getOrderNumber() + RandomString.make(10));
         order.setAddress(address);
+        // Check quantity before payment
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
@@ -91,6 +91,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("run out of stock").build());
         }
+        // check if customer or guest
         if (userService.getUserLogin() != null)
             saveInvoiceForUser(userService.getUserLogin(), order);
 
@@ -204,10 +205,13 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomBadRequestException(
                     CustomError.builder().code("400").message("This is not your order").build());
         }
+        // Set status
         if (order.getStatus() == Order.STATUS_NEW_ORDER_OR_PENDING) {
+            // Cancel order
             order.setStatus(Order.STATUS_CANCEL);
             refillProductQuantityList(order.getCart());
         } else if (order.getStatus() == Order.STATUS_SUCCESS) {
+            // Refund
             order.setStatus(Order.STATUS_REFUND);
             updateStatusForDeliveryNote(order);
             refillInventory(order.getCart());
@@ -217,19 +221,6 @@ public class OrderServiceImpl implements OrderService {
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);
-    }
-
-    // Check order belong to customer or not
-    private boolean isCustomerOrder(Order order) {
-        boolean isCustomerOrder = false;
-        if (invoiceRepository.findByOrderId(order.getId()) != null && userService.getUserLogin() == null) {
-            return isCustomerOrder;
-        }
-        if (userService.getUserLogin() != null) {
-            if (getInvoiceByUser(userService.getUserLogin(), order) != null)
-                isCustomerOrder = true;
-        }
-        return isCustomerOrder;
     }
 
     private void updateStatusForDeliveryNote(Order order) {
@@ -275,14 +266,7 @@ public class OrderServiceImpl implements OrderService {
         return wrapper;
     }
 
-    private Invoice getInvoiceByUser(User user, Order order) {
-        Optional<Invoice> invoice = invoiceRepository.findByUserIdAndOrderId(user.getId(), order.getId());
-        if (invoice.isPresent()) {
-            return invoice.get();
-        }
-        return null;
-    }
-
+    // Display customer's orders list
     @Override
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter) {
         Map<String, Object> result = orderCriteria.getOrders(filter);
@@ -290,6 +274,7 @@ public class OrderServiceImpl implements OrderService {
         return toOrderDTOList(orders);
     }
 
+    // Display customer's purchase
     @Override
     public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter) {
         Map<String, Object> result = orderCriteria.getOrdersForCustomer(filter, userService.getUserLogin().getId());

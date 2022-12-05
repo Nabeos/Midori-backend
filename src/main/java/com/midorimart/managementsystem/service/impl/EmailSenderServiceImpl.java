@@ -56,7 +56,7 @@ public class EmailSenderServiceImpl implements EmailService {
     @Override
     public MimeMessage sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
-        String verifyUri = "http://localhost:3000/guestnotification/"+order.getOrderNumber()+"/"+order.getOrderCode();
+        String verifyUri = "http://localhost:3000/guestnotificationrefund/"+order.getOrderNumber()+"/"+order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
         String orderDay = orderDate.split("-")[0];
