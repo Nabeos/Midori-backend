@@ -143,6 +143,6 @@ public class ProductMapper {
     }
 
     public static ProductQuantityDTOResponse toProductQuantityDTOResponse(ProductQuantity product) {
-        return ProductQuantityDTOResponse.builder().expiryDate(DateHelper.convertDate(product.getExpiryDate())).build();
+        return ProductQuantityDTOResponse.builder().expiryDate(DateHelper.convertDate(product.getExpiryDate()).substring(0,10)).build();
     }
 }
