@@ -208,6 +208,9 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(Order.STATUS_REFUND);
             updateStatusForDeliveryNote(order);
             refillInventory(order.getCart());
+        }else{
+            throw new CustomBadRequestException(
+                    CustomError.builder().code("400").message("Hủy Bỏ Thất Bại do đơn được chấp nhận").build());
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);

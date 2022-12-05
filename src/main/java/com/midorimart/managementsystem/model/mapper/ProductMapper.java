@@ -36,7 +36,8 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .star(product.getStar())
                 .discount(product.getDiscount())
-                .origin(product.getCountry()!=null?toCountryDTOResponse(product.getCountry()):CountryDTOResponse.builder().code("VNM").build())
+                .origin(product.getCountry() != null ? toCountryDTOResponse(product.getCountry())
+                        : CountryDTOResponse.builder().code("VNM").build())
                 .category(toCategoryDTOResponse(product.getCategory()))
                 .created_at(DateHelper.convertDate(product.getCreated_at()))
                 .updated_at(DateHelper.convertDate(product.getUpdated_at()))
@@ -45,12 +46,11 @@ public class ProductMapper {
                 .quantity(product.getQuantity())
                 .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
                         .build())
-                // .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
     }
 
     private static String getStatus(int status) {
-        switch(status){
+        switch (status) {
             case 0:
                 return "Hết Hàng";
             case 1:
@@ -92,7 +92,8 @@ public class ProductMapper {
     }
 
     public static CountryDTOResponse toCountryDTOResponse(Country country) {
-        return CountryDTOResponse.builder().code(country.getCode()).name(country.getName()).thumbnail(country.getImage()).build();
+        return CountryDTOResponse.builder().code(country.getCode()).name(country.getName())
+                .thumbnail(country.getImage()).build();
     }
 
     public static Category toCategory(CategoryDTOCreate categoryDTOCreate) {
@@ -121,7 +122,8 @@ public class ProductMapper {
                 .deleted(product.getDeleted())
                 .price(product.getPrice())
                 .discount(product.getDiscount())
-                .origin(product.getCountry()!=null?toCountryDTOResponse(product.getCountry()):CountryDTOResponse.builder().code("VNM").build())
+                .origin(product.getCountry() != null ? toCountryDTOResponse(product.getCountry())
+                        : CountryDTOResponse.builder().code("VNM").build())
                 .category(toCategoryDTOResponse(product.getCategory()))
                 .created_at(DateHelper.convertDate(product.getCreated_at()))
                 .updated_at(DateHelper.convertDate(product.getUpdated_at()))
@@ -131,7 +133,8 @@ public class ProductMapper {
                 .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
                         .build())
                 .comments(CommentMapper.toListCommentDTOResponse(product.getComments()))
-                // .productQuantityInStock(toProductQuantityDTOResponseList(product.getProductQuantities()))
+                .expiryDate(product.getProductQuantities() == null ? null
+                        : toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
     }
 
@@ -140,8 +143,6 @@ public class ProductMapper {
     }
 
     public static ProductQuantityDTOResponse toProductQuantityDTOResponse(ProductQuantity product) {
-        return ProductQuantityDTOResponse.builder().quantity(product.getQuantity())
-                .manufacturingDate(product.getManufacturingDate()).expiryDate(DateHelper.convertDate(product.getExpiryDate()))
-                .createdDate(product.getCreatedDate()).updatedDate(product.getUpdatedDate()).build();
+        return ProductQuantityDTOResponse.builder().expiryDate(DateHelper.convertDate(product.getExpiryDate())).build();
     }
 }

@@ -34,6 +34,6 @@ public class ProductDetailDTOResponse{
     private double star;
     private MerchantDTOResponse merchant;
     private ProductUnitDTOResponse unit;
-    private List<ProductQuantityDTOResponse> productQuantityInStock;
+    private List<ProductQuantityDTOResponse> expiryDate;
     private List<CommentDTOResponse> comments;
 }

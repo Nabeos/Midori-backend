@@ -33,5 +33,4 @@ public class ProductDTOResponse {
     private ProductUnitDTOResponse unit;
     private MerchantDTOResponse merchant;
     private double star;
-    private List<ProductQuantityDTOResponse> productQuantityInStock;
 }
