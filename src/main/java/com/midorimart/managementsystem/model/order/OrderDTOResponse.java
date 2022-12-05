@@ -28,4 +28,5 @@ public class OrderDTOResponse {
     private String orderNumber;
     private String status;
     private List<OrderDetailDTOResponse> orderDetail;
+    private String orderCode;
 }

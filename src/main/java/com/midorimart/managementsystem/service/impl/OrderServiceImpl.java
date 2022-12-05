@@ -42,6 +42,7 @@ import com.midorimart.managementsystem.service.OrderService;
 import com.midorimart.managementsystem.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
         address.add(orderDTOPlace.getAddress().getWardId());
         address.add(orderDTOPlace.getAddress().getAddressDetail());
         Order order = OrderMapper.toOrder(orderDTOPlace);
+        order.setOrderCode(RandomString.make(10) + order.getOrderNumber() + RandomString.make(10));
         order.setAddress(address);
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
@@ -194,10 +196,11 @@ public class OrderServiceImpl implements OrderService {
 
     // Update status for Customer (refund, cancel)
     @Override
-    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers) throws CustomBadRequestException {
+    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers, String code)
+            throws CustomBadRequestException {
         Order order = orderRepository.findByOrderNumber(orderNumbers);
         // Check order belonging
-        if (!isCustomerOrder(order)) {
+        if (!order.getOrderCode().equals(code)) {
             throw new CustomBadRequestException(
                     CustomError.builder().code("400").message("This is not your order").build());
         }
@@ -208,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(Order.STATUS_REFUND);
             updateStatusForDeliveryNote(order);
             refillInventory(order.getCart());
-        }else{
+        } else {
             throw new CustomBadRequestException(
                     CustomError.builder().code("400").message("Hủy Bỏ Thất Bại do đơn được chấp nhận").build());
         }

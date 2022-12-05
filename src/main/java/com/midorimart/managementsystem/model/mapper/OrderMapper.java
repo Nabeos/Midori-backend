@@ -72,6 +72,7 @@ public class OrderMapper {
                 .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
                 .status(getStatus(order.getStatus(), id))
                 .orderDetail(toListOrderDetailDTOResponse(order.getCart()))
+                .orderCode(order.getOrderCode())
                 .build();
     }
 

@@ -56,6 +56,7 @@ public class EmailSenderServiceImpl implements EmailService {
     @Override
     public MimeMessage sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
+        String verifyUri = "http://localhost:3000/guestnotification/"+order.getOrderNumber()+"/"+order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
         String orderDay = orderDate.split("-")[0];
@@ -128,7 +129,9 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "  <div>Phí vận chuyển:  35.000đ</div>"
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + 35000)
                 + "</div></div>"
-                + "<div style='display: flex; justify-content: center; margin-top: 10px'><button onclick='' id='cancelOrderButton'>Trả hàng/Hoàn tiền</button></div>"
+                + "<div style='display: flex; justify-content: center; margin-top: 10px'>"
+                + "<button onclick='' id='cancelOrderButton'>"
+                + "<a href='"+verifyUri+"'>Trả hàng/Hoàn tiền</a></button></div>"
                 + "</div></div>"
                 + "</html>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã giao hàng thành công");
@@ -289,7 +292,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "  </div>"
                 + "  <div style='margin-left: 10px; margin-top: 10px'>"
                 + "    <span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span> "
-                + odDay + "/" + odMonth + "/" + odYear  + " " + order.getDeliveryTimeRange()
+                + odDay + "/" + odMonth + "/" + odYear + " " + order.getDeliveryTimeRange()
                 + "  </div>"
                 + "  <h4 style='border-bottom: 1px solid lightgray; padding-bottom: 10px; color:#0c6e21'>CHI TIẾT ĐƠN HÀNG</h4>"
                 + "  <div>"
@@ -368,6 +371,7 @@ public class EmailSenderServiceImpl implements EmailService {
     @Override
     public MimeMessage sendPlaceOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
+        String verifyUri = "http://localhost:3000/guestnotification/"+order.getOrderNumber()+"/"+order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
         String orderDay = orderDate.split("-")[0];
@@ -418,7 +422,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "</div>"
                 + "</div></div><div style='margin-left: 10px; margin-top: 10px'>"
                 + "<span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span> "
-                + order.getDeliveryDate()+" " + order.getDeliveryTimeRange()
+                + order.getDeliveryDate() + " " + order.getDeliveryTimeRange()
                 + "</div><h4 style='order-bottom: 1px solid lightgray; padding-bottom: 10px; color:#0c6e21'>CHI TIẾT ĐƠN HÀNG</h4><div>"
                 + "<table>"
                 + "  <tr>"
@@ -436,7 +440,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "  <div>Phí vận chuyển:  35.000đ</div>"
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + 35000)
                 + "đ</div></div>"
-                + "<div style='display: flex; justify-content: center; margin-top: 10px'><button onclick='' id='cancelOrderButton'>Hủy đơn hàng</button></div>"
+                + "<div style='display: flex; justify-content: center; margin-top: 10px'><button onclick='' id='cancelOrderButton'><a href='"+verifyUri+"'>Hủy Đơn Hàng</a></button></div>"
                 + "</div></div>"
                 + "</html>";
         emailDetails

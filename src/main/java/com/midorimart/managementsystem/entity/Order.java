@@ -69,14 +69,20 @@ public class Order {
 
     @Column(name = "total_money")
     private float totalMoney;
+    @Column(name = "order_code")
+    private String orderCode;
+
+    public String getOrderCode(){
+        return this.orderCode == null ? "Chưa có":this.orderCode;
+    }
 
     public AddressDTOResponse getAddressField() {
         return AddressDTOResponse.builder()
-        .provinceId(this.address.split(";")[0])
-        .districtId(this.address.split(";")[1])
-        .wardId(this.address.split(";")[2])
-        .addressDetail(this.address.split(";")[3])
-        .build();
+                .provinceId(this.address.split(";")[0])
+                .districtId(this.address.split(";")[1])
+                .wardId(this.address.split(";")[2])
+                .addressDetail(this.address.split(";")[3])
+                .build();
     }
 
     public void setAddress(List<String> addressField) {

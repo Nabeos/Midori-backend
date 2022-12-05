@@ -18,7 +18,7 @@ public interface OrderService {
 
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status) throws CustomBadRequestException, UnsupportedEncodingException, MessagingException;
 
-    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber) throws CustomBadRequestException;
+    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber, String orderCode) throws CustomBadRequestException;
 
     // public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber);
 
