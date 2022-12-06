@@ -32,3 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 src/test/java/com/midorimart/managementsystem/service/impl/UserServiceimplTest.java
+src/test/java/com/midorimart/managementsystem/service/impl/DeliveryNoteServiceImplTest.java
+src/test**
