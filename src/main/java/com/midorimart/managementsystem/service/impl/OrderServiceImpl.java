@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 import org.hibernate.StaleObjectStateException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -45,7 +46,6 @@ import net.bytebuddy.utility.RandomString;
 
 @Service
 @RequiredArgsConstructor
-
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -62,9 +62,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
             ObjectOptimisticLockingFailureException.class })
-    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap)
+    public Map<String, OrderDTOResponse> addNewOrder(OrderDTOPlace orderDTOPlacemap)
             throws CustomBadRequestException {
-        OrderDTOPlace orderDTOPlace = OrderDTOPlacemap.get("orderinformation");
+        OrderDTOPlace orderDTOPlace = orderDTOPlacemap;
         // turn address into string to save in db
         if (orderDTOPlace.getCart() == null || orderDTOPlace.getCart().isEmpty()) {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Chưa có sản phẩm").build());
@@ -89,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
                 e.printStackTrace();
             }
         } else {
-            throw new CustomBadRequestException(CustomError.builder().code("400").message("run out of stock").build());
+            throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());
         }
         // check if customer or guest
         if (userService.getUserLogin() != null)
@@ -100,6 +100,8 @@ public class OrderServiceImpl implements OrderService {
 
     private boolean CheckQuantity(List<OrderDetail> cart) {
         for (OrderDetail orderDetail : cart) {
+            if (orderDetail.getQuantity() <= 0 || Integer.toString(orderDetail.getQuantity()) == null)
+                return false;
             int quantityInStock = productRepository.findById(orderDetail.getProduct().getId()).get().getQuantity();
             if (quantityInStock < orderDetail.getQuantity())
                 return false;
@@ -296,5 +298,11 @@ public class OrderServiceImpl implements OrderService {
         Map<String, List<OrderDTOResponse>> wrapper = new HashMap<>();
         wrapper.put("orders", orderDTOResponses);
         return wrapper;
+    }
+
+    @Override
+    public Map<String, OrderDTOResponse> addNewOrderTest(@Valid OrderDTOPlace addNewCartMap) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,17 +32,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 @CrossOrigin
 @RequiredArgsConstructor
-
 public class OrderController {
 
     private final OrderService orderService;
-
-    // @Operation(summary = "Get Order Detail API by order number")
-    // @GetMapping("/v1/order-management/{order-number}")
-    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(
-    // @PathVariable(name = "order-number") String orderNumber) {
-    // return orderService.getOrderDetail(orderNumber);
-    // }
 
     @Operation(summary = "Get All Orders for Seller")
     @GetMapping("/v1/order-management/orders")
@@ -63,8 +58,16 @@ public class OrderController {
 
     @Operation(summary = "Add new order")
     @PostMapping("/payment-management/finishOrder")
-    public Map<String, OrderDTOResponse> addNewCart(@RequestBody Map<String, OrderDTOPlace> addNewCartMap) throws CustomBadRequestException {
-        return orderService.addNewOrder(addNewCartMap);
+    public Map<String, OrderDTOResponse> addNewCart(@RequestBody Map<String, @Valid OrderDTOPlace> addNewCartMap)
+            throws CustomBadRequestException, ConstraintViolationException, HttpMessageNotReadableException {
+        return orderService.addNewOrder(addNewCartMap.get("orderinformation"));
+    }
+
+    @Operation(summary = "Add new order")
+    @PostMapping("/payment-management/finishOrders")
+    public Map<String, OrderDTOResponse> addNewCartTest(@RequestBody @Valid OrderDTOPlace addNewCartMap)
+            throws CustomBadRequestException {
+        return orderService.addNewOrderTest(addNewCartMap);
     }
 
     @Operation(summary = "Update Status For Seller")
@@ -80,7 +83,8 @@ public class OrderController {
     public Map<String, OrderDTOResponse> updateStatusForCustomer(
             @PathVariable(name = "order-number") String orderNumber,
             @RequestParam(name = "code", required = true, defaultValue = "abc") String orderCode,
-            @RequestParam(name = "status", required = false, defaultValue = "8") int status) throws CustomBadRequestException {
+            @RequestParam(name = "status", required = false, defaultValue = "8") int status)
+            throws CustomBadRequestException {
         return orderService.updateStatusForCustomer(orderNumber, orderCode);
     }
 }

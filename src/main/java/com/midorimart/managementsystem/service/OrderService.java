@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 
-import com.midorimart.managementsystem.entity.Invoice;
+import org.springframework.validation.annotation.Validated;
+
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.order.OrderDTOFilter;
 import com.midorimart.managementsystem.model.order.OrderDTOPlace;
 import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 
+@Validated
 public interface OrderService {
 
-    public Map<String, OrderDTOResponse> addNewOrder(Map<String, OrderDTOPlace> OrderDTOPlacemap) throws CustomBadRequestException;
+    public Map<String, OrderDTOResponse> addNewOrder(@Valid OrderDTOPlace orderDTOPlace) throws CustomBadRequestException, ConstraintViolationException;
 
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status) throws CustomBadRequestException, UnsupportedEncodingException, MessagingException;
 
@@ -27,5 +31,7 @@ public interface OrderService {
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter);
 
     public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter);
+
+    public Map<String, OrderDTOResponse> addNewOrderTest(@Valid OrderDTOPlace addNewCartMap);
 
 }
