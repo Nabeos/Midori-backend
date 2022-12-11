@@ -33,6 +33,7 @@ public class OrderMapper {
                 .paymentMethod(orderDTOPlace.getPaymentMethod())
                 .deliveryDate(orderDTOPlace.getDeliveryDate())
                 .deliveryTimeRange(orderDTOPlace.getDeliveryTimeRange())
+                .totalMoney(orderDTOPlace.getTotalBill())
                 .receiveProductsMethod(orderDTOPlace.getReceiveProductsMethod())
                 .build();
 
