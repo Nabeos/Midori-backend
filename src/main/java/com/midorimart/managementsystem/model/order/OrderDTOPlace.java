@@ -2,10 +2,13 @@ package com.midorimart.managementsystem.model.order;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.midorimart.managementsystem.annotation.DateValid;
 import com.midorimart.managementsystem.annotation.PhoneNumberValid;
 import com.midorimart.managementsystem.model.address.dto.AddressDTOResponse;
 
@@ -19,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class OrderDTOPlace {
-    @NotEmpty(message = "Thiếu tên")
+    @NotBlank(message = "Thiếu tên")
     private String fullName;
     @Email(message = "Email không hợp lệ")
     private String email;
@@ -28,13 +31,13 @@ public class OrderDTOPlace {
     @NotNull(message = "Thiếu phương thức giao dịch")
     private int receiveProductsMethod;
     @NotNull(message = "Thiếu địa chỉ")
-    private AddressDTOResponse address;
+    private @Valid AddressDTOResponse address;
     private List<OrderDetailDTOPlace> cart;
     @NotNull(message = "Thiếu phương thức thanh toán")
     private int paymentMethod;
-    @NotEmpty(message = "Thiếu ngày giao")
+    @DateValid
     private String deliveryDate;
-    @NotEmpty(message = "Thiếu giờ giao")
+    @NotBlank(message = "Thiếu giờ giao")
     private String deliveryTimeRange;
     private String note;
     private float totalBill;

@@ -66,17 +66,10 @@ public class OrderController {
         return orderService.addNewOrder(addNewCartMap.get("orderinformation"));
     }
 
-    @Operation(summary = "Add new order")
-    @PostMapping("/payment-management/finishOrders")
-    public Map<String, OrderDTOResponse> addNewCartTest(@RequestBody @Valid OrderDTOPlace addNewCartMap)
-            throws CustomBadRequestException {
-        return orderService.addNewOrderTest(addNewCartMap);
-    }
-
     @Operation(summary = "Update Status For Seller")
     @PutMapping("/v1/order-management/{order-number}")
     public Map<String, OrderDTOResponse> updateStatus(@PathVariable(name = "order-number") String orderNumber,
-            @RequestParam(name = "status", defaultValue = "8", required = true) @NotNull Integer status)
+            @RequestParam(name = "status", defaultValue = "8", required = true) Integer status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         return orderService.updateStatus(orderNumber, status);
     }

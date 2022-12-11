@@ -56,13 +56,11 @@ public class DeliveryNoteServiceImpl implements DeliveryNoteService {
     @Override
     public Map<String, List<DeliveryNoteDTOResponse>> getDeliveryNoteByDate(String firstDate, String secondDate,
             int limit, int offset) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Map<String, List<DeliveryNoteDTOResponse>> getDeliveryNoteByUser(int id, int limit, int offset) {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -20,4 +20,6 @@ public interface ReceivedNoteRepository extends JpaRepository<ReceivedNote, Inte
     @Query(value = "select * from Received_note where merchant_id = ?1 order by created_at desc OFFSET ?2 ROWS FETCH NEXT ?3 ROWS ONLY", nativeQuery = true)
     List<ReceivedNote> findByMerchantId(int id, int offset, int limit);
 
+    ReceivedNote findByName(String name);
+
 }

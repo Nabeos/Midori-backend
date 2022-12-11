@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOCreate;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOFilter;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOResponse;
@@ -12,7 +13,7 @@ public interface ReceivedNoteService {
 
     Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(ReceivedNoteDTOFilter filter) throws ParseException;
 
-    Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap);
+    Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException;
 
     // Map<String, ReceivedNoteDTOResponse> updateReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap,
             // int id);

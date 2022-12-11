@@ -4,6 +4,9 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOCreate;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOFilter;
 import com.midorimart.managementsystem.model.receivedNote.ReceivedNoteDTOResponse;
@@ -25,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @Tag(name = "Received Note API")
+@Validated
 public class ReceivedNoteController {
     private final ReceivedNoteService receivedNoteService;
 
@@ -80,7 +85,7 @@ public class ReceivedNoteController {
     @Operation(summary = "Create new received note")
     @PostMapping("/api/v1/received-notes")
     public Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(
-            @RequestBody Map<String, ReceivedNoteDTOCreate> receivedNoteMap) {
+            @RequestBody Map<String, @Valid ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException {
         return receivedNoteService.addNewReceivedNote(receivedNoteMap);
     }
 

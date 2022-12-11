@@ -5,8 +5,10 @@ import java.util.Map;
 
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,8 +37,16 @@ public class APIExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public Map<String, String> notEmptyException(ConstraintViolationException e) {
         Map<String, String> errors = new HashMap<>();
-        if (e.getConstraintViolations().iterator().hasNext()) {
-            errors.put("error", e.getMessage());
+        errors.put("error", e.getConstraintViolations().iterator().next().getMessage());
+        return errors;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public Map<String, String> notEmptyException(MethodArgumentNotValidException e) {
+        Map<String, String> errors = new HashMap<>();
+        if (e.getBindingResult().hasErrors()) {
+            errors.put("error", e.getAllErrors().get(0).getDefaultMessage());
         }
         return errors;
     }
@@ -54,6 +64,14 @@ public class APIExceptionHandler {
     public Map<String, String> typeMismatchException(MethodArgumentTypeMismatchException e) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", "Lỗi truyền dữ liệu");
+        return errors;
+    }
+
+    @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public Map<String, String> typeMismatchException(InvalidDataAccessResourceUsageException e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", "Nhập sai dữ liệu");
         return errors;
     }
 

@@ -77,11 +77,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = OrderMapper.toOrder(orderDTOPlace);
         order.setOrderCode(RandomString.make(10) + order.getOrderNumber() + RandomString.make(10));
         order.setAddress(address);
-        float totalBill = 0;
-        for (OrderDetail oDetail : order.getCart()) {
-            totalBill += oDetail.getTotalMoney();
-        }
-        order.setTotalMoney(totalBill);
         // Check quantity before payment
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
@@ -107,6 +102,9 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetail orderDetail : cart) {
             if (orderDetail.getQuantity() <= 0 || Integer.toString(orderDetail.getQuantity()) == null)
                 return false;
+            if(!productRepository.findById(orderDetail.getProduct().getId()).isPresent()){
+                return false;
+            }
             int quantityInStock = productRepository.findById(orderDetail.getProduct().getId()).get().getQuantity();
             if (quantityInStock < orderDetail.getQuantity())
                 return false;
