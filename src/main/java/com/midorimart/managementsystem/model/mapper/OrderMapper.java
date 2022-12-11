@@ -47,7 +47,7 @@ public class OrderMapper {
                 .product(Product.builder().id(orderDetailDTOPlace.getProductId()).build())
                 .quantity(orderDetailDTOPlace.getQuantity())
                 .price(orderDetailDTOPlace.getPrice())
-                .totalMoney(orderDetailDTOPlace.getPrice() * orderDetailDTOPlace.getQuantity())
+                .totalMoney(orderDetailDTOPlace.getTotalPrice())
                 .build();
     }
 
