@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -62,9 +63,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
             ObjectOptimisticLockingFailureException.class })
-    public Map<String, OrderDTOResponse> addNewOrder(OrderDTOPlace orderDTOPlacemap)
+    public Map<String, OrderDTOResponse> addNewOrder(OrderDTOPlace orderDTOPlace)
             throws CustomBadRequestException {
-        OrderDTOPlace orderDTOPlace = orderDTOPlacemap;
         // turn address into string to save in db
         if (orderDTOPlace.getCart() == null || orderDTOPlace.getCart().isEmpty()) {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Chưa có sản phẩm").build());
@@ -77,6 +77,11 @@ public class OrderServiceImpl implements OrderService {
         Order order = OrderMapper.toOrder(orderDTOPlace);
         order.setOrderCode(RandomString.make(10) + order.getOrderNumber() + RandomString.make(10));
         order.setAddress(address);
+        float totalBill = 0;
+        for (OrderDetail oDetail : order.getCart()) {
+            totalBill += oDetail.getTotalMoney();
+        }
+        order.setTotalMoney(totalBill);
         // Check quantity before payment
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
@@ -140,7 +145,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
-        Order order = orderRepository.findByOrderNumber(orderNumber);
+        Optional<Order> orderOptional = orderRepository.findByOrderNumber(orderNumber);
+        if (!orderOptional.isPresent()) {
+            throw new CustomBadRequestException(
+                    CustomError.builder().code("400").message("wrong order number").build());
+        }
+        Order order = orderOptional.get();
+
         // change status to reject or accept
         if (status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS && order.getStatus() == 0) {
             order.setStatus(status);
@@ -201,7 +212,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers, String code)
             throws CustomBadRequestException {
-        Order order = orderRepository.findByOrderNumber(orderNumbers);
+        Optional<Order> orderOptional = orderRepository.findByOrderNumber(orderNumbers);
+        if (!orderOptional.isPresent()) {
+            throw new CustomBadRequestException(
+                    CustomError.builder().code("400").message("wrong order number").build());
+        }
+        Order order = orderOptional.get();
         // Check order belonging
         if (!order.getOrderCode().equals(code)) {
             throw new CustomBadRequestException(

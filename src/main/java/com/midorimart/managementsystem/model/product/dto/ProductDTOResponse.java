@@ -5,6 +5,7 @@ import java.util.List;
 import com.midorimart.managementsystem.model.category.dto.CategoryDTOResponse;
 import com.midorimart.managementsystem.model.country.dto.CountryDTOResponse;
 import com.midorimart.managementsystem.model.merchant.dto.MerchantDTOResponse;
+import com.midorimart.managementsystem.model.productQuantityInStock.dto.ProductQuantityDTOResponse;
 import com.midorimart.managementsystem.model.productUnit.dto.ProductUnitDTOResponse;
 
 import lombok.Builder;
@@ -32,4 +33,5 @@ public class ProductDTOResponse {
     private ProductUnitDTOResponse unit;
     private MerchantDTOResponse merchant;
     private double star;
+    private List<ProductQuantityDTOResponse> expiryDate;
 }

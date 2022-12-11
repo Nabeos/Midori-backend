@@ -7,8 +7,10 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 @CrossOrigin
 @RequiredArgsConstructor
+@Validated
 public class OrderController {
 
     private final OrderService orderService;
@@ -73,7 +76,7 @@ public class OrderController {
     @Operation(summary = "Update Status For Seller")
     @PutMapping("/v1/order-management/{order-number}")
     public Map<String, OrderDTOResponse> updateStatus(@PathVariable(name = "order-number") String orderNumber,
-            @RequestParam(name = "status", defaultValue = "8", required = false) int status)
+            @RequestParam(name = "status", defaultValue = "8", required = true) @NotNull Integer status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         return orderService.updateStatus(orderNumber, status);
     }

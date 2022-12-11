@@ -46,6 +46,8 @@ public class ProductMapper {
                 .quantity(product.getQuantity())
                 .unit(ProductUnitDTOResponse.builder().id(product.getUnit().getId()).name(product.getUnit().getName())
                         .build())
+                .expiryDate(product.getProductQuantities() == null ? null
+                        : toProductQuantityDTOResponseList(product.getProductQuantities()))
                 .build();
     }
 
@@ -143,6 +145,8 @@ public class ProductMapper {
     }
 
     public static ProductQuantityDTOResponse toProductQuantityDTOResponse(ProductQuantity product) {
-        return ProductQuantityDTOResponse.builder().expiryDate(DateHelper.convertDate(product.getExpiryDate()).substring(0,10)).build();
+        return ProductQuantityDTOResponse.builder()
+                .expiryDate(DateHelper.convertDate(product.getExpiryDate()).substring(0, 10))
+                .quantityInPQ(product.getQuantity()).build();
     }
 }

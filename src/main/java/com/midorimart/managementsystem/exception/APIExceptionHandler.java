@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
 import com.midorimart.managementsystem.exception.custom.CustomNotFoundException;
@@ -43,6 +44,14 @@ public class APIExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public Map<String, String> phoneNumberException(HttpMessageNotReadableException e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", "Lỗi truyền dữ liệu");
+        return errors;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public Map<String, String> typeMismatchException(MethodArgumentTypeMismatchException e) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", "Lỗi truyền dữ liệu");
         return errors;

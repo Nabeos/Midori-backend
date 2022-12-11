@@ -22,6 +22,7 @@ public class OrderDTOResponse {
     private String email;
     private String phoneNumber;
     private String receiveProductsMethod;
+    private String paymentMethod;
     private AddressDTOResponse address;
     private String notes;
     private float totalBill;

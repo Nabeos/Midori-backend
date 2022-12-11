@@ -47,13 +47,13 @@ public class OrderMapper {
                 .product(Product.builder().id(orderDetailDTOPlace.getProductId()).build())
                 .quantity(orderDetailDTOPlace.getQuantity())
                 .price(orderDetailDTOPlace.getPrice())
-                .totalMoney(orderDetailDTOPlace.getTotalPrice())
+                .totalMoney(orderDetailDTOPlace.getPrice() * orderDetailDTOPlace.getQuantity())
                 .build();
     }
 
     public static OrderDTOResponse toOrderDTOResponse(Order order, int id) {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String deliveryDate = order.getDeliveryDate().substring(0,10);
+        String deliveryDate = order.getDeliveryDate().substring(0, 10);
         String day = deliveryDate.split("-")[2];
         String month = deliveryDate.split("-")[1];
         String year = deliveryDate.split("-")[0];
@@ -62,7 +62,7 @@ public class OrderMapper {
                 .totalBill(order.getTotalMoney())
                 .orderNumber(order.getOrderNumber())
                 .orderDate(format.format(order.getOrderDate()))
-                .deliveryDate(day+"-"+month+"-"+year)
+                .deliveryDate(day + "-" + month + "-" + year)
                 .deliveryTimeRange(order.getDeliveryTimeRange())
                 .fullName(order.getFullName())
                 .email(order.getEmail())
@@ -71,9 +71,21 @@ public class OrderMapper {
                 .notes(order.getNote())
                 .receiveProductsMethod(getReceiveMethod(order.getReceiveProductsMethod()))
                 .status(getStatus(order.getStatus(), id))
+                .paymentMethod(getPaymentMethod(order.getPaymentMethod()))
                 .orderDetail(toListOrderDetailDTOResponse(order.getCart()))
                 .orderCode(order.getOrderCode())
                 .build();
+    }
+
+    private static String getPaymentMethod(int paymentMethod) {
+        switch (paymentMethod) {
+            case 0:
+                return "Thanh toán tại cửa hàng";
+            case 1:
+                return "Thanh toán online";
+            default:
+                return "Error";
+        }
     }
 
     public static String getOrderNumber() {
