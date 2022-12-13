@@ -65,11 +65,12 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
 
     @Override
     @Transactional(rollbackFor = { SQLException.class, CustomBadRequestException.class,
-            ConstraintViolationException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+            ConstraintViolationException.class, MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class })
     public Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(
             Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException {
         ReceivedNoteDTOCreate receivedDTOCreate = receivedNoteMap.get("receivedNote");
-        if (receivedDTOCreate.getReceivedDetail().isEmpty() || receivedDTOCreate.getReceivedDetail() == null) {
+        if (receivedDTOCreate.getReceivedDetail() == null || receivedDTOCreate.getReceivedDetail().isEmpty()) {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Không có sản phẩm").build());
         }
         if (receivedNoteRepository.findByName(receivedDTOCreate.getName()) != null) {
