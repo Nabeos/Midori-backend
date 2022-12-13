@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class EmailSenderServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final ProductRepository productRepository;
-
+    private int shippingFee = 30000;
     private List<MimeMessage> queue = new ArrayList<>();
 
     public void push(Order order) throws UnsupportedEncodingException, MessagingException {
@@ -126,12 +126,12 @@ public class EmailSenderServiceImpl implements EmailService {
 
                 + " </table></div><div style='text-align: end; margin-top: 10px'><div>Tạm tính:  "
                 + order.getTotalMoney() + "</div>"
-                + "  <div>Phí vận chuyển:  35.000đ</div>"
-                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + 35000)
+                + "  <div>Phí vận chuyển:  30.000đ</div>"
+                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
                 + "</div></div>"
                 + "<div style='display: flex; justify-content: center; margin-top: 10px'>"
-                + "<button onclick='' id='cancelOrderButton'>"
-                + "<a href='"+verifyUri+"'>Trả hàng/Hoàn tiền</a></button></div>"
+                + "<button onclick=''>"
+                + "<a href='"+verifyUri+"' id='cancelOrderButton'>Trả hàng/Hoàn tiền</a></button></div>"
                 + "</div></div>"
                 + "</html>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã giao hàng thành công");
@@ -215,8 +215,8 @@ public class EmailSenderServiceImpl implements EmailService {
 
                 + " </table></div><div style='text-align: end; margin-top: 10px'><div>Tạm tính:  "
                 + order.getTotalMoney() + "đ</div>"
-                + "  <div>Phí vận chuyển:  35.000đ</div>"
-                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + 35000)
+                + "  <div>Phí vận chuyển:  30.000đ</div>"
+                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
                 + "đ</div></div></div></div>"
                 + "</html>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã được chấp nhận");
@@ -309,8 +309,8 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "  </div>"
                 + "  <div style='text-align: end; margin-top: 10px'>"
                 + "    <div>Tạm tính:	" + order.getTotalMoney() + "đ</div>"
-                + "    <div>Phí vận chuyển:	35.000đ</div>"
-                + "    <div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + 35000)
+                + "    <div>Phí vận chuyển:	30.000đ</div>"
+                + "    <div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
                 + "đ</div>"
                 + "  </div>"
                 + "</div>"
@@ -437,10 +437,10 @@ public class EmailSenderServiceImpl implements EmailService {
 
                 + " </table></div><div style='text-align: end; margin-top: 10px'><div>Tạm tính:  "
                 + order.getTotalMoney() + "đ</div>"
-                + "  <div>Phí vận chuyển:  35.000đ</div>"
-                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + 35000)
+                + "  <div>Phí vận chuyển:  30.000đ</div>"
+                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
                 + "đ</div></div>"
-                + "<div style='display: flex; justify-content: center; margin-top: 10px'><button onclick='' id='cancelOrderButton'><a href='"+verifyUri+"'>Hủy Đơn Hàng</a></button></div>"
+                + "<div style='display: flex; justify-content: center; margin-top: 10px'><button onclick='' ><a id='cancelOrderButton' href='"+verifyUri+"'>Hủy Đơn Hàng</a></button></div>"
                 + "</div></div>"
                 + "</html>";
         emailDetails
