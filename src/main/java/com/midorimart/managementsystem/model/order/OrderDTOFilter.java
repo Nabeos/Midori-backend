@@ -13,4 +13,5 @@ public class OrderDTOFilter {
     private int offset;
     private int limit;
     private int status;
+    private int type;
 }

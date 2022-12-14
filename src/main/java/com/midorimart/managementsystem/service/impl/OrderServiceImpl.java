@@ -98,45 +98,11 @@ public class OrderServiceImpl implements OrderService {
         return buildDTOResponse(order);
     }
 
-    private boolean CheckQuantity(List<OrderDetail> cart) {
-        for (OrderDetail orderDetail : cart) {
-            if (orderDetail.getQuantity() <= 0 || Integer.toString(orderDetail.getQuantity()) == null)
-                return false;
-            if(!productRepository.findById(orderDetail.getProduct().getId()).isPresent()){
-                return false;
-            }
-            int quantityInStock = productRepository.findById(orderDetail.getProduct().getId()).get().getQuantity();
-            if (quantityInStock < orderDetail.getQuantity())
-                return false;
-        }
-        return true;
-    }
-
-    // Save invoice for user
-    private void saveInvoiceForUser(User userLogin, Order order) {
-        Invoice invoice = new Invoice();
-        invoice.setUser(userLogin);
-        invoice.setOrder(order);
-        invoice.setStatus(1);
-        invoice = invoiceRepository.save(invoice);
-        saveUserProductStatus(invoice.getOrder().getCart(), userLogin);
-    }
-
     public void saveOrderDetail(List<OrderDetail> orderDetailList, Order order) {
         for (OrderDetail od : orderDetailList) {
             od.setOrder(order);
             orderDetailRepository.save(od);
         }
-    }
-
-    private boolean CheckQuantityInStock(List<OrderDetail> oDetail) {
-        for (OrderDetail orderDetail : oDetail) {
-            int quantityInStock = productQuantityRepository
-                    .findSumOfQuantityByProductId(orderDetail.getProduct().getId());
-            if (quantityInStock < orderDetail.getQuantity())
-                return false;
-        }
-        return true;
     }
 
     // update status for seller (accept, reject, shipping, successful)
@@ -190,22 +156,6 @@ public class OrderServiceImpl implements OrderService {
                 CustomError.builder().code("400").message("You can not update status anymore").build());
     }
 
-    // Create Delivery Note
-    private DeliveryNote createdDeliveryNote(Order order) {
-        DeliveryNote deliveryNote = new DeliveryNote();
-        deliveryNote.setCreatedAt(new Date());
-        deliveryNote.setName("XUAT" + order.getOrderNumber());
-        deliveryNote.setNote("Phiếu xuất kho cho đơn hàng " + order.getOrderNumber() + " giao lúc "
-                + order.getDeliveryDate().substring(0, 10) + " " + order.getDeliveryTimeRange() + "\n"
-                + "Chú thích của Đơn Hàng: " + order.getNote());
-        deliveryNote.setUser(userService.getUserLogin());
-        deliveryNote.setOrder(order);
-        deliveryNote.setStatus(1);
-        DeliveryNote newDelivery = deliveryNoteServiceImpl.addNewDeliveryNote(deliveryNote, order.getCart());
-
-        return newDelivery;
-    }
-
     // Update status for Customer (refund, cancel)
     @Override
     public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumbers, String code)
@@ -237,6 +187,60 @@ public class OrderServiceImpl implements OrderService {
         }
         order = orderRepository.save(order);
         return buildDTOResponse(order);
+    }
+
+    // Display customer's orders list
+    @Override
+    public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter) {
+        Map<String, Object> result = orderCriteria.getOrders(filter);
+        List<Order> orders = (List<Order>) result.get("totalOrders");
+        return toOrderDTOList(orders);
+    }
+
+    // Display customer's purchase
+    @Override
+    public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter) {
+        Map<String, Object> result = orderCriteria.getOrdersForCustomer(filter, userService.getUserLogin().getId());
+        List<Order> orders = (List<Order>) result.get("totalOrders");
+        return toOrderDTOList(orders);
+    }
+
+    // Create Delivery Note
+    private DeliveryNote createdDeliveryNote(Order order) {
+        DeliveryNote deliveryNote = new DeliveryNote();
+        deliveryNote.setCreatedAt(new Date());
+        deliveryNote.setName("XUAT" + order.getOrderNumber());
+        deliveryNote.setNote("Phiếu xuất kho cho đơn hàng " + order.getOrderNumber() + " giao lúc "
+                + order.getDeliveryDate().substring(0, 10) + " " + order.getDeliveryTimeRange() + "\n"
+                + "Chú thích của Đơn Hàng: " + order.getNote());
+        deliveryNote.setUser(userService.getUserLogin());
+        deliveryNote.setOrder(order);
+        deliveryNote.setStatus(1);
+        DeliveryNote newDelivery = deliveryNoteServiceImpl.addNewDeliveryNote(deliveryNote, order.getCart());
+
+        return newDelivery;
+    }
+
+    private void saveUserProductStatus(List<OrderDetail> list, User user) {
+        for (OrderDetail orderDetail : list) {
+            Product product = productRepository.findById(orderDetail.getProduct().getId()).get();
+            user.getProducts().add(product);
+            user = userRepository.save(user);
+        }
+    }
+
+    private Map<String, List<OrderDTOResponse>> toOrderDTOList(List<Order> orders) {
+        User user = userService.getUserLogin();
+        List<OrderDTOResponse> orderDTOResponses = OrderMapper.toOrderDTOList(orders, user.getRole().getId());
+        Map<String, List<OrderDTOResponse>> wrapper = new HashMap<>();
+        wrapper.put("orders", orderDTOResponses);
+        return wrapper;
+    }
+
+    @Override
+    public Map<String, OrderDTOResponse> addNewOrderTest(@Valid OrderDTOPlace addNewCartMap) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     private void updateStatusForDeliveryNote(Order order) {
@@ -282,41 +286,37 @@ public class OrderServiceImpl implements OrderService {
         return wrapper;
     }
 
-    // Display customer's orders list
-    @Override
-    public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter) {
-        Map<String, Object> result = orderCriteria.getOrders(filter);
-        List<Order> orders = (List<Order>) result.get("totalOrders");
-        return toOrderDTOList(orders);
-    }
-
-    // Display customer's purchase
-    @Override
-    public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter) {
-        Map<String, Object> result = orderCriteria.getOrdersForCustomer(filter, userService.getUserLogin().getId());
-        List<Order> orders = (List<Order>) result.get("totalOrders");
-        return toOrderDTOList(orders);
-    }
-
-    private void saveUserProductStatus(List<OrderDetail> list, User user) {
-        for (OrderDetail orderDetail : list) {
-            Product product = productRepository.findById(orderDetail.getProduct().getId()).get();
-            user.getProducts().add(product);
-            user = userRepository.save(user);
+    private boolean CheckQuantity(List<OrderDetail> cart) {
+        for (OrderDetail orderDetail : cart) {
+            if (orderDetail.getQuantity() <= 0 || Integer.toString(orderDetail.getQuantity()) == null)
+                return false;
+            if (!productRepository.findById(orderDetail.getProduct().getId()).isPresent()) {
+                return false;
+            }
+            int quantityInStock = productRepository.findById(orderDetail.getProduct().getId()).get().getQuantity();
+            if (quantityInStock < orderDetail.getQuantity())
+                return false;
         }
+        return true;
     }
 
-    private Map<String, List<OrderDTOResponse>> toOrderDTOList(List<Order> orders) {
-        User user = userService.getUserLogin();
-        List<OrderDTOResponse> orderDTOResponses = OrderMapper.toOrderDTOList(orders, user.getRole().getId());
-        Map<String, List<OrderDTOResponse>> wrapper = new HashMap<>();
-        wrapper.put("orders", orderDTOResponses);
-        return wrapper;
+    // Save invoice for user
+    private void saveInvoiceForUser(User userLogin, Order order) {
+        Invoice invoice = new Invoice();
+        invoice.setUser(userLogin);
+        invoice.setOrder(order);
+        invoice.setStatus(1);
+        invoice = invoiceRepository.save(invoice);
+        saveUserProductStatus(invoice.getOrder().getCart(), userLogin);
     }
 
-    @Override
-    public Map<String, OrderDTOResponse> addNewOrderTest(@Valid OrderDTOPlace addNewCartMap) {
-        // TODO Auto-generated method stub
-        return null;
+    private boolean CheckQuantityInStock(List<OrderDetail> oDetail) {
+        for (OrderDetail orderDetail : oDetail) {
+            int quantityInStock = productQuantityRepository
+                    .findSumOfQuantityByProductId(orderDetail.getProduct().getId());
+            if (quantityInStock < orderDetail.getQuantity())
+                return false;
+        }
+        return true;
     }
 }
