@@ -102,7 +102,7 @@ public class ProductController {
 
     @Operation(summary = "Add new Product")
     @PostMapping("/api/v1/product-management/products")
-    public Map<String, String> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap)
+    public Map<String, List<String>> addNewProduct(@RequestBody Map<String, ProductDTOCreate> productDTOMap)
             throws CustomBadRequestException, CustomNotFoundException {
         return service.addNewProduct(productDTOMap);
     }

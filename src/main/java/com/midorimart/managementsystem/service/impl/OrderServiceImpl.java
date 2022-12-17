@@ -129,6 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Send email for customer if order is rejected
             if (order.getStatus() == Order.STATUS_REJECT) {
+                refillProductQuantityList(order.getCart());
                 emailService.sendRejectedEmail(order);
                 return buildDTOResponse(order);
             }

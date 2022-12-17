@@ -22,7 +22,7 @@ public interface ProductService {
 
     public Map<String, List<ProductDTOResponse>> findAllProduct();
 
-    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
+    public Map<String, List<String>> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
             throws CustomBadRequestException, CustomNotFoundException;
 
     public Map<String, CategoryDTOResponse> addNewCategory(Map<String, CategoryDTOCreate> categoryMap)

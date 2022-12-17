@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
     //Add new Product
     @Override
-    public Map<String, String> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
+    public Map<String, List<String>> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
             throws CustomNotFoundException, CustomBadRequestException {
         ProductDTOCreate productDTOCreate = productDTOMap.get("product");
         Product product = ProductMapper.toProduct(productDTOCreate);
@@ -113,8 +113,11 @@ public class ProductServiceImpl implements ProductService {
                 product.setSlug(SlugUtil.getSlug(product.getTitle(), product.getSku()));
                 product = productRepository.save(product);
             }
-            Map<String, String> wrapper = new HashMap<>();
-            wrapper.put("product", product.getSlug());
+            Map<String, List<String>> wrapper = new HashMap<>();
+            List<String> results = new ArrayList<>();
+            results.add(product.getId()+"");
+            results.add(product.getSlug());
+            wrapper.put("product", results);
             return wrapper;
         }
         throw new CustomBadRequestException(

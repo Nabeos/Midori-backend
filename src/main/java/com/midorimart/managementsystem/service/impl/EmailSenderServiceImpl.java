@@ -56,7 +56,8 @@ public class EmailSenderServiceImpl implements EmailService {
     @Override
     public MimeMessage sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
-        String verifyUri = "http://localhost:3000/guestnotificationrefund/"+order.getOrderNumber()+"/"+order.getOrderCode();
+        String verifyUri = "http://localhost:3000/guestnotificationrefund/" + order.getOrderNumber() + "/"
+                + order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
         String orderDay = orderDate.split("-")[0];
@@ -84,12 +85,13 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "                  tr:nth-child(even) {"
                 + "background-color: #dddddd;}"
                 + "#cancelOrderButton {"
-                + " border: 1px solid #d32a14;"
-                + "   background: #d32a14;"
+                + " border: 1px solid #EAB308;"
+                + "   background: #EAB308;"
                 + "   border-radius: 5px;"
-                + "     padding: 10px;"
+                + "   padding: 10px;"
                 + "   color: white;"
-                + "   font-size: 15px; }"
+                + "   font-size: 15px;"
+                + "   text-decoration: none; }"
                 + "</style>"
                 + "</head>"
                 + "<body>"
@@ -130,8 +132,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
                 + "</div></div>"
                 + "<div style='display: flex; justify-content: center; margin-top: 10px'>"
-                + "<button onclick=''>"
-                + "<a href='"+verifyUri+"' id='cancelOrderButton'>Trả hàng/Hoàn tiền</a></button></div>"
+                + "<a href='" + verifyUri + "' id='cancelOrderButton'>Trả hàng/Hoàn tiền</a></div>"
                 + "</div></div>"
                 + "</html>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã giao hàng thành công");
@@ -371,7 +372,8 @@ public class EmailSenderServiceImpl implements EmailService {
     @Override
     public MimeMessage sendPlaceOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
-        String verifyUri = "http://localhost:3000/guestnotification/"+order.getOrderNumber()+"/"+order.getOrderCode();
+        String verifyUri = "http://localhost:3000/guestnotification/" + order.getOrderNumber() + "/"
+                + order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
         String orderDay = orderDate.split("-")[0];
@@ -398,9 +400,10 @@ public class EmailSenderServiceImpl implements EmailService {
                 + " border: 1px solid #d32a14;"
                 + "   background: #d32a14;"
                 + "   border-radius: 5px;"
-                + "     padding: 10px;"
+                + "   padding: 10px;"
                 + "   color: white;"
-                + "   font-size: 15px; }"
+                + "   font-size: 15px;"
+                + "   text-decoration: none;}"
                 + "</style>"
                 + "</head>"
                 + "<body>"
@@ -440,7 +443,8 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "  <div>Phí vận chuyển:  30.000đ</div>"
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
                 + "đ</div></div>"
-                + "<div style='display: flex; justify-content: center; margin-top: 10px'><button onclick='' ><a id='cancelOrderButton' href='"+verifyUri+"'>Hủy Đơn Hàng</a></button></div>"
+                + "<div style='display: flex; justify-content: center; margin-top: 10px'><a id='cancelOrderButton' href='"
+                + verifyUri + "'>Hủy Đơn Hàng</a></div>"
                 + "</div></div>"
                 + "</html>";
         emailDetails
