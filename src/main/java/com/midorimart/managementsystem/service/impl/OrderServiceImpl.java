@@ -222,6 +222,7 @@ public class OrderServiceImpl implements OrderService {
         return newDelivery;
     }
 
+    // Save purchase for Customer after Placing order successfully
     private void saveUserProductStatus(List<OrderDetail> list, User user) {
         for (OrderDetail orderDetail : list) {
             Product product = productRepository.findById(orderDetail.getProduct().getId()).get();
@@ -230,6 +231,7 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    // Return to orderDTO to display to user
     private Map<String, List<OrderDTOResponse>> toOrderDTOList(List<Order> orders) {
         User user = userService.getUserLogin();
         List<OrderDTOResponse> orderDTOResponses = OrderMapper.toOrderDTOList(orders, user.getRole().getId());
@@ -238,12 +240,7 @@ public class OrderServiceImpl implements OrderService {
         return wrapper;
     }
 
-    @Override
-    public Map<String, OrderDTOResponse> addNewOrderTest(@Valid OrderDTOPlace addNewCartMap) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    // Change status for delivery note when order's status changes
     private void updateStatusForDeliveryNote(Order order) {
         DeliveryNote existed = deliveryNoteRepository.findByOrderId(order.getId());
         existed.setStatus(Order.STATUS_REFUND);
@@ -264,12 +261,14 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    // Return quantity for each product in inventory
     private void refillQuantityInStock(OrderDetail od) {
         ProductQuantity existed = productQuantityRepository.findByProductId(od.getProduct().getId());
         existed.setQuantity(existed.getQuantity() + od.getQuantity());
         existed = productQuantityRepository.save(existed);
     }
 
+    // Refill quantity for each product
     private void refillProductQuantity(OrderDetail product) {
         Product p = productRepository.findById(product.getProduct().getId()).get();
         p.setQuantity(p.getQuantity() + product.getQuantity());
@@ -287,6 +286,7 @@ public class OrderServiceImpl implements OrderService {
         return wrapper;
     }
 
+    // Check quantity in cart
     private boolean CheckQuantity(List<OrderDetail> cart) {
         for (OrderDetail orderDetail : cart) {
             if (orderDetail.getQuantity() <= 0 || Integer.toString(orderDetail.getQuantity()) == null)
@@ -309,15 +309,5 @@ public class OrderServiceImpl implements OrderService {
         invoice.setStatus(1);
         invoice = invoiceRepository.save(invoice);
         saveUserProductStatus(invoice.getOrder().getCart(), userLogin);
-    }
-
-    private boolean CheckQuantityInStock(List<OrderDetail> oDetail) {
-        for (OrderDetail orderDetail : oDetail) {
-            int quantityInStock = productQuantityRepository
-                    .findSumOfQuantityByProductId(orderDetail.getProduct().getId());
-            if (quantityInStock < orderDetail.getQuantity())
-                return false;
-        }
-        return true;
     }
 }

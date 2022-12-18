@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductUnitServiceImpl implements ProductUnitService {
     private final ProductUnitRepository productUnitRepository;
 
+    // Display all units
     @Override
     public Map<String, List<ProductUnitDTOResponse>> getAllUnit() {
         List<ProductUnit> productUnits = productUnitRepository.findAll();

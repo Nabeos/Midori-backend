@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.utils;
 
 public class SkuUtil {
+    // Create Sku from category and product id
     public static String getSku(int categoryId, int productId) {
         String sku = "";
         if (categoryId < 10) {

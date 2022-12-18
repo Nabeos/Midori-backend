@@ -31,25 +31,29 @@ public class CommentServiceImpl implements CommentService {
     private final ProductRepository productRepository;
     private final UserService userService;
 
+    // Add new comment
     @Override
-    public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap) throws CustomBadRequestException {
+    public Map<String, CommentDTOResponse> addComment(String slug, Map<String, CommentDTOCreate> commentDTOMap)
+            throws CustomBadRequestException {
         CommentDTOCreate commentDTOCreate = commentDTOMap.get("comment");
         User user = userService.getUserLogin();
         Product product = productRepository.findBySlug(slug).get();
-        if(checkBoughtProduct(product, user)){
+        if (checkBoughtProduct(product, user)) {
             Comment comment = CommentMapper.toComment(commentDTOCreate);
             comment.setUser(user);
             comment.setProduct(product);
             comment = commentRepository.save(comment);
             return buildCommentDTOResponse(comment);
         }
-        throw new CustomBadRequestException(CustomError.builder().code("400").message("You must buy product first").build());
+        throw new CustomBadRequestException(
+                CustomError.builder().code("400").message("You must buy product first").build());
     }
 
+    // Check if bought product or not
     private boolean checkBoughtProduct(Product product, User user) {
         boolean isBought = false;
-        for(User u : product.getUsers()){
-            if(u.getId() == user.getId()){
+        for (User u : product.getUsers()) {
+            if (u.getId() == user.getId()) {
                 isBought = true;
                 return isBought;
             }
@@ -64,6 +68,7 @@ public class CommentServiceImpl implements CommentService {
         return wrapper;
     }
 
+    // Get star rate
     @Override
     public Map<String, Double> getAverageStarForEachProduct(int id) {
         Optional<Double> avgStarOptional = commentRepository.findAvgStarByProduct(id);
@@ -73,12 +78,14 @@ public class CommentServiceImpl implements CommentService {
         return wrapper;
     }
 
+    // Update comment
     @Override
     public Map<String, CommentDTOResponse> updateComment(int id,
             Map<String, CommentDTOUpdate> commentDTOMap) throws CustomBadRequestException {
         CommentDTOUpdate commentDTOUpdate = commentDTOMap.get("comment");
         Comment comment = commentRepository.findById(id).get();
         User user = userService.getUserLogin();
+        // Check if comment belongs to user or not
         if (user.getId() != comment.getUser().getId()) {
             throw new CustomBadRequestException(
                     CustomError.builder().code("400").message("You have no permission to edit this comment").build());

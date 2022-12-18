@@ -38,6 +38,7 @@ public class MerchantServiceImpl implements MerchantService {
         return buildDTOResponse(merchant);
     }
 
+    // Display merchant
     @Override
     public Map<String, List<MerchantDTOResponse>> getAllMerchant() {
         List<Merchant> merchants = merchantRepository.findAll();

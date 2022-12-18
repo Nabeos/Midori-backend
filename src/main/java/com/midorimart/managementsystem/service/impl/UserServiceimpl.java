@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,21 +51,19 @@ import net.bytebuddy.utility.RandomString;
 public class UserServiceimpl implements UserService {
     private final EmailService emailService;
     private final UserRepository userRepository;
-    private final JavaMailSender mailSender;
     private final RoleRepository roleRepository;
     private final UserCriteria userCriteria;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private static final String REGEX_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d @$!%*?&]{6,32}$";
-    // private static final String REGEX_ALL_LETTER =
-    // "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ
-    // ]+$";
     private static final String REGEX_PHONE_NUMBER = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
     private final String FOLDER_PATH = "D:\\FPT_KI_9\\Practice_Coding\\SEP490_G5_Fall2022_Version_1.2\\Midori-mart-project\\public\\images\\user";
+    // Test in back-end
     // private final String FOLDER_PATH
     // ="C:\\Users\\AS\\Desktop\\FPT\\FALL_2022\\SEP
     // Project\\midori\\src\\main\\resources\\static\\images";
 
+    // Login
     @Override
     public Map<String, UserDTOResponse> authenticate(Map<String, UserDTOLoginRequest> userLoginRequestMap)
             throws CustomBadRequestException {
@@ -91,6 +88,7 @@ public class UserServiceimpl implements UserService {
 
     }
 
+    // Register account
     @Override
     public Map<String, UserDTOResponse> register(Map<String, UserDTOCreate> userDTOCreateMap)
             throws CustomBadRequestException {
@@ -232,6 +230,7 @@ public class UserServiceimpl implements UserService {
                 CustomError.builder().code("404").message("Verification code not found").build());
     }
 
+    // Upload avatar
     @Override
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files)
             throws IllegalStateException, IOException {
@@ -247,6 +246,7 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
+    // Save image
     private String saveFile(MultipartFile file) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
         String filePathToSave = "\\images\\user\\" + file.getOriginalFilename();
@@ -257,6 +257,7 @@ public class UserServiceimpl implements UserService {
         return user.getThumbnail();
     }
 
+    // Add shopkeeper for admin
     @Override
     public Map<String, UserDTOResponse> addNewUser(Map<String, UserDTOCreate> userDTOCreateMap) {
         UserDTOCreate userDTOCreate = userDTOCreateMap.get("user");
@@ -276,6 +277,7 @@ public class UserServiceimpl implements UserService {
         return null;
     }
 
+    // Display all roles
     @Override
     public Map<String, List<RoleDTOResponse>> getAllRoles() {
         List<Role> roles = roleRepository.findAll();
@@ -286,6 +288,7 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
+    // Get user list for admin
     @Override
     public Map<String, Object> getUsers(UserDTOFilter filter) {
         Map<String, Object> userMap = userCriteria.getAllUsers(filter);
@@ -299,6 +302,7 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
+    // activate or deactivate account
     @Override
     public Map<String, UserDTOResponse> updateUserStatus(int id) {
         User user = userRepository.findById(id).get();
@@ -351,6 +355,7 @@ public class UserServiceimpl implements UserService {
 
     }
 
+    // Get shopkeeper list
     @Override
     public Map<String, Object> getSellers() {
         List<User> sellers = userRepository.findAllByRoleId(4);
@@ -362,6 +367,7 @@ public class UserServiceimpl implements UserService {
         return wrapper;
     }
 
+    // Search user by name
     public Map<String, List<UserDTOResponse>> searchUser(String name, int offset, int limit) {
         String keyword = "%" + name + "%";
         List<User> userList = userRepository.findByNameOrEmailOrPhoneNumber(keyword, offset, limit);

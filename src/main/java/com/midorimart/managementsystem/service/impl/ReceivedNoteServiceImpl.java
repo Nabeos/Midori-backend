@@ -47,6 +47,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     private final MerchantRepository merchantRepository;
     private final ProductQuantityRepository productQuantityRepository;
 
+    // Display inventory receiving voucher with filter
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(ReceivedNoteDTOFilter filter) {
         Map<String, List<ReceivedNote>> result = (Map<String, List<ReceivedNote>>) receivedNoteCriteria
@@ -55,6 +56,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         return buildDTOListResponse(receivedNote);
     }
 
+    // Display inventory receiving voucher for user
     private Map<String, List<ReceivedNoteDTOResponse>> buildDTOListResponse(List<ReceivedNote> receivedNote) {
         List<ReceivedNoteDTOResponse> receivedNoteDTOResponses = receivedNote.stream()
                 .map(ReceivedNoteMapper::toReceivedNoteDTOResponse).collect(Collectors.toList());
@@ -63,6 +65,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         return wrapper;
     }
 
+    // Add new inventory receiving voucher
     @Override
     @Transactional(rollbackFor = { SQLException.class, CustomBadRequestException.class,
             ConstraintViolationException.class, MethodArgumentTypeMismatchException.class,
@@ -84,6 +87,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         return buildDTOResponse(receivedNote);
     }
 
+    // Save received note detail
     private void saveReceivedNoteDetail(List<ReceivedNoteDetail> receivedNoteDetailList, ReceivedNote receivedNote)
             throws CustomBadRequestException {
         for (ReceivedNoteDetail receivedNoteDetail : receivedNoteDetailList) {
@@ -99,8 +103,10 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         }
     }
 
+    // Save quantity of each product to inventory
     private void saveQuantityInStock(ReceivedNoteDetail receivedNoteDetail, Product product) {
         ProductQuantity existedQuantity = productQuantityRepository.findByProductIdAndisDisabled(product.getId());
+        // if already had product in database
         if (existedQuantity != null) {
             existedQuantity.setQuantity(receivedNoteDetail.getQuantity() + existedQuantity.getQuantity());
             existedQuantity.setUpdatedDate(new Date());
@@ -134,12 +140,14 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         return wrapper;
     }
 
+    // Get inventory receiving voucher by creator
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByUser(int id, int offset, int limit) {
         List<ReceivedNote> receivedNote = receivedNoteRepository.findByUserId(id, limit, offset);
         return buildDTOListResponse(receivedNote);
     }
 
+    // Get inventory receiving voucher by time ranges
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByDate(String firstDate, String secondDate,
             int offset, int limit) {
@@ -148,6 +156,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
         return buildDTOListResponse(receivedNote);
     }
 
+    // Get inventory receiving voucher by merchant
     @Override
     public Map<String, List<ReceivedNoteDTOResponse>> getReceivedNoteByMerchant(int id, int offset, int limit) {
         List<ReceivedNote> receivedNote = receivedNoteRepository.findByMerchantId(id, limit, offset);

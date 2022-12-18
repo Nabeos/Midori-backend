@@ -18,20 +18,21 @@ import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 @Validated
 public interface OrderService {
 
-    public Map<String, OrderDTOResponse> addNewOrder(@Valid OrderDTOPlace orderDTOPlace) throws CustomBadRequestException, ConstraintViolationException;
+    public Map<String, OrderDTOResponse> addNewOrder(@Valid OrderDTOPlace orderDTOPlace)
+            throws CustomBadRequestException, ConstraintViolationException;
 
-    public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status) throws CustomBadRequestException, UnsupportedEncodingException, MessagingException;
+    public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status)
+            throws CustomBadRequestException, UnsupportedEncodingException, MessagingException;
 
-    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber, String orderCode) throws CustomBadRequestException;
+    public Map<String, OrderDTOResponse> updateStatusForCustomer(String orderNumber, String orderCode)
+            throws CustomBadRequestException;
 
-    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(String orderNumber);
+    // public Map<String, CustomerOrderDTOResponse> getOrderDetail(String
+    // orderNumber);
 
     // public List<Invoice> getInvoiceByUser(int userId);
 
     public Map<String, List<OrderDTOResponse>> getOrderListForSeller(OrderDTOFilter filter);
 
     public Map<String, List<OrderDTOResponse>> getOrderListForCustomer(OrderDTOFilter filter);
-
-    public Map<String, OrderDTOResponse> addNewOrderTest(@Valid OrderDTOPlace addNewCartMap);
-
 }

@@ -84,14 +84,14 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
-    //Add new Product
+    // Add new Product
     @Override
     public Map<String, List<String>> addNewProduct(Map<String, ProductDTOCreate> productDTOMap)
             throws CustomNotFoundException, CustomBadRequestException {
         ProductDTOCreate productDTOCreate = productDTOMap.get("product");
         Product product = ProductMapper.toProduct(productDTOCreate);
         Optional<Product> productOptional = productRepository.findByTitle(product.getTitle());
-        //Check existed product
+        // Check existed product
         if (productOptional.isEmpty()) {
             Optional<Category> categoryOptional = categoryRepository.findById(productDTOCreate.getCategory());
             Optional<ProductUnit> productUnitOptional = productUnitRepository
@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
             }
             Map<String, List<String>> wrapper = new HashMap<>();
             List<String> results = new ArrayList<>();
-            results.add(product.getId()+"");
+            results.add(product.getId() + "");
             results.add(product.getSlug());
             wrapper.put("product", results);
             return wrapper;
@@ -171,6 +171,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Upload image for products
     @Override
     public Map<String, List<ImageDTOResponse>> uploadImage(MultipartFile[] files, String slug)
             throws IllegalStateException, IOException {
@@ -186,6 +187,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Save image to folder
     private String saveFile(MultipartFile file, Product product) throws IllegalStateException, IOException {
         String filePath = FOLDER_PATH + "\\" + file.getOriginalFilename();
         String fileToSave = "\\images\\product\\" + file.getOriginalFilename();
@@ -196,6 +198,7 @@ public class ProductServiceImpl implements ProductService {
         return gallery.getThumbnail();
     }
 
+    // Search products
     @Override
     public Map<String, List<ProductDTOResponse>> searchProduct(String title, int limit, int offset) {
         String query = "%" + title + "%";
@@ -222,6 +225,7 @@ public class ProductServiceImpl implements ProductService {
         throw new CustomNotFoundException(CustomError.builder().code("404").message("Product is not existed").build());
     }
 
+    // Get bestseller in product detail
     @Override
     public Map<String, List<ProductDTOResponse>> getBestSellerInEachCategory(int categoryId) {
         List<Integer> productID = productRepository.findBestSellersInEachCategoryCustom(categoryId);
@@ -235,6 +239,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Set star rate for a product
     private void setAvgStarForProduct(ProductDTOResponse productDTOResponse) {
         Double avgStar = commentService.getAverageStarForEachProduct(productDTOResponse.getId())
                 .get("avgStar") == null ? 0
@@ -242,12 +247,14 @@ public class ProductServiceImpl implements ProductService {
         productDTOResponse.setStar(avgStar);
     }
 
+    // Set star rate for products list
     private void setAvgStarForProductList(List<ProductDTOResponse> productDTOResponses) {
         for (ProductDTOResponse productDTOResponse : productDTOResponses) {
             setAvgStarForProduct(productDTOResponse);
         }
     }
 
+    // Set star rate for product detail
     private void setAvgStarForProduct(ProductDetailDTOResponse productDTOResponse) {
         Double avgStar = commentService.getAverageStarForEachProduct(productDTOResponse.getId())
                 .get("avgStar") == null ? 0
@@ -255,6 +262,7 @@ public class ProductServiceImpl implements ProductService {
         productDTOResponse.setStar(avgStar);
     }
 
+    // Get bestseller in Home page
     @Override
     public Map<String, List<ProductDTOResponse>> getBestSellerInHomePage() {
         List<Integer> productID = productRepository.findBestSellersInHomeCustom();
@@ -268,6 +276,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Get top 3 bestseller category in Home Page
     @Override
     public Map<String, List<CategoryDTOResponse>> getTop3BestsellerCategory() {
         List<Integer> categoriesId = productRepository.findBestsellerCategoryCustom();
@@ -280,6 +289,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Get Top 20 bestsellers in each category
     @Override
     public Map<String, List<ProductDTOResponse>> getTop20BestSellerInEachCategory(int categoryId) {
         List<Integer> productID = productRepository.findTop20BestSellersInCategoryCustom(categoryId);
@@ -293,6 +303,7 @@ public class ProductServiceImpl implements ProductService {
         return wrapper;
     }
 
+    // Edit product
     @Override
     public Map<String, ProductDetailDTOResponse> updateProduct(Map<String, ProductDTOCreate> productDTOMap, String slug)
             throws CustomNotFoundException {
@@ -301,6 +312,7 @@ public class ProductServiceImpl implements ProductService {
         existedProduct.setAmount(productUpdate.getAmount());
         existedProduct.setCategory(categoryRepository.findById(productUpdate.getCategory()).get());
 
+        // Set title and slug
         if (!checkProductName(productUpdate.getTitle(), existedProduct)) {
             existedProduct.setTitle(productUpdate.getTitle());
             existedProduct.setSlug(SlugUtil.getSlug(productUpdate.getTitle(), existedProduct.getSku()));
@@ -317,6 +329,7 @@ public class ProductServiceImpl implements ProductService {
         return buildDTODetailResponse(existedProduct);
     }
 
+    // Get existed product
     private boolean checkProductName(String title, Product existedProduct) {
         Optional<Product> productOptional = productRepository.findByTitle(title);
         if (productOptional.isPresent()) {
@@ -326,6 +339,7 @@ public class ProductServiceImpl implements ProductService {
         return false;
     }
 
+    // return product to FE
     private Map<String, ProductDetailDTOResponse> buildDTODetailResponse(Product existedProduct) {
         ProductDetailDTOResponse productDetailDTOResponse = ProductMapper.toProductDetail(existedProduct);
         Map<String, ProductDetailDTOResponse> wrapper = new HashMap<>();

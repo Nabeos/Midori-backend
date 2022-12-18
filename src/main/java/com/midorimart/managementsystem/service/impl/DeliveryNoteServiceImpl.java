@@ -17,12 +17,10 @@ import com.midorimart.managementsystem.model.deliveryNote.DeliveryNoteDTORespons
 import com.midorimart.managementsystem.model.mapper.DeliveryNoteMapper;
 import com.midorimart.managementsystem.repository.DeliveryNoteDetailRepository;
 import com.midorimart.managementsystem.repository.DeliveryNoteRepository;
-import com.midorimart.managementsystem.repository.OrderRepository;
 import com.midorimart.managementsystem.repository.ProductQuantityRepository;
 import com.midorimart.managementsystem.repository.ProductRepository;
 import com.midorimart.managementsystem.repository.custom.DeliveryNoteCriteria;
 import com.midorimart.managementsystem.service.DeliveryNoteService;
-import com.midorimart.managementsystem.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,20 +31,9 @@ public class DeliveryNoteServiceImpl implements DeliveryNoteService {
     private final DeliveryNoteDetailRepository deliveryNoteDetailRepository;
     private final ProductRepository productRepository;
     private final ProductQuantityRepository productQuantityRepository;
-    private final UserService userService;
-    private final OrderRepository orderRepository;
     private final DeliveryNoteCriteria deliveryNoteCriteria;
 
-    @Override
-    public Map<String, String> deleteDeliveryNote(int id) {
-        DeliveryNote deliveryNote = deliveryNoteRepository.findById(id).get();
-        deliveryNote.setStatus(0);
-        deliveryNote = deliveryNoteRepository.save(deliveryNote);
-        Map<String, String> wrapper = new HashMap<>();
-        wrapper.put("deliveryNote", "Delete successfully");
-        return wrapper;
-    }
-
+    // Add new Delivery note
     public DeliveryNote addNewDeliveryNote(DeliveryNote deliveryNote, List<OrderDetail> cart) {
         deliveryNote = deliveryNoteRepository.save(deliveryNote);
         saveDeliveryNoteDetail(cart, deliveryNote);
@@ -64,6 +51,7 @@ public class DeliveryNoteServiceImpl implements DeliveryNoteService {
         return null;
     }
 
+    // Display delivery note
     @Override
     public Map<String, List<DeliveryNoteDTOResponse>> getAllDeliveryNote(DeliveryNoteDTOFilter filter) {
         Map<String, List<DeliveryNote>> result = (Map<String, List<DeliveryNote>>) deliveryNoteCriteria
@@ -80,13 +68,7 @@ public class DeliveryNoteServiceImpl implements DeliveryNoteService {
         return wrapper;
     }
 
-    private Map<String, DeliveryNoteDTOResponse> buildDTOResponse(DeliveryNote deliveryNote) {
-        DeliveryNoteDTOResponse deliveryNoteDTOResponse = DeliveryNoteMapper.toDeliveryNoteDTOResponse(deliveryNote);
-        Map<String, DeliveryNoteDTOResponse> wrapper = new HashMap<>();
-        wrapper.put("deliveryNote", deliveryNoteDTOResponse);
-        return wrapper;
-    }
-
+    // Save delivery note detail
     private void saveDeliveryNoteDetail(List<OrderDetail> carts, DeliveryNote deliveryNote) {
         for (OrderDetail cart : carts) {
             DeliveryNoteDetail deliveryNoteDetail = new DeliveryNoteDetail();
@@ -100,10 +82,21 @@ public class DeliveryNoteServiceImpl implements DeliveryNoteService {
         }
     }
 
+    // Minus quantity in inventory
     private void reduceQuantityInStock(DeliveryNoteDetail deliveryNoteDetail, int id) {
         ProductQuantity existedQuantity = productQuantityRepository.findByProductIdAndisDisabled(id);
         existedQuantity.setQuantity(existedQuantity.getQuantity() - deliveryNoteDetail.getQuantity());
         existedQuantity.setUpdatedDate(new Date());
         existedQuantity = productQuantityRepository.save(existedQuantity);
+    }
+
+    @Override
+    public Map<String, String> deleteDeliveryNote(int id) {
+        DeliveryNote deliveryNote = deliveryNoteRepository.findById(id).get();
+        deliveryNote.setStatus(0);
+        deliveryNote = deliveryNoteRepository.save(deliveryNote);
+        Map<String, String> wrapper = new HashMap<>();
+        wrapper.put("deliveryNote", "Delete successfully");
+        return wrapper;
     }
 }

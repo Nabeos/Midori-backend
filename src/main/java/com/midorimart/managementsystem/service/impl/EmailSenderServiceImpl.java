@@ -38,6 +38,7 @@ public class EmailSenderServiceImpl implements EmailService {
         queue.add(message);
     }
 
+    // send email after 1s
     @Scheduled(fixedRate = 2000, initialDelay = 10000)
     public void run() {
         int success = 0, error = 0;
@@ -53,6 +54,7 @@ public class EmailSenderServiceImpl implements EmailService {
         System.out.println("Sent: " + success + ", Error: " + error);
     }
 
+    // Send email when order status is success
     @Override
     public MimeMessage sendSuccessfulOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
@@ -152,6 +154,7 @@ public class EmailSenderServiceImpl implements EmailService {
         return message;
     }
 
+    // Send email to customer after shopkeeper accepted order
     @Override
     public MimeMessage sendAcceptedEmail(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
@@ -239,6 +242,7 @@ public class EmailSenderServiceImpl implements EmailService {
         return bodyCart;
     }
 
+    // Send reject email after shopkeeper rejected order
     @Override
     public MimeMessage sendRejectedEmail(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();
@@ -346,6 +350,7 @@ public class EmailSenderServiceImpl implements EmailService {
 
     }
 
+    // Send reset password email
     @Override
     public MimeMessage sendResetPasswordEmail(User user, String randomCode)
             throws UnsupportedEncodingException, MessagingException {
@@ -369,6 +374,7 @@ public class EmailSenderServiceImpl implements EmailService {
         return sendEmail(emailDetails);
     }
 
+    // Send email after customer placed order successfully
     @Override
     public MimeMessage sendPlaceOrderNotice(Order order) throws UnsupportedEncodingException, MessagingException {
         EmailDetails emailDetails = new EmailDetails();

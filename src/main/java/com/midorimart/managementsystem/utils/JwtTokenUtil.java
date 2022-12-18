@@ -18,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenUtil {
-    private static final long ACCESS_TOKEN_REQUIRED = 60 * 60 * 2;
     private final String secret = "ABCDEFGHI";
 
+    // Create token when login
     public String generateToken(User user, long expiredDate) {
         Map<String, Object> claims = new HashMap<>();
 
@@ -38,6 +38,7 @@ public class JwtTokenUtil {
 
     }
 
+    // Get payload from token
     public TokenPayload getPayLoadFromToken(String token) {
         return getClaimFromToken(token, (Claims claims) -> {
             Map<String, Object> result = (Map<String, Object>) claims.get("payload");
@@ -55,15 +56,18 @@ public class JwtTokenUtil {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
+    // Validate token
     public boolean validateToken(String token, TokenPayload tokenPayload) {
         return getPayLoadFromToken(token).equals(tokenPayload) && !isExpiredToken(token);
     }
 
+    // Check expired token
     private boolean isExpiredToken(String token) {
         final Date expiration = getExpirationDate(token);
         return expiration.before(new Date());
     }
 
+    // Get expiration date
     private Date getExpirationDate(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
