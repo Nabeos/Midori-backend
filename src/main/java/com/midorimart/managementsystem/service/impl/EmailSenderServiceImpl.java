@@ -382,9 +382,9 @@ public class EmailSenderServiceImpl implements EmailService {
                 + order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
-        String orderDay = orderDate.split("-")[0];
+        String orderDay = orderDate.split("-")[2];
         String oMonth = orderDate.split("-")[1];
-        String oYear = orderDate.split("-")[2];
+        String oYear = orderDate.split("-")[0];
         String orderTime = DateHelper.convertDate(order.getOrderDate()).substring(10);
         String body = "<!DOCTYPE html>"
                 + "<html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta http-equiv='X-UA-Compatible' content='ie=edge'>"
