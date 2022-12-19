@@ -128,10 +128,9 @@ public class EmailSenderServiceImpl implements EmailService {
 
                 + bodyCart
 
-                + " </table></div><div style='text-align: end; margin-top: 10px'><div>Tạm tính:  "
-                + order.getTotalMoney() + "</div>"
-                + "  <div>Phí vận chuyển:  30.000đ</div>"
-                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
+                + " </table></div>"
+
+                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + order.getTotalMoney()
                 + "</div></div>"
                 + "<div style='display: flex; justify-content: center; margin-top: 10px'>"
                 + "<a href='" + verifyUri + "' id='cancelOrderButton'>Trả hàng/Hoàn tiền</a></div>"
@@ -217,10 +216,8 @@ public class EmailSenderServiceImpl implements EmailService {
 
                 + bodyCart
 
-                + " </table></div><div style='text-align: end; margin-top: 10px'><div>Tạm tính:  "
-                + order.getTotalMoney() + "đ</div>"
-                + "  <div>Phí vận chuyển:  30.000đ</div>"
-                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
+                + " </table></div>"
+                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + order.getTotalMoney()
                 + "đ</div></div></div></div>"
                 + "</html>";
         emailDetails.setSubject("Đơn hàng " + order.getOrderNumber() + " đã được chấp nhận");
@@ -386,6 +383,10 @@ public class EmailSenderServiceImpl implements EmailService {
         String oMonth = orderDate.split("-")[1];
         String oYear = orderDate.split("-")[0];
         String orderTime = DateHelper.convertDate(order.getOrderDate()).substring(10);
+        String orderDeliveryDate = order.getDeliveryDate().substring(0, 10);
+        String odDay = orderDeliveryDate.split("-")[1];
+        String odMonth = orderDeliveryDate.split("-")[2];
+        String odYear = orderDeliveryDate.split("-")[0];
         String body = "<!DOCTYPE html>"
                 + "<html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta http-equiv='X-UA-Compatible' content='ie=edge'>"
                 + "<title>Static Template</title>"
@@ -431,7 +432,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "</div>"
                 + "</div></div><div style='margin-left: 10px; margin-top: 10px'>"
                 + "<span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span> "
-                + order.getDeliveryDate() + " " + order.getDeliveryTimeRange()
+                + odDay + "/" + odMonth + "/" + odYear + " " + order.getDeliveryTimeRange()
                 + "</div><h4 style='order-bottom: 1px solid lightgray; padding-bottom: 10px; color:#0c6e21'>CHI TIẾT ĐƠN HÀNG</h4><div>"
                 + "<table>"
                 + "  <tr>"
@@ -444,10 +445,8 @@ public class EmailSenderServiceImpl implements EmailService {
 
                 + bodyCart
 
-                + " </table></div><div style='text-align: end; margin-top: 10px'><div>Tạm tính:  "
-                + order.getTotalMoney() + "đ</div>"
-                + "  <div>Phí vận chuyển:  30.000đ</div>"
-                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
+                + " </table></div>"
+                + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " +order.getTotalMoney()
                 + "đ</div></div>"
                 + "<div style='display: flex; justify-content: center; margin-top: 10px'><a id='cancelOrderButton' href='"
                 + verifyUri + "'>Hủy Đơn Hàng</a></div>"

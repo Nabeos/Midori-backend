@@ -32,7 +32,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                         + "(select distinct c.id as Category_ID, c.name, p.id as Product_ID, sum(quantity) over(partition by product_id) as total_number "
                         + "from Order_Detail od "
                         + "left join Product p on od.product_id = p.id "
-                        + "left join Category c on p.category_id = c.id where order_id in (select id from [Order] where DATEDIFF(DAY, order_date, GETDATE()) <= 7))AA)BB order by total_number desc";
+                        + "left join Category c on p.category_id = c.id where order_id in (select id from [Order] where DATEDIFF(DAY, order_date, GETDATE()) <= 7) and p.deleted = 0)AA)BB order by total_number desc";
 
         public final String queryForBestCategory = "select category_id from "
                         + "(select *, Row_Number() over(order by total_appear desc) as category_rank from "
