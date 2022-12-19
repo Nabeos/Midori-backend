@@ -66,8 +66,8 @@ public class EmailSenderServiceImpl implements EmailService {
         String oMonth = orderDate.split("-")[1];
         String oYear = orderDate.split("-")[2];
         String orderDeliveryDate = order.getDeliveryDate().substring(0, 10);
-        String odDay = orderDeliveryDate.split("-")[1];
-        String odMonth = orderDeliveryDate.split("-")[2];
+        String odDay = orderDeliveryDate.split("-")[2];
+        String odMonth = orderDeliveryDate.split("-")[1];
         String odYear = orderDeliveryDate.split("-")[0];
         String orderTime = DateHelper.convertDate(order.getOrderDate()).substring(10);
         String body = "<!DOCTYPE html>"
@@ -111,7 +111,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "<div>" + order.getFullName() + "</div>"
                 + "<div>" + order.getEmail() + "</div>"
                 + "<div>" + order.getPhoneNumber() + "</div>"
-                + "</div><div ><span style='font-weight: bold'> Địa chỉ giao hàng</span><div>" + order.getAddress()
+                + "</div><div ><span style='font-weight: bold'> Địa chỉ giao hàng</span><div>" + order.getAddress().split(";")[3]
                 + "</div>"
                 + "</div></div><div style='margin-left: 10px; margin-top: 10px'>"
                 + "<span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span>  "
@@ -163,8 +163,8 @@ public class EmailSenderServiceImpl implements EmailService {
         String oMonth = orderDate.split("-")[1];
         String oYear = orderDate.split("-")[2];
         String orderDeliveryDate = order.getDeliveryDate().substring(0, 10);
-        String odDay = orderDeliveryDate.split("-")[1];
-        String odMonth = orderDeliveryDate.split("-")[2];
+        String odDay = orderDeliveryDate.split("-")[2];
+        String odMonth = orderDeliveryDate.split("-")[1];
         String odYear = orderDeliveryDate.split("-")[0];
         String orderTime = DateHelper.convertDate(order.getOrderDate()).substring(10);
         String body = "<!DOCTYPE html>"
@@ -199,7 +199,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "<div>" + order.getFullName() + "</div>"
                 + "<div>" + order.getEmail() + "</div>"
                 + "<div>" + order.getPhoneNumber() + "</div>"
-                + "</div><div ><span style='font-weight: bold'> Địa chỉ giao hàng</span><div>" + order.getAddress()
+                + "</div><div ><span style='font-weight: bold'> Địa chỉ giao hàng</span><div>" + order.getAddress().split(";")[3]
                 + "</div>"
                 + "</div></div><div style='margin-left: 10px; margin-top: 10px'>"
                 + "<span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span> "
@@ -249,8 +249,8 @@ public class EmailSenderServiceImpl implements EmailService {
         String oMonth = orderDate.split("-")[1];
         String oYear = orderDate.split("-")[2];
         String orderDeliveryDate = order.getDeliveryDate().substring(0, 10);
-        String odDay = orderDeliveryDate.split("-")[1];
-        String odMonth = orderDeliveryDate.split("-")[2];
+        String odDay = orderDeliveryDate.split("-")[2];
+        String odMonth = orderDeliveryDate.split("-")[1];
         String odYear = orderDeliveryDate.split("-")[0];
         String orderTime = DateHelper.convertDate(order.getOrderDate()).substring(10);
         String body = "<!DOCTYPE html>"
@@ -290,7 +290,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "  </div>"
                 + "  <div >"
                 + "    <span style='font-weight: bold'> Địa chỉ giao hàng</span>"
-                + "    <div>" + order.getAddress() + "</div>"
+                + "    <div>" + order.getAddress().split(";")[3] + "</div>"
                 + "  </div>"
                 + "  </div>"
                 + "  <div style='margin-left: 10px; margin-top: 10px'>"
@@ -427,7 +427,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "<div>" + order.getFullName() + "</div>"
                 + "<div>" + order.getEmail() + "</div>"
                 + "<div>" + order.getPhoneNumber() + "</div>"
-                + "</div><div ><span style='font-weight: bold'> Địa chỉ giao hàng</span><div>" + order.getAddress()
+                + "</div><div ><span style='font-weight: bold'> Địa chỉ giao hàng</span><div>" + order.getAddress().split(";")[3]
                 + "</div>"
                 + "</div></div><div style='margin-left: 10px; margin-top: 10px'>"
                 + "<span style='font-weight: bold'>Thời gian giao hàng dự kiến:</span> "
