@@ -129,9 +129,9 @@ public class EmailSenderServiceImpl implements EmailService {
                 + bodyCart
 
                 + " </table></div>"
-
+                +" <div style='text-align: end; margin-top: 10px'>"
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + order.getTotalMoney()
-                + "</div></div>"
+                + "đ</div></div>"
                 + "<div style='display: flex; justify-content: center; margin-top: 10px'>"
                 + "<a href='" + verifyUri + "' id='cancelOrderButton'>Trả hàng/Hoàn tiền</a></div>"
                 + "</div></div>"
@@ -217,6 +217,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + bodyCart
 
                 + " </table></div>"
+                +" <div style='text-align: end; margin-top: 10px'>"
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " + order.getTotalMoney()
                 + "đ</div></div></div></div>"
                 + "</html>";
@@ -310,9 +311,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "     </table>"
                 + "  </div>"
                 + "  <div style='text-align: end; margin-top: 10px'>"
-                + "    <div>Tạm tính:	" + order.getTotalMoney() + "đ</div>"
-                + "    <div>Phí vận chuyển:	30.000đ</div>"
-                + "    <div style='font-weight: bold'>Tổng giá trị đơn hàng: " + (order.getTotalMoney() + shippingFee)
+                + "    <div style='font-weight: bold'>Tổng giá trị đơn hàng: " + order.getTotalMoney()
                 + "đ</div>"
                 + "  </div>"
                 + "</div>"
@@ -379,13 +378,13 @@ public class EmailSenderServiceImpl implements EmailService {
                 + order.getOrderCode();
         String bodyCart = buildBodyCart(order);
         String orderDate = DateHelper.convertDate(order.getOrderDate()).substring(0, 10);
-        String orderDay = orderDate.split("-")[2];
+        String orderDay = orderDate.split("-")[0];
         String oMonth = orderDate.split("-")[1];
-        String oYear = orderDate.split("-")[0];
+        String oYear = orderDate.split("-")[2];
         String orderTime = DateHelper.convertDate(order.getOrderDate()).substring(10);
         String orderDeliveryDate = order.getDeliveryDate().substring(0, 10);
-        String odDay = orderDeliveryDate.split("-")[1];
-        String odMonth = orderDeliveryDate.split("-")[2];
+        String odDay = orderDeliveryDate.split("-")[2];
+        String odMonth = orderDeliveryDate.split("-")[1];
         String odYear = orderDeliveryDate.split("-")[0];
         String body = "<!DOCTYPE html>"
                 + "<html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta http-equiv='X-UA-Compatible' content='ie=edge'>"
@@ -446,6 +445,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + bodyCart
 
                 + " </table></div>"
+                +" <div style='text-align: end; margin-top: 10px'>"
                 + "<div style='font-weight: bold'>Tổng giá trị đơn hàng: " +order.getTotalMoney()
                 + "đ</div></div>"
                 + "<div style='display: flex; justify-content: center; margin-top: 10px'><a id='cancelOrderButton' href='"
