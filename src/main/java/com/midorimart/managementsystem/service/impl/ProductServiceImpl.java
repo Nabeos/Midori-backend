@@ -319,7 +319,7 @@ public class ProductServiceImpl implements ProductService {
         } else
             throw new CustomNotFoundException(
                     CustomError.builder().code("404").message("Product name already existed").build());
-
+        existedProduct.setDiscount(productUpdate.getDiscount());
         existedProduct.setPrice(productUpdate.getPrice());
         existedProduct.setCountry(countryRepository.findByCode(productUpdate.getOrigin()));
         existedProduct.setDescription(productUpdate.getDescription());

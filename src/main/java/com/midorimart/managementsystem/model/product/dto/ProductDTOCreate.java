@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductDTOCreate {
     private int category;
+    private int discount;
     private String title;
     private double price;
     private double amount;

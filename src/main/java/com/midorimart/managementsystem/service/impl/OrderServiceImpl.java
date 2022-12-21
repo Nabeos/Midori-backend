@@ -134,6 +134,10 @@ public class OrderServiceImpl implements OrderService {
                 return buildDTOResponse(order);
             }
         }
+        else if((status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS) && (order.getStatus() == 1 || order.getStatus() == 4)){
+            throw new CustomBadRequestException(
+                CustomError.builder().code("400").message("Đã được cập nhật hoặc xử lý bởi người khác").build());
+        }
         // update status
         else if (order.getStatus() == Order.STATUS_IN_PROGRESS && order.getReceiveProductsMethod() != 1) {
             order.setStatus(Order.STATUS_SUCCESS);

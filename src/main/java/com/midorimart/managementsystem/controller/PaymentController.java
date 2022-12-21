@@ -72,35 +72,26 @@ public class PaymentController {
       @RequestParam String amountStr, HttpServletRequest req, HttpServletResponse resp)
       throws UnsupportedEncodingException {
     // Optional<Payment> paymentOptional = paymentRepository.findByVnp_TxnRef();
-    String vnp_Version = "2.1.0";
-    String vnp_Command = "pay";
-    String orderType = "100000";
     String vnp_TxnRef = order_number;
     String vnp_IpAddr = PaymentConfig.getIpAddress(req);
-    String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
     int amount = Integer.parseInt(amountStr) * 100;
     Map<String, String> vnp_Params = new HashMap<>();
     // if (paymentOptional.isPresent()) {
-      vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+    vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
     // }
-    vnp_Params.put("vnp_Version", vnp_Version);
-    vnp_Params.put("vnp_Command", vnp_Command);
-    vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+    vnp_Params.put("vnp_Version", PaymentConfig.vnp_Version);
+    vnp_Params.put("vnp_Command", PaymentConfig.vnp_Command);
+    vnp_Params.put("vnp_TmnCode", PaymentConfig.vnp_TmnCode);
     vnp_Params.put("vnp_Amount", String.valueOf(amount));
-    vnp_Params.put("vnp_CurrCode", "VND");
+    vnp_Params.put("vnp_CurrCode", PaymentConfig.vnp_CurrCode);
     String bank_code = req.getParameter("bankcode");
     if (bank_code != null && !bank_code.isEmpty()) {
       vnp_Params.put("vnp_BankCode", bank_code);
     }
     vnp_Params.put("vnp_OrderInfo", "Thanh toan cho don hang " + order_number);
-    vnp_Params.put("vnp_OrderType", orderType);
+    vnp_Params.put("vnp_OrderType", PaymentConfig.vnp_OrderType);
 
-    String locate = "vn";
-    if (locate != null && !locate.isEmpty()) {
-      vnp_Params.put("vnp_Locale", locate);
-    } else {
-      vnp_Params.put("vnp_Locale", "vn");
-    }
+    vnp_Params.put("vnp_Locale", "vn");
     vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl);
     vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
     Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));

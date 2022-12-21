@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +74,8 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
     public Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(
             Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException {
         ReceivedNoteDTOCreate receivedDTOCreate = receivedNoteMap.get("receivedNote");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date now = new Date();
         if (receivedDTOCreate.getReceivedDetail() == null || receivedDTOCreate.getReceivedDetail().isEmpty()) {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Không có sản phẩm").build());
         }
@@ -80,6 +83,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Bị trùng tên").build());
         }
         ReceivedNote receivedNote = ReceivedNoteMapper.toReceivedNote(receivedDTOCreate);
+        receivedNote.setName("NHAP" + sdf.format(now));
         receivedNote.setUser(userService.getUserLogin());
         receivedNote.setMerchant(merchantRepository.findById(receivedDTOCreate.getMerchant()).get());
         receivedNote = receivedNoteRepository.save(receivedNote);
