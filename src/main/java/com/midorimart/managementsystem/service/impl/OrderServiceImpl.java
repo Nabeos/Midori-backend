@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
-            ObjectOptimisticLockingFailureException.class })
+            ObjectOptimisticLockingFailureException.class, CustomBadRequestException.class })
     public Map<String, OrderDTOResponse> addNewOrder(OrderDTOPlace orderDTOPlace)
             throws CustomBadRequestException {
         // turn address into string to save in db

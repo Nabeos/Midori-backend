@@ -9,17 +9,20 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +35,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.midorimart.managementsystem.config.PaymentConfig;
-import com.midorimart.managementsystem.model.payment.Payment;
+import com.midorimart.managementsystem.entity.Order;
+import com.midorimart.managementsystem.entity.Payment;
+import com.midorimart.managementsystem.exception.custom.CustomBadRequestException;
+import com.midorimart.managementsystem.model.CustomError;
+import com.midorimart.managementsystem.model.mapper.TransactionMapper;
+import com.midorimart.managementsystem.model.payment.PaymentDTO;
+import com.midorimart.managementsystem.model.payment.TransactionDTO;
+import com.midorimart.managementsystem.repository.InvoiceRepository;
+import com.midorimart.managementsystem.repository.OrderRepository;
+import com.midorimart.managementsystem.repository.PaymentRepository;
+import com.midorimart.managementsystem.repository.UserRepository;
+import com.midorimart.managementsystem.service.EmailService;
+import com.midorimart.managementsystem.service.UserService;
+import com.midorimart.managementsystem.utils.DateHelper;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -42,20 +59,30 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Payment API")
 @RequiredArgsConstructor
 public class PaymentController {
+  private final PaymentRepository paymentRepository;
+  private final UserService userService;
+  private final OrderRepository orderRepository;
+  private final EmailService emailService;
+  private final InvoiceRepository invoiceRepository;
+  private final UserRepository userRepository;
 
+  @Operation(summary = "Pay url")
   @PostMapping("/payment-management")
-  public Map<String, Payment> pay(@RequestParam String vnp_OrderInfo,
+  public Map<String, PaymentDTO> createPayment(@RequestParam String order_number,
       @RequestParam String amountStr, HttpServletRequest req, HttpServletResponse resp)
       throws UnsupportedEncodingException {
+    // Optional<Payment> paymentOptional = paymentRepository.findByVnp_TxnRef();
     String vnp_Version = "2.1.0";
     String vnp_Command = "pay";
     String orderType = "100000";
-    String vnp_TxnRef = PaymentConfig.getRandomNumber(8);
+    String vnp_TxnRef = order_number;
     String vnp_IpAddr = PaymentConfig.getIpAddress(req);
     String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
-
     int amount = Integer.parseInt(amountStr) * 100;
     Map<String, String> vnp_Params = new HashMap<>();
+    // if (paymentOptional.isPresent()) {
+      vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+    // }
     vnp_Params.put("vnp_Version", vnp_Version);
     vnp_Params.put("vnp_Command", vnp_Command);
     vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
@@ -65,8 +92,7 @@ public class PaymentController {
     if (bank_code != null && !bank_code.isEmpty()) {
       vnp_Params.put("vnp_BankCode", bank_code);
     }
-    vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-    vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
+    vnp_Params.put("vnp_OrderInfo", "Thanh toan cho don hang " + order_number);
     vnp_Params.put("vnp_OrderType", orderType);
 
     String locate = "vn";
@@ -87,33 +113,6 @@ public class PaymentController {
     String vnp_ExpireDate = formatter.format(cld.getTime());
     // Add Params of 2.0.1 Version
     vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-    // Billing
-    // vnp_Params.put("vnp_Bill_Mobile", req.getParameter("txt_billing_mobile"));
-    // vnp_Params.put("vnp_Bill_Email", req.getParameter("txt_billing_email"));
-    // String fullName = (req.getParameter("txt_billing_fullname")).trim();
-    // if (fullName != null && !fullName.isEmpty()) {
-    // int idx = fullName.indexOf(' ');
-    // String firstName = fullName.substring(0, idx);
-    // String lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
-    // vnp_Params.put("vnp_Bill_FirstName", firstName);
-    // vnp_Params.put("vnp_Bill_LastName", lastName);
-
-    // }
-    // vnp_Params.put("vnp_Bill_Address", req.getParameter("txt_inv_addr1"));
-    // vnp_Params.put("vnp_Bill_City", req.getParameter("txt_bill_city"));
-    // vnp_Params.put("vnp_Bill_Country", req.getParameter("txt_bill_country"));
-    // if (req.getParameter("txt_bill_state") != null &&
-    // !req.getParameter("txt_bill_state").isEmpty()) {
-    // vnp_Params.put("vnp_Bill_State", req.getParameter("txt_bill_state"));
-    // }
-    // // Invoice
-    // vnp_Params.put("vnp_Inv_Phone", req.getParameter("txt_inv_mobile"));
-    // vnp_Params.put("vnp_Inv_Email", req.getParameter("txt_inv_email"));
-    // vnp_Params.put("vnp_Inv_Customer", req.getParameter("txt_inv_customer"));
-    // vnp_Params.put("vnp_Inv_Address", req.getParameter("txt_inv_addr1"));
-    // vnp_Params.put("vnp_Inv_Company", req.getParameter("txt_inv_company"));
-    // vnp_Params.put("vnp_Inv_Taxcode", req.getParameter("txt_inv_taxcode"));
-    // vnp_Params.put("vnp_Inv_Type", req.getParameter("cbo_inv_type"));
     // Build data to hash and querystring
     List fieldNames = new ArrayList(vnp_Params.keySet());
     Collections.sort(fieldNames);
@@ -142,16 +141,16 @@ public class PaymentController {
     String vnp_SecureHash = PaymentConfig.hmacSHA512(PaymentConfig.vnp_HashSecret, hashData.toString());
     queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
     String paymentUrl = PaymentConfig.vnp_PayUrl + "?" + queryUrl;
-    Payment payment = new Payment();
+    PaymentDTO payment = new PaymentDTO();
     payment.setCode("00");
     payment.setMessage("success");
     payment.setData(paymentUrl);
-    Map<String, Payment> result = new HashMap<>();
+    Map<String, PaymentDTO> result = new HashMap<>();
     result.put("payment", payment);
     return result;
   }
 
-  @GetMapping("/payment-management")
+  @GetMapping("/payment-management/query")
   public Map<String, String> vnPayQuery(@RequestParam String vnp_TxnRef, @RequestParam String vnp_TransDate,
       HttpServletRequest req, HttpServletResponse resp) throws IOException {
     // vnp_Command = querydr
@@ -188,7 +187,6 @@ public class PaymentController {
         query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
         query.append('=');
         query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-
         if (itr.hasNext()) {
           query.append('&');
           hashData.append('&');
@@ -218,14 +216,56 @@ public class PaymentController {
     return result;
   }
 
-  @GetMapping("")
-  public void getIPN(@RequestParam String vnp_Amount,
-      @RequestParam String vnp_OrderInfo,
-      @RequestParam String vnp_ResponseCode,
-      @RequestParam String vnp_TmnCode,
-      @RequestParam String vnp_TxnRef,
-      @RequestParam String vnp_SecureHashType,
-      @RequestParam String vnp_SecureHash) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+  @Operation(summary = "Return and save information after paying")
+  @GetMapping("/payment-management")
+  public Map<String, TransactionDTO> getIPN(@RequestParam(required = false) String vnp_Amount,
+      @RequestParam(required = false) String vnp_BankCode,
+      @RequestParam(required = false) String vnp_CardType,
+      @RequestParam(required = false) String vnp_BankTranNo,
+      @RequestParam(required = false) String vnp_OrderInfo,
+      @RequestParam(required = false) String vnp_PayDate,
+      @RequestParam(required = false) String vnp_TransactionNo,
+      @RequestParam(required = false) String vnp_ResponseCode,
+      @RequestParam(required = false) String vnp_TmnCode,
+      @RequestParam(required = false) String vnp_TxnRef,
+      @RequestParam(required = false) String vnp_SecureHash)
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, CustomBadRequestException, ParseException {
+    Optional<Order> order = orderRepository.findByOrderNumber(vnp_TxnRef);
+    if (order.isEmpty()) {
+      throw new CustomBadRequestException(CustomError.builder().code("400").message("no order found").build());
+    }
+
+    Optional<Payment> existedPayment = paymentRepository.findByVnpTransactionNo(vnp_TransactionNo);
+    Payment payment = null;
+    if (existedPayment.isEmpty()) {
+      payment = new Payment();
+    } else {
+      payment = existedPayment.get();
+    }
+    payment.setVnp_Amount(vnp_Amount);
+    payment.setVnp_BankCode(vnp_BankCode);
+    payment.setVnp_BankTranNo(vnp_BankTranNo);
+    payment.setVnp_CardType(vnp_CardType);
+    payment.setVnp_OrderInfo(vnp_OrderInfo);
+    Date paymentDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(vnp_PayDate);
+    payment.setVnp_PayDate(DateHelper.convertDate(paymentDate));
+    payment.setVnp_ResponseCode(vnp_ResponseCode);
+    payment.setVnp_SecureHash(vnp_SecureHash);
+    payment.setVnp_TmnCode(vnp_TmnCode);
+    payment.setVnp_TransactionNo(vnp_TransactionNo);
+    payment.setVnp_TxnRef(vnp_TxnRef);
+    payment.setOrder(order.get());
+    if (invoiceRepository.findByOrderId(order.get().getId()) != null) {
+      payment.setUser(
+          userRepository.findById(invoiceRepository.findByOrderId(order.get().getId()).getUser().getId()) + "");
+    } else {
+      payment.setUser("Guest");
+    }
+    payment = paymentRepository.save(payment);
+    TransactionDTO transactionDTO = TransactionMapper.toTransactionDTO(payment);
+    Map<String, TransactionDTO> result = new HashMap<>();
+    result.put("transactionInfo", transactionDTO);
+
     Map vnp_Params = new HashMap<>();
     vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
     vnp_Params.put("vnp_Amount", String.valueOf(vnp_Amount));
@@ -274,13 +314,17 @@ public class PaymentController {
             // update order status to 1
           } else {
             // Giao dịch không thành công làm gì tiếp thì làm
+            System.out.println("Giao dịch ko thành công");
           }
         } else {
           // bắn ra 1 cái exception hay 1 cái j đấy
+          System.out.println("check amount lỗi");
         }
       } else {
         // bắn ra 1 cái exception hay 1 cái j đấy
+        System.out.println("không có order id");
       }
     }
+    return result;
   }
 }
