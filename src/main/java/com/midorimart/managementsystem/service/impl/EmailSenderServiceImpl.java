@@ -145,7 +145,7 @@ public class EmailSenderServiceImpl implements EmailService {
     public MimeMessage sendEmail(EmailDetails emailDetails) throws UnsupportedEncodingException, MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("midorimartapp@gmail.com", "Midori Mart");
+        helper.setFrom("midorimartapp@gmail.com", "MidoriMart");
         helper.setText(emailDetails.getMsgBody(), true);
         helper.setSubject(emailDetails.getSubject());
         helper.setTo(emailDetails.getRecipient());

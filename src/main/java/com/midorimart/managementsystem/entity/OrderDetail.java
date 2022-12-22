@@ -37,7 +37,7 @@ public class OrderDetail {
     @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
+    private int discount;
     private int quantity;
     private float price;
     @Column(name="total_money")

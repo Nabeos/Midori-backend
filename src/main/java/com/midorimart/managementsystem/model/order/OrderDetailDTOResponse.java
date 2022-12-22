@@ -9,6 +9,7 @@ public class OrderDetailDTOResponse {
     private String sku;
     private String thumbnails;
     private String productName;
+    private int discount;
     private double price;
     private int quantity;
     private double totalPrice;

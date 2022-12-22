@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class OrderDetailDTOPlace {
     private int productId;
     private int quantity;
+    private int discount;
     private float price;
     private float totalPrice;
 }

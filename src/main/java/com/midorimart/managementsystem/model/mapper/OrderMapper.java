@@ -47,6 +47,7 @@ public class OrderMapper {
         return OrderDetail.builder()
                 .product(Product.builder().id(orderDetailDTOPlace.getProductId()).build())
                 .quantity(orderDetailDTOPlace.getQuantity())
+                .discount(orderDetailDTOPlace.getDiscount())
                 .price(orderDetailDTOPlace.getPrice())
                 .totalMoney(orderDetailDTOPlace.getTotalPrice())
                 .build();
@@ -157,6 +158,7 @@ public class OrderMapper {
         return OrderDetailDTOResponse.builder().sku(orderDetails.getProduct().getSku())
                 .productName(orderDetails.getProduct().getTitle())
                 .thumbnails(thumbnails)
+                .discount(orderDetails.getDiscount())
                 .price(orderDetails.getPrice())
                 .totalPrice(orderDetails.getTotalMoney())
                 .quantity(orderDetails.getQuantity())
