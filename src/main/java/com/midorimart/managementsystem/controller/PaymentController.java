@@ -86,7 +86,7 @@ public class PaymentController {
       }
       payment = paymentOptional.get();
     }
-    String vnp_TxnRef = PaymentConfig.getRandomNumber(3)+order_number+PaymentConfig.getRandomNumber(3);
+    String vnp_TxnRef = PaymentConfig.getRandomNumber(3) + order_number + PaymentConfig.getRandomNumber(3);
     int amount = Integer.parseInt(amountStr) * 100;
     Map<String, String> vnp_Params = new HashMap<>();
     vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
@@ -241,8 +241,9 @@ public class PaymentController {
       @RequestParam(required = false) String vnp_TmnCode,
       @RequestParam(required = false) String vnp_TxnRef,
       @RequestParam(required = false) String vnp_SecureHash)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, CustomBadRequestException, ParseException, MessagingException {
-        String od = vnp_TxnRef.substring(3, vnp_TxnRef.length()-3);
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, CustomBadRequestException, ParseException,
+      MessagingException {
+    String od = vnp_TxnRef.substring(3, vnp_TxnRef.length() - 3);
     Optional<Order> order = orderRepository.findByOrderNumber(od);
 
     Optional<Payment> existedPayment = paymentRepository.findByOrderId(order.get().getId());
@@ -256,13 +257,17 @@ public class PaymentController {
         throw new CustomBadRequestException(CustomError.builder().code("400").message("Sai thông tin").build());
       }
       // check response code
+
       if (!payment.getVnp_ResponseCode().equalsIgnoreCase("00")) {
         payment.setVnp_ResponseCode(vnp_ResponseCode);
       }
       // cập nhật trạng thái đơn hàng
-      if(vnp_ResponseCode.equals("00")){
+      if (vnp_ResponseCode.equals("00")) {
         order.get().setPaymentMethod(2);
         emailService.sendPlaceOrderNotice(order.get());
+        orderRepository.save(order.get());
+      } else if (vnp_ResponseCode.equalsIgnoreCase("24")) {
+        order.get().setStatus(6);
         orderRepository.save(order.get());
       }
     }
