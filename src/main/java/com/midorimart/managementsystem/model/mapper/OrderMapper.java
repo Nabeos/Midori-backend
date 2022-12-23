@@ -84,7 +84,9 @@ public class OrderMapper {
             case 0:
                 return "Thanh toán tại cửa hàng";
             case 1:
-                return "Thanh toán online";
+                return "Đang Chờ Thanh toán Online";
+            case 2:
+                return "Đã Thanh toán online Thành Công";
             default:
                 return "Error";
         }

@@ -10,8 +10,8 @@ import com.midorimart.managementsystem.entity.Payment;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Integer>{
-  @Query(value = "select * from Payment where vnp_TransactionNo = ?1", nativeQuery = true)
-  Optional<Payment> findByVnpTransactionNo(String vnp_TransactionNo);
+  @Query(value = "select * from Payment where order_id = ?1", nativeQuery = true)
+  Optional<Payment> findByOrderId(int orderId);
 
   // Optional<Payment> findByVnpTxnRef();
 }

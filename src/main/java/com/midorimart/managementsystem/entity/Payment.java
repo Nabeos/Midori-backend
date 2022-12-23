@@ -56,4 +56,6 @@ public class Payment {
   private String vnp_TxnRef;
   @Column(name = "vnp_SecureHash")
   private String vnp_SecureHash;
+  @Column(name = "disabled")
+  private int disabled;
 }
