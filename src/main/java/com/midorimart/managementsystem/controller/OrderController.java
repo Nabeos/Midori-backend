@@ -61,7 +61,7 @@ public class OrderController {
     @Operation(summary = "Add new order")
     @PostMapping("/payment-management/finishOrder")
     public Map<String, OrderDTOResponse> addNewCart(@RequestBody Map<String, @Valid OrderDTOPlace> addNewCartMap)
-            throws CustomBadRequestException, ConstraintViolationException, HttpMessageNotReadableException {
+            throws CustomBadRequestException, ConstraintViolationException, HttpMessageNotReadableException, UnsupportedEncodingException, MessagingException {
         return orderService.addNewOrder(addNewCartMap.get("orderinformation"));
     }
 

@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.TimeZone;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -240,7 +241,7 @@ public class PaymentController {
       @RequestParam(required = false) String vnp_TmnCode,
       @RequestParam(required = false) String vnp_TxnRef,
       @RequestParam(required = false) String vnp_SecureHash)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, CustomBadRequestException, ParseException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, CustomBadRequestException, ParseException, MessagingException {
         String od = vnp_TxnRef.substring(3, vnp_TxnRef.length()-3);
     Optional<Order> order = orderRepository.findByOrderNumber(od);
 
@@ -261,6 +262,7 @@ public class PaymentController {
       // cập nhật trạng thái đơn hàng
       if(vnp_ResponseCode.equals("00")){
         order.get().setPaymentMethod(2);
+        emailService.sendPlaceOrderNotice(order.get());
         orderRepository.save(order.get());
       }
     }

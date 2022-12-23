@@ -82,9 +82,9 @@ public class OrderMapper {
     private static String getPaymentMethod(int paymentMethod) {
         switch (paymentMethod) {
             case 0:
-                return "Thanh toán tại cửa hàng";
-            case 1:
                 return "Đang Chờ Thanh toán Online";
+            case 1:
+                return "Thanh toán tại nhà";
             case 2:
                 return "Đã Thanh toán online Thành Công";
             default:

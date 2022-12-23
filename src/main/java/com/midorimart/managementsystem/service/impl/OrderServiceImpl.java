@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackFor = { StaleObjectStateException.class, SQLException.class,
             ObjectOptimisticLockingFailureException.class, CustomBadRequestException.class })
     public Map<String, OrderDTOResponse> addNewOrder(OrderDTOPlace orderDTOPlace)
-            throws CustomBadRequestException {
+            throws CustomBadRequestException, UnsupportedEncodingException, MessagingException {
         // turn address into string to save in db
         if (orderDTOPlace.getCart() == null || orderDTOPlace.getCart().isEmpty()) {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Chưa có sản phẩm").build());
@@ -81,12 +81,8 @@ public class OrderServiceImpl implements OrderService {
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
-            try {
+            if(orderDTOPlace.getPaymentMethod() == 1){
                 emailService.sendPlaceOrderNotice(order);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (MessagingException e) {
-                e.printStackTrace();
             }
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());

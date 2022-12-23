@@ -19,7 +19,7 @@ import com.midorimart.managementsystem.model.order.OrderDTOResponse;
 public interface OrderService {
 
     public Map<String, OrderDTOResponse> addNewOrder(@Valid OrderDTOPlace orderDTOPlace)
-            throws CustomBadRequestException, ConstraintViolationException;
+            throws CustomBadRequestException, ConstraintViolationException, UnsupportedEncodingException, MessagingException;
 
     public Map<String, OrderDTOResponse> updateStatus(String orderNumber, int status)
             throws CustomBadRequestException, UnsupportedEncodingException, MessagingException;
