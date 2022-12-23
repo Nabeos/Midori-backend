@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
-import javax.validation.Valid;
 
 import org.hibernate.StaleObjectStateException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -81,22 +80,23 @@ public class OrderServiceImpl implements OrderService {
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
-            if(orderDTOPlace.getPaymentMethod() == 1){
+            if (orderDTOPlace.getPaymentMethod() == 1) {
                 emailService.sendPlaceOrderNotice(order);
             }
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());
         }
         // check if customer or guest
-        if (userService.getUserLogin() != null)
+        if (userService.getUserLogin() != null) {
             saveInvoiceForUser(userService.getUserLogin(), order);
-
+        }
         return buildDTOResponse(order);
     }
 
     public void saveOrderDetail(List<OrderDetail> orderDetailList, Order order) {
         for (OrderDetail od : orderDetailList) {
             od.setOrder(order);
+            od.getProduct().getId();
             orderDetailRepository.save(od);
         }
     }
@@ -129,10 +129,10 @@ public class OrderServiceImpl implements OrderService {
                 emailService.sendRejectedEmail(order);
                 return buildDTOResponse(order);
             }
-        }
-        else if((status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS) && (order.getStatus() == 1 || order.getStatus() == 4)){
+        } else if ((status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS)
+                && (order.getStatus() == 1 || order.getStatus() == 4)) {
             throw new CustomBadRequestException(
-                CustomError.builder().code("400").message("Đã được cập nhật hoặc xử lý bởi người khác").build());
+                    CustomError.builder().code("400").message("Đã được cập nhật hoặc xử lý bởi người khác").build());
         }
         // update status
         else if (order.getStatus() == Order.STATUS_IN_PROGRESS && order.getReceiveProductsMethod() != 1) {
@@ -308,6 +308,9 @@ public class OrderServiceImpl implements OrderService {
         invoice.setOrder(order);
         invoice.setStatus(1);
         invoice = invoiceRepository.save(invoice);
-        saveUserProductStatus(invoice.getOrder().getCart(), userLogin);
+        order.getCart().forEach((p)->{
+            userLogin.getProducts().add(productRepository.findById(p.getProduct().getId()).get());
+            userRepository.save(userLogin);
+        });
     }
 }
