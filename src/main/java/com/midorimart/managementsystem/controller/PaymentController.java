@@ -74,7 +74,7 @@ public class PaymentController {
       @RequestParam String amountStr, HttpServletRequest req, HttpServletResponse resp)
       throws UnsupportedEncodingException, CustomBadRequestException, CustomNotFoundException {
     Optional<Order> order = orderRepository.findByOrderNumber(order_number);
-    if (order.isEmpty()) {
+    if (order.isEmpty() || order.get().getPaymentMethod() != 0 || order.get().getStatus() != 0) {
       throw new CustomNotFoundException(CustomError.builder().code("404").message("Không tìm thấy đơn hàng").build());
     }
     Payment payment = new Payment();
@@ -101,7 +101,6 @@ public class PaymentController {
     }
     vnp_Params.put("vnp_OrderInfo", "Thanh toan cho don hang: " + order_number);
     vnp_Params.put("vnp_OrderType", PaymentConfig.vnp_OrderType);
-
     vnp_Params.put("vnp_Locale", "vn");
     vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl);
     vnp_Params.put("vnp_IpAddr", PaymentConfig.vnp_IpAddr);
@@ -116,7 +115,7 @@ public class PaymentController {
     // Add Params of 2.0.1 Version
     vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
     // Build data to hash and querystring
-    List fieldNames = new ArrayList(vnp_Params.keySet());
+    List<String> fieldNames = new ArrayList(vnp_Params.keySet());
     Collections.sort(fieldNames);
     StringBuilder hashData = new StringBuilder();
     StringBuilder query = new StringBuilder();
@@ -126,9 +125,13 @@ public class PaymentController {
       String fieldValue = (String) vnp_Params.get(fieldName);
       if ((fieldValue != null) && (fieldValue.length() > 0)) {
         // Build hash data
+        // if (fieldName.equals("vnp_TxnRef") || fieldName.equals("vnp_TmnCode") ||
+        // fieldName.equals("vnp_Amount")
+        // || fieldName.equals("vnp_CreateDate")) {
         hashData.append(fieldName);
         hashData.append('=');
         hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+        // }
         // Build query
         query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
         query.append('=');
@@ -146,7 +149,7 @@ public class PaymentController {
 
     payment.setOrder(order.get());
     payment.setVnp_ResponseCode(0 + "");
-    payment.setVnp_Amount(amount + "");
+    payment.setVnp_Amount(amountStr);
     payment.setDisabled(1);
     payment.setVnp_SecureHash(vnp_SecureHash);
     payment = paymentRepository.save(payment);
@@ -163,10 +166,10 @@ public class PaymentController {
   @GetMapping("payment-management/query")
   public Map<String, String> vnPayQuery(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     // vnp_Command = querydr
-    String vnp_TxnRef = "20224414044406";
-    String vnp_TransDate = "20221222220611";
+    String vnp_TxnRef = "03120221123111119937";
+    String vnp_TransDate = "20221224104622";
     String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
-    String vnp_IpAddr = PaymentConfig.getIpAddress(req);
+    String vnp_IpAddr = PaymentConfig.vnp_IpAddr;
     Map<String, String> vnp_Params = new HashMap<>();
     vnp_Params.put("vnp_Version", "2.1.0");
     vnp_Params.put("vnp_Command", "querydr");
@@ -211,7 +214,6 @@ public class PaymentController {
     URL url = new URL(paymentUrl);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
-    System.out.println(connection.getResponseMessage());
     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
     String inputLine;
     StringBuilder response = new StringBuilder();
@@ -257,7 +259,6 @@ public class PaymentController {
         throw new CustomBadRequestException(CustomError.builder().code("400").message("Sai thông tin").build());
       }
       // check response code
-
       if (!payment.getVnp_ResponseCode().equalsIgnoreCase("00")) {
         payment.setVnp_ResponseCode(vnp_ResponseCode);
       }
@@ -286,7 +287,8 @@ public class PaymentController {
     payment.setDisabled(0);
     if (invoiceRepository.findByOrderId(order.get().getId()) != null) {
       payment.setUser(
-          userRepository.findById(invoiceRepository.findByOrderId(order.get().getId()).getUser().getId()) + "");
+          userRepository.findById(invoiceRepository.findByOrderId(order.get().getId()).getUser().getId()).get()
+              .getFullname() + "");
     } else {
       payment.setUser("Guest");
     }
@@ -295,5 +297,82 @@ public class PaymentController {
     Map<String, TransactionDTO> result = new HashMap<>();
     result.put("transactionInfo", transactionDTO);
     return result;
+  }
+
+  @PostMapping("payment-management/refund")
+  public String refund(@RequestParam String vnp_TxnRef,
+      @RequestParam String vnp_TransDate,
+      @RequestParam String email,
+      @RequestParam String amountStr,
+      @RequestParam String tranType) throws IOException {
+    int amount = Integer.parseInt(amountStr) * 100;
+    String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
+    String vnp_IpAddr = PaymentConfig.vnp_IpAddr;
+
+    Map<String, String> vnp_Params = new HashMap<>();
+    // vnp_Params.put("vnp_RequestId", PaymentConfig.getRandomNumber(8));
+    vnp_Params.put("vnp_Version", PaymentConfig.vnp_Version);
+    vnp_Params.put("vnp_Command", "refund");
+    vnp_Params.put("vnp_Amount", String.valueOf(amount));
+    vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+    vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+    vnp_Params.put("vnp_OrderInfo", "Kiem tra ket qua GD OrderId:" + vnp_TxnRef.substring(3, vnp_TxnRef.length() - 3));
+    vnp_Params.put("vnp_TransDate", vnp_TransDate);
+    vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+    vnp_Params.put("vnp_CreateBy", email);
+    vnp_Params.put("vnp_TransactionType", tranType);
+
+    Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+    String vnp_CreateDate = formatter.format(cld.getTime());
+    vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+    // Build data to hash and querystring
+    List<String> fieldNames = new ArrayList(vnp_Params.keySet());
+    Collections.sort(fieldNames);
+    StringBuilder hashData = new StringBuilder();
+    StringBuilder query = new StringBuilder();
+    Iterator<String> itr = fieldNames.iterator();
+    while (itr.hasNext()) {
+      String fieldName = (String) itr.next();
+      String fieldValue = (String) vnp_Params.get(fieldName);
+      if ((fieldValue != null) && (fieldValue.length() > 0)) {
+        // Build hash data
+        // if (fieldName.equals("vnp_TxnRef") || fieldName.equals("vnp_TmnCode") ||
+        // fieldName.equals("vnp_Amount")
+        // || fieldName.equals("vnp_TransDate")) {
+        hashData.append(fieldName);
+        hashData.append('=');
+        hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+        // }
+        // Build query
+        query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+        query.append('=');
+        query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+
+        if (itr.hasNext()) {
+          query.append('&');
+          hashData.append('&');
+        }
+      }
+    }
+    String queryUrl = query.toString();
+    String vnp_SecureHash = PaymentConfig.hmacSHA512(PaymentConfig.vnp_HashSecret, hashData.toString());
+    queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+    String paymentUrl = PaymentConfig.vnp_apiUrl + "?" + queryUrl;
+    URL url = new URL(paymentUrl);
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("GET");
+    BufferedReader in = new BufferedReader(
+        new InputStreamReader(connection.getInputStream()));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+    String Rsp = response.toString();
+    String respDecode = URLDecoder.decode(Rsp, "UTF-8");
+    String[] responseData = respDecode.split("&|\\=");
+    return Arrays.toString(responseData);
   }
 }

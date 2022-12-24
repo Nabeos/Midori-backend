@@ -80,15 +80,16 @@ public class OrderServiceImpl implements OrderService {
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
             saveOrderDetail(order.getCart(), order);
-            if (orderDTOPlace.getPaymentMethod() == 1) {
-                emailService.sendPlaceOrderNotice(order);
-            }
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());
         }
         // check if customer or guest
         if (userService.getUserLogin() != null) {
-            saveInvoiceForUser(userService.getUserLogin(), order);
+            User user = userService.getUserLogin();
+            saveInvoiceForUser(user, order);
+        }
+        if (orderDTOPlace.getPaymentMethod() == 1) {
+            emailService.sendPlaceOrderNotice(order);
         }
         return buildDTOResponse(order);
     }
@@ -96,7 +97,6 @@ public class OrderServiceImpl implements OrderService {
     public void saveOrderDetail(List<OrderDetail> orderDetailList, Order order) {
         for (OrderDetail od : orderDetailList) {
             od.setOrder(order);
-            od.getProduct().getId();
             orderDetailRepository.save(od);
         }
     }
@@ -111,7 +111,10 @@ public class OrderServiceImpl implements OrderService {
                     CustomError.builder().code("400").message("wrong order number").build());
         }
         Order order = orderOptional.get();
-
+        if (order.getPaymentMethod() == 0) {
+            throw new CustomBadRequestException(
+                    CustomError.builder().code("400").message("Phải Chờ Khách thanh toán xong.").build());
+        }
         // change status to reject or accept
         if (status == Order.STATUS_REJECT || status == Order.STATUS_IN_PROGRESS && order.getStatus() == 0) {
             order.setStatus(status);
@@ -308,7 +311,7 @@ public class OrderServiceImpl implements OrderService {
         invoice.setOrder(order);
         invoice.setStatus(1);
         invoice = invoiceRepository.save(invoice);
-        order.getCart().forEach((p)->{
+        order.getCart().forEach((p) -> {
             userLogin.getProducts().add(productRepository.findById(p.getProduct().getId()).get());
             userRepository.save(userLogin);
         });
