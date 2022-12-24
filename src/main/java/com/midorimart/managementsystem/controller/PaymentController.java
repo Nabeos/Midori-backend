@@ -272,7 +272,8 @@ public class PaymentController {
         orderRepository.save(order.get());
       }
     }
-    payment.setVnp_Amount(vnp_Amount);
+    int amount = Integer.parseInt(vnp_Amount)/100;
+    payment.setVnp_Amount(amount+"");
     payment.setVnp_BankCode(vnp_BankCode);
     payment.setVnp_BankTranNo(vnp_BankTranNo);
     payment.setVnp_CardType(vnp_CardType);
