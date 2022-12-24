@@ -74,7 +74,7 @@ public class PaymentController {
       @RequestParam String amountStr, HttpServletRequest req, HttpServletResponse resp)
       throws UnsupportedEncodingException, CustomBadRequestException, CustomNotFoundException {
     Optional<Order> order = orderRepository.findByOrderNumber(order_number);
-    if (order.isEmpty() || order.get().getPaymentMethod() != 0 || order.get().getStatus() != 0) {
+    if (order.isEmpty() || order.get().getPaymentMethod() != 0) {
       throw new CustomNotFoundException(CustomError.builder().code("404").message("Không tìm thấy đơn hàng").build());
     }
     Payment payment = new Payment();
