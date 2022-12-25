@@ -228,10 +228,10 @@ public class EmailSenderServiceImpl implements EmailService {
     }
 
     private String buildBodyCart(Order order) {
-        String bodyCart = "<tr>";
+        String bodyCart = "";
         for (OrderDetail od : order.getCart()) {
             Product product = productRepository.findById(od.getProduct().getId()).get();
-            bodyCart += "<td>" + product.getTitle() + "</td>";
+            bodyCart += "<tr><td>" + product.getTitle() + "</td>";
             bodyCart += "<td>" + product.getSku() + "</td>";
             bodyCart += "<td>" + od.getPrice() + "đ</td>";
             bodyCart += "<td>" + od.getQuantity() + "</td>";
