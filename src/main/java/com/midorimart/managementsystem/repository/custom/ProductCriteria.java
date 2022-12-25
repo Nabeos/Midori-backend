@@ -49,13 +49,13 @@ public class ProductCriteria {
         String query1 = "";
         String query2 = "";
         if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {
-            query1 = filter.getPriceAsc() != null ? "order by p.price asc, p.status asc"
-                    : "order by p.price desc, p.status asc";
-            query.append(filter.getPriceAsc() != null ? " order by p.price asc, p.status asc"
-                    : " order by p.price desc, p.status asc");
+            query1 = filter.getPriceAsc() != null ? "order by p.price asc, p.status desc"
+                    : "order by p.price desc, p.status desc";
+            query.append(filter.getPriceAsc() != null ? " order by p.price asc, p.status desc"
+                    : " order by p.price desc, p.status desc");
         } else {
-            query2 = "order by p.status asc";
-            query.append(" order by p.status asc");
+            query2 = "order by p.status desc";
+            query.append(" order by p.status desc");
         }
         String queryForCount = query.toString();
         if (filter.getPriceAsc() != null || filter.getPriceDesc() != null) {

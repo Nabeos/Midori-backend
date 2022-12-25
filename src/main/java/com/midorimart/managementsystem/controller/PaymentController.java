@@ -50,6 +50,7 @@ import com.midorimart.managementsystem.repository.PaymentRepository;
 import com.midorimart.managementsystem.repository.UserRepository;
 import com.midorimart.managementsystem.service.EmailService;
 import com.midorimart.managementsystem.service.UserService;
+import com.midorimart.managementsystem.service.impl.OrderServiceImpl;
 import com.midorimart.managementsystem.utils.DateHelper;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,6 +65,7 @@ public class PaymentController {
   private final PaymentRepository paymentRepository;
   private final UserService userService;
   private final OrderRepository orderRepository;
+  private final OrderServiceImpl orderService;
   private final EmailService emailService;
   private final InvoiceRepository invoiceRepository;
   private final UserRepository userRepository;
@@ -267,8 +269,9 @@ public class PaymentController {
         order.get().setPaymentMethod(2);
         emailService.sendPlaceOrderNotice(order.get());
         orderRepository.save(order.get());
-      } else if (vnp_ResponseCode.equalsIgnoreCase("24")) {
+      } else {
         order.get().setStatus(6);
+        orderService.refillProductQuantityList(order.get().getCart());
         orderRepository.save(order.get());
       }
     }

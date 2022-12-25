@@ -251,7 +251,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Return the quantity of product before Buying
-    private void refillProductQuantityList(List<OrderDetail> list) {
+    public void refillProductQuantityList(List<OrderDetail> list) {
         for (OrderDetail product : list) {
             refillProductQuantity(product);
         }

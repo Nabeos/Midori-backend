@@ -71,6 +71,7 @@ public class ProductMapper {
                 .description(productDTOCreate.getDescription())
                 .price(productDTOCreate.getPrice())
                 .created_at(now)
+                .quantity(0)
                 .updated_at(now)
                 .discount(0)
                 .deleted(0)
