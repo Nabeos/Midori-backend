@@ -312,7 +312,7 @@ public class OrderServiceImpl implements OrderService {
         invoice.setStatus(1);
         invoice = invoiceRepository.save(invoice);
         order.getCart().forEach((p) -> {
-            userLogin.getProducts().add(productRepository.findById(p.getProduct().getId()).get());
+            userLogin.getProducts().add(p.getProduct());
             userRepository.save(userLogin);
         });
     }
