@@ -69,22 +69,23 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Chưa có sản phẩm").build());
         }
         List<String> address = new ArrayList<>();
-        address.add(orderDTOPlace.getAddress().getProvinceId());
-        address.add(orderDTOPlace.getAddress().getDistrictId());
-        address.add(orderDTOPlace.getAddress().getWardId());
+        address.add("province");
+        address.add("district");
+        address.add("ward");
         address.add(orderDTOPlace.getAddress().getAddressDetail());
         Order order = OrderMapper.toOrder(orderDTOPlace);
         order.setOrderCode(RandomString.make(10) + order.getOrderNumber() + RandomString.make(10));
         order.setAddress(address);
+        List<OrderDetail> cart = order.getCart();
+        User user = userService.getUserLogin()==null?null:userService.getUserLogin();
         // Check quantity before payment
-        if (CheckQuantity(order.getCart())) {
+        if (CheckQuantity(cart)) {
             order = orderRepository.save(order);
-            if (userService.getUserLogin() != null) {
-                User user = userService.getUserLogin();
-                saveOrderDetailForCustomer(order.getCart(), order, user);
+            if (user != null) {
+                saveOrderDetailForCustomer(cart, order, user);
                 saveInvoiceForUser(user, order);
             } else {
-                saveOrderDetail(order.getCart(), order);
+                saveOrderDetail(cart, order);
             }
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());
@@ -107,9 +108,9 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetail od : orderDetailList) {
             od.setOrder(order);
             user.getProducts().add(od.getProduct());
-            user = userRepository.save(user);
             od = orderDetailRepository.save(od);
         }
+        user = userRepository.save(user);
     }
 
     // update status for seller (accept, reject, shipping, successful)
@@ -321,6 +322,6 @@ public class OrderServiceImpl implements OrderService {
         invoice.setUser(userLogin);
         invoice.setOrder(order);
         invoice.setStatus(1);
-        invoice = invoiceRepository.save(invoice);
+        invoiceRepository.save(invoice);
     }
 }
