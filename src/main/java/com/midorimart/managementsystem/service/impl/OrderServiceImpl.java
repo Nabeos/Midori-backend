@@ -74,13 +74,14 @@ public class OrderServiceImpl implements OrderService {
         address.add("ward");
         address.add(orderDTOPlace.getAddress().getAddressDetail());
         Order order = OrderMapper.toOrder(orderDTOPlace);
-        order.setOrderCode(RandomString.make(10) + order.getOrderNumber() + RandomString.make(10));
+        order.setOrderCode(RandomString.make(5) + order.getOrderNumber() + RandomString.make(5));
         order.setAddress(address);
         List<OrderDetail> cart = order.getCart();
-        User user = userService.getUserLogin()==null?null:userService.getUserLogin();
+        User user = userService.getUserLogin();
         // Check quantity before payment
         if (CheckQuantity(cart)) {
             order = orderRepository.save(order);
+            // check if customer or guest
             if (user != null) {
                 saveOrderDetailForCustomer(cart, order, user);
                 saveInvoiceForUser(user, order);
@@ -90,7 +91,6 @@ public class OrderServiceImpl implements OrderService {
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());
         }
-        // check if customer or guest
         if (orderDTOPlace.getPaymentMethod() == 1) {
             emailService.sendPlaceOrderNotice(order);
         }
@@ -304,12 +304,13 @@ public class OrderServiceImpl implements OrderService {
     // Check quantity in cart
     private boolean CheckQuantity(List<OrderDetail> cart) {
         for (OrderDetail orderDetail : cart) {
+            Optional<Product> p = productRepository.findById(orderDetail.getProduct().getId());
             if (orderDetail.getQuantity() <= 0 || Integer.toString(orderDetail.getQuantity()) == null)
                 return false;
-            if (!productRepository.findById(orderDetail.getProduct().getId()).isPresent()) {
+            if (!p.isPresent()) {
                 return false;
             }
-            int quantityInStock = productRepository.findById(orderDetail.getProduct().getId()).get().getQuantity();
+            int quantityInStock = p.get().getQuantity();
             if (quantityInStock < orderDetail.getQuantity())
                 return false;
         }
