@@ -79,15 +79,17 @@ public class OrderServiceImpl implements OrderService {
         // Check quantity before payment
         if (CheckQuantity(order.getCart())) {
             order = orderRepository.save(order);
-            saveOrderDetail(order.getCart(), order);
+            if (userService.getUserLogin() != null) {
+                User user = userService.getUserLogin();
+                saveOrderDetailForCustomer(order.getCart(), order, user);
+                saveInvoiceForUser(user, order);
+            } else {
+                saveOrderDetail(order.getCart(), order);
+            }
         } else {
             throw new CustomBadRequestException(CustomError.builder().code("400").message("Hết Hàng").build());
         }
         // check if customer or guest
-        if (userService.getUserLogin() != null) {
-            User user = userService.getUserLogin();
-            saveInvoiceForUser(user, order);
-        }
         if (orderDTOPlace.getPaymentMethod() == 1) {
             emailService.sendPlaceOrderNotice(order);
         }
@@ -98,6 +100,15 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetail od : orderDetailList) {
             od.setOrder(order);
             orderDetailRepository.save(od);
+        }
+    }
+
+    public void saveOrderDetailForCustomer(List<OrderDetail> orderDetailList, Order order, User user) {
+        for (OrderDetail od : orderDetailList) {
+            od.setOrder(order);
+            user.getProducts().add(od.getProduct());
+            user = userRepository.save(user);
+            od = orderDetailRepository.save(od);
         }
     }
 
@@ -311,9 +322,5 @@ public class OrderServiceImpl implements OrderService {
         invoice.setOrder(order);
         invoice.setStatus(1);
         invoice = invoiceRepository.save(invoice);
-        order.getCart().forEach((p) -> {
-            userLogin.getProducts().add(p.getProduct());
-            userRepository.save(userLogin);
-        });
     }
 }
