@@ -211,7 +211,7 @@ public class EmailSenderServiceImpl implements EmailService {
                 + "    <th>Mã sản phẩm</th>"
                 + "    <th>Giá tiền</th>"
                 + "    <th>Số lượng</th>"
-                + "     <th>Tổng tạm</th>"
+                + "    <th>Tổng tạm</th>"
                 + "  </tr>"
 
                 + bodyCart
@@ -231,11 +231,13 @@ public class EmailSenderServiceImpl implements EmailService {
         String bodyCart = "";
         for (OrderDetail od : order.getCart()) {
             Product product = productRepository.findById(od.getProduct().getId()).get();
-            bodyCart += "<tr><td>" + product.getTitle() + "</td>";
+            bodyCart += "<tr>";
+            bodyCart += "<td>" + product.getTitle() + "</td>";
             bodyCart += "<td>" + product.getSku() + "</td>";
             bodyCart += "<td>" + od.getPrice() + "đ</td>";
             bodyCart += "<td>" + od.getQuantity() + "</td>";
-            bodyCart += "<td>" + od.getTotalMoney() + "đ</td></tr>";
+            bodyCart += "<td>" + od.getTotalMoney() + "đ</td>";
+            bodyCart += "</tr>";
         }
         return bodyCart;
     }
