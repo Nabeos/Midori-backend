@@ -85,7 +85,7 @@ public class ReceivedNoteController {
     @Operation(summary = "Create new received note")
     @PostMapping("/api/v1/received-notes")
     public Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(
-            @RequestBody Map<String, @Valid ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException {
+            @RequestBody Map<String, @Valid ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException, ParseException {
         return receivedNoteService.addNewReceivedNote(receivedNoteMap);
     }
 

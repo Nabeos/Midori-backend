@@ -1,6 +1,7 @@
 package com.midorimart.managementsystem.service.impl;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
             ConstraintViolationException.class, MethodArgumentTypeMismatchException.class,
             HttpMessageNotReadableException.class })
     public Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(
-            Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException {
+            Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException, ParseException {
         ReceivedNoteDTOCreate receivedDTOCreate = receivedNoteMap.get("receivedNote");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         Date now = new Date();
@@ -93,13 +94,24 @@ public class ReceivedNoteServiceImpl implements ReceivedNoteService {
 
     // Save received note detail
     private void saveReceivedNoteDetail(List<ReceivedNoteDetail> receivedNoteDetailList, ReceivedNote receivedNote)
-            throws CustomBadRequestException {
+            throws CustomBadRequestException, ParseException {
         for (ReceivedNoteDetail receivedNoteDetail : receivedNoteDetailList) {
             Optional<Product> productOptional = productRepository.findById(receivedNoteDetail.getProduct().getId());
             if (!productOptional.isPresent()) {
                 throw new CustomBadRequestException(
                         CustomError.builder().code("400").message("Không có sản phẩm").build());
             }
+            Product product = productOptional.get();
+            ProductQuantity quantityInStock = productQuantityRepository.findByProductId(product.getId());
+            if (product.getQuantity() != 0 && !quantityInStock.getExpiryDate().equals(receivedNoteDetail.getExpiryDate())) {
+                throw new CustomBadRequestException(
+                        CustomError.builder().code("400").message("Sản phẩm trước đó chưa hết hàng").build());
+            }
+            if (product.getCategory().getId() == 8) {
+                receivedNoteDetail.setExpiryDate();
+                System.out.println(receivedNoteDetail.getExpiryDate());
+            }
+
             receivedNoteDetail.setReceivedNote(receivedNote);
             receivedNoteDetail.setProduct(productOptional.get());
             receivedNoteDetail = receivedNoteDetailRepository.save(receivedNoteDetail);

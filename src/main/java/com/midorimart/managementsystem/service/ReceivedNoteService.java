@@ -13,7 +13,7 @@ public interface ReceivedNoteService {
 
     Map<String, List<ReceivedNoteDTOResponse>> getAllReceivedNote(ReceivedNoteDTOFilter filter) throws ParseException;
 
-    Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException;
+    Map<String, ReceivedNoteDTOResponse> addNewReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap) throws CustomBadRequestException, ParseException;
 
     // Map<String, ReceivedNoteDTOResponse> updateReceivedNote(Map<String, ReceivedNoteDTOCreate> receivedNoteMap,
             // int id);

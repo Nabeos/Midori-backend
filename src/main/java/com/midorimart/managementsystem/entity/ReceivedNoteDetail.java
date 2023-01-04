@@ -1,6 +1,10 @@
 package com.midorimart.managementsystem.entity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,4 +54,10 @@ public class ReceivedNoteDetail {
 
     @Column(name = "total_price")
     private double totalPrice;
+
+    public void setExpiryDate() throws ParseException{
+        if(this.expiryDate == null){
+            this.expiryDate = new SimpleDateFormat("yyyy-MM-dd").parse("3000-12-12");
+        }
+    }
 }
