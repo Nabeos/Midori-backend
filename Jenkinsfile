@@ -7,17 +7,9 @@ pipeline{
     }
 
     stages{
-        stage('Build with maven'){
-            steps{
-                sh 'mvn --version'
-                sh 'java --version'
-                sh 'mvn clean package -Dmaven.test.failure.ignore=true'
-            }
-        }
-
         stage('run docker-compose'){
             steps{
-                sh 'docker-compose up -d --build'
+                sh 'docker compose up -d --build'
             }
         }
     }
