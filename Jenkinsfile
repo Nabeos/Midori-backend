@@ -17,9 +17,7 @@ pipeline{
 
         stage('run docker-compose'){
             steps{
-                sh 'cd /var/masamune/src'
-                sh 'docker-compose build'
-                sh 'docker-compose up -d'
+                sh 'docker-compose up -d --build'
             }
         }
     }
