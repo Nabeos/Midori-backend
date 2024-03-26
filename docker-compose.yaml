@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  be:
+    container_name: be
+    image: my-backend
+    build:
+      - context: Midori-backend
+    ports:
+      - "5050:5050"
+    environment:
+      - USER_NAME=sa
+      - PASSWD=password
+      - SERVER_PORT=5050
+  fe:
+    container_name: fe
+    image: my-front-end
+    build:
+      context: Midori-front-end
+    ports:
+      - "3000:3000"
+    environment:
+      - HOST=http://be
